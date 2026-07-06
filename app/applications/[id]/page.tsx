@@ -1,12 +1,8 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { applications, documents, financialSignals, msmes } from "@/data/mock-data";
-import type { UserRole } from "@/domain/types";
 import { ApplicationWorkspace } from "@/features/loan-workspace/application-workspace";
-
-function parseRole(role?: string): UserRole {
-  return role === "manager" ? "manager" : "loan-officer";
-}
+import { parseRole } from "@/lib/utils";
 
 export default async function ApplicationDetailPage({
   params,

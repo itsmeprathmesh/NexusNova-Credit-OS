@@ -1,10 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { ApplicationQueue } from "@/features/loan-workspace/application-queue";
-import type { UserRole } from "@/domain/types";
-
-function parseRole(role?: string): UserRole {
-  return role === "manager" ? "manager" : "loan-officer";
-}
+import { parseRole } from "@/lib/utils";
 
 export default async function ApplicationsPage({ searchParams }: { searchParams: Promise<{ role?: string }> }) {
   const query = await searchParams;

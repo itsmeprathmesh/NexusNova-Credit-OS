@@ -1,10 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { CommandCenterView } from "@/features/command-center/command-center-view";
-import type { UserRole } from "@/domain/types";
-
-function parseRole(role?: string): UserRole {
-  return role === "manager" ? "manager" : "loan-officer";
-}
+import { parseRole } from "@/lib/utils";
 
 export default async function CommandCenterPage({ searchParams }: { searchParams: Promise<{ role?: string }> }) {
   const query = await searchParams;

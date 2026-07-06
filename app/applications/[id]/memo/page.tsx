@@ -1,12 +1,8 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { applications, documents, financialSignals, msmes } from "@/data/mock-data";
-import type { UserRole } from "@/domain/types";
 import { CreditMemo } from "@/features/loan-workspace/credit-memo";
-
-function parseRole(role?: string): UserRole {
-  return role === "manager" ? "manager" : "loan-officer";
-}
+import { parseRole } from "@/lib/utils";
 
 export default async function ApplicationMemoPage({
   params,

@@ -11,9 +11,9 @@ describe("customer support helpers", () => {
   it("summarizes customer credit readiness from documents and signals", () => {
     const readiness = calculateCustomerReadiness(application, applicationDocuments, signals);
 
-    expect(readiness.score).toBeGreaterThan(60);
+    expect(readiness.score).toBeGreaterThanOrEqual(40);
     expect(readiness.missingDocuments).toContain("Udyam");
-    expect(readiness.reviewItems.join(" ")).toContain("large credits");
+    expect(readiness.reviewItems.join(" ")).toContain("Two large credits need invoice matching");
     expect(readiness.estimatedEligibleAmount).toBeLessThanOrEqual(application.requestedAmount);
   });
 

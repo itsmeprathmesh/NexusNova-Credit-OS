@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { applications, financialSignals, msmes } from "@/data/mock-data";
 import {
+  calculateAiReadiness,
+  calculateBusinessGrowthForecast,
+  calculateCashFlowForecast,
   calculateDynamicCreditLimit,
   calculateFinancialHealth,
   calculateFraudRisk,
   calculateRepaymentRisk,
   createLoanRecommendation,
+  getDocumentIntelligence,
+  runLoanStressScenario,
   runStressScenario
 } from "./intelligence";
 
@@ -52,5 +57,55 @@ describe("intelligence services", () => {
     });
 
     expect(stressed.safeLimit).toBeLessThan(base.safeLimit);
+  });
+
+  it("summarizes document intelligence across all required documents", () => {
+    const review = getDocumentIntelligence(application.id);
+
+    expect(review).toHaveLength(6);
+    expect(review.map((item) => item.type)).toContain("GST Returns");
+    expect(review.some((item) => item.uploadStatus === "missing")).toBe(true);
+    expect(review.some((item) => item.mismatchWarnings.length > 0)).toBe(true);
+  });
+
+  it("calculates AI readiness from missing documents and review issues", () => {
+    const readiness = calculateAiReadiness(application.id);
+
+    expect(readiness.score).toBeLessThan(90);
+    expect(readiness.missingDocuments).toContain("Udyam");
+    expect(readiness.reviewItems.join(" ")).toContain("Bank credits exceed");
+  });
+
+  it("creates explainable business growth and cash-flow forecasts", () => {
+    const growth = calculateBusinessGrowthForecast(signals);
+    const cashFlow = calculateCashFlowForecast(signals);
+
+    expect(growth.reason).toContain("revenue");
+    expect(growth.evidence.length).toBeGreaterThan(1);
+    expect(cashFlow.reason.toLowerCase()).toContain("cash-flow");
+    expect(cashFlow.confidence).toBeGreaterThanOrEqual(70);
+  });
+
+  it("updates decision objects for a richer loan stress scenario", () => {
+    const baseline = runLoanStressScenario(application, msme, signals, {
+      loanAmount: application.requestedAmount,
+      interestRate: 11.5,
+      tenureMonths: 36,
+      revenueDropPercent: 0,
+      receivableDelayDays: 0,
+      seasonalityImpactPercent: 0
+    });
+    const stressed = runLoanStressScenario(application, msme, signals, {
+      loanAmount: application.requestedAmount,
+      interestRate: 14,
+      tenureMonths: 24,
+      revenueDropPercent: 25,
+      receivableDelayDays: 45,
+      seasonalityImpactPercent: 15
+    });
+
+    expect(stressed.coverageRatio).toBeLessThan(baseline.coverageRatio);
+    expect(stressed.dynamicLimit.safeLimit).toBeLessThan(baseline.dynamicLimit.safeLimit);
+    expect(["reduce", "escalate", "request-documents", "reject"]).toContain(stressed.recommendation.action);
   });
 });

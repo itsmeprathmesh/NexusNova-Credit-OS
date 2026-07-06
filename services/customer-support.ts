@@ -30,9 +30,11 @@ export function calculateCustomerReadiness(
   documents: DocumentRecord[],
   signals: FinancialSignals
 ): CustomerReadiness {
-  const uploadedTypes = new Set(documents.map((document) => document.type));
+  const uploadedTypes = new Set(documents.filter((document) => document.status !== "missing").map((document) => document.type));
   const missingDocuments = requiredDocuments.filter((document) => !uploadedTypes.has(document));
-  const reviewItems = documents.flatMap((document) => document.issues);
+  const reviewItems = documents.flatMap((document) =>
+    document.status === "missing" ? [] : [...document.issues, ...document.mismatchWarnings, ...document.tamperIndicators]
+  );
   const reviewPenalty = reviewItems.length * 8;
   const missingPenalty = missingDocuments.length * 5;
   const failedTransactionPenalty = Math.min(14, signals.failedTransactions * 2);

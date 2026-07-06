@@ -1,12 +1,8 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
-import { msmes, portfolio } from "@/data/mock-data";
-import type { UserRole } from "@/domain/types";
+import { applications, financialSignals, getCustomer360, msmes, portfolio } from "@/data/mock-data";
 import { MsmeDrilldown } from "@/features/portfolio/msme-drilldown";
-
-function parseRole(role?: string): UserRole {
-  return role === "manager" ? "manager" : "loan-officer";
-}
+import { parseRole } from "@/lib/utils";
 
 export default async function PortfolioDrilldownPage({
   params,
@@ -24,9 +20,13 @@ export default async function PortfolioDrilldownPage({
     notFound();
   }
 
+  const snapshot = getCustomer360(msmeId);
+  const signals = financialSignals.find((item) => item.msmeId === msmeId);
+  const application = applications.find((item) => item.msmeId === msmeId);
+
   return (
     <AppShell active="portfolio" role={role}>
-      <MsmeDrilldown msme={msme} portfolioItem={portfolioItem} role={role} />
+      <MsmeDrilldown msme={msme} portfolioItem={portfolioItem} role={role} snapshot={snapshot} signals={signals} application={application} />
     </AppShell>
   );
 }

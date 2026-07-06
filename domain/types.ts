@@ -5,6 +5,8 @@ export type DecisionAction = "approve" | "reduce" | "reject" | "request-document
 
 export type DocumentType = "GST Returns" | "Bank Statement" | "Udyam" | "PAN" | "ITR" | "Financial Statement";
 export type DocumentStatus = "verified" | "review-needed" | "missing" | "stale";
+export type OcrStatus = "completed" | "needs-review" | "not-started";
+export type ValidationStatus = "passed" | "warning" | "failed" | "pending";
 
 export interface MsmeProfile {
   id: string;
@@ -36,9 +38,15 @@ export interface DocumentRecord {
   applicationId: string;
   type: DocumentType;
   status: DocumentStatus;
+  ocrStatus: OcrStatus;
   ocrConfidence: number;
+  validationStatus: ValidationStatus;
   extractedFields: Record<string, string>;
   issues: string[];
+  mismatchWarnings: string[];
+  tamperIndicators: string[];
+  missingFields: string[];
+  uploadedAt?: string;
 }
 
 export interface FinancialSignals {
@@ -95,4 +103,69 @@ export interface AuditEvent {
   action: string;
   timestamp: string;
   rationale: string;
+}
+
+export type InteractionChannel = "branch-visit" | "phone" | "email" | "portal" | "site-visit";
+export type TimelineEventKind = "relationship" | "credit" | "document" | "alert" | "decision" | "note";
+
+export interface RelationshipManagerAssignment {
+  msmeId: string;
+  name: string;
+  employeeId: string;
+  branch: string;
+  phone: string;
+  since: string;
+}
+
+export interface RelationshipTimelineEvent {
+  id: string;
+  msmeId: string;
+  date: string;
+  kind: TimelineEventKind;
+  title: string;
+  summary: string;
+  actor: string;
+  channel?: InteractionChannel;
+}
+
+export interface LoanHistoryRecord {
+  id: string;
+  msmeId: string;
+  product: string;
+  sanctionedAmount: number;
+  outstanding: number;
+  status: "active" | "closed" | "watchlist";
+  sanctionedDate: string;
+  tenureMonths: number;
+}
+
+export interface PreviousCreditDecision {
+  id: string;
+  msmeId: string;
+  applicationId?: string;
+  date: string;
+  action: DecisionAction;
+  amount: number;
+  officer: string;
+  rationale: string;
+  aiRecommendation: DecisionAction;
+}
+
+export interface CrmNote {
+  id: string;
+  msmeId: string;
+  author: string;
+  role: string;
+  date: string;
+  content: string;
+  pinned?: boolean;
+}
+
+export interface Customer360Snapshot {
+  msmeId: string;
+  relationshipManager: RelationshipManagerAssignment;
+  timeline: RelationshipTimelineEvent[];
+  loanHistory: LoanHistoryRecord[];
+  previousDecisions: PreviousCreditDecision[];
+  crmNotes: CrmNote[];
 }

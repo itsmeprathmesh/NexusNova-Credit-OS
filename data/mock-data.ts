@@ -1,4 +1,16 @@
-import type { DocumentRecord, FinancialSignals, LoanApplication, MsmeProfile, PortfolioItem } from "@/domain/types";
+import type {
+  CrmNote,
+  Customer360Snapshot,
+  DocumentRecord,
+  FinancialSignals,
+  LoanApplication,
+  LoanHistoryRecord,
+  MsmeProfile,
+  PortfolioItem,
+  PreviousCreditDecision,
+  RelationshipManagerAssignment,
+  RelationshipTimelineEvent
+} from "@/domain/types";
 
 export const msmes: MsmeProfile[] = [
   {
@@ -61,27 +73,90 @@ export const documents: DocumentRecord[] = [
     applicationId: "app-1001",
     type: "GST Returns",
     status: "verified",
+    ocrStatus: "completed",
     ocrConfidence: 94,
+    validationStatus: "passed",
     extractedFields: { fyTurnover: "INR 3.82 Cr", lastFiled: "June 2026" },
-    issues: []
+    issues: [],
+    mismatchWarnings: [],
+    tamperIndicators: [],
+    missingFields: [],
+    uploadedAt: "2026-07-02 10:24"
   },
   {
     id: "doc-bank-aurora",
     applicationId: "app-1001",
     type: "Bank Statement",
     status: "review-needed",
+    ocrStatus: "needs-review",
     ocrConfidence: 82,
+    validationStatus: "warning",
     extractedFields: { averageBalance: "INR 18.4 L", failedTxns: "7" },
-    issues: ["Two large credits need invoice matching"]
+    issues: ["Two large credits need invoice matching"],
+    mismatchWarnings: ["Bank credits exceed linked GST invoices by INR 7.8 L in May"],
+    tamperIndicators: ["Statement page 4 metadata differs from rest of PDF"],
+    missingFields: ["Invoice reference for credit CR-2026-05-18"],
+    uploadedAt: "2026-07-02 10:31"
   },
   {
     id: "doc-pan-aurora",
     applicationId: "app-1001",
     type: "PAN",
     status: "verified",
+    ocrStatus: "completed",
     ocrConfidence: 98,
+    validationStatus: "passed",
     extractedFields: { pan: "AAKPA1842K" },
-    issues: []
+    issues: [],
+    mismatchWarnings: [],
+    tamperIndicators: [],
+    missingFields: [],
+    uploadedAt: "2026-07-02 10:19"
+  },
+  {
+    id: "doc-udyam-aurora",
+    applicationId: "app-1001",
+    type: "Udyam",
+    status: "missing",
+    ocrStatus: "not-started",
+    ocrConfidence: 0,
+    validationStatus: "pending",
+    extractedFields: {},
+    issues: ["Udyam certificate not uploaded"],
+    mismatchWarnings: [],
+    tamperIndicators: [],
+    missingFields: ["Udyam registration number", "Enterprise classification"],
+    uploadedAt: undefined
+  },
+  {
+    id: "doc-itr-aurora",
+    applicationId: "app-1001",
+    type: "ITR",
+    status: "stale",
+    ocrStatus: "completed",
+    ocrConfidence: 88,
+    validationStatus: "warning",
+    extractedFields: { assessmentYear: "2024-25", declaredIncome: "INR 28.6 L" },
+    issues: ["Latest assessment year ITR is pending"],
+    mismatchWarnings: ["Declared income trails observed banking inflows"],
+    tamperIndicators: [],
+    missingFields: ["AY 2025-26 acknowledgement"],
+    uploadedAt: "2026-07-02 10:38"
+  },
+  {
+    id: "doc-financials-aurora",
+    applicationId: "app-1001",
+    type: "Financial Statement",
+    status: "review-needed",
+    ocrStatus: "needs-review",
+    ocrConfidence: 79,
+    validationStatus: "warning",
+    extractedFields: { netMargin: "11.8%", receivables: "INR 42 L" },
+    issues: ["Receivables ageing schedule needs CA confirmation"],
+    mismatchWarnings: ["Receivables growth is faster than six-month revenue growth"],
+    tamperIndicators: [],
+    missingFields: ["CA UDIN", "Ageing bucket over 90 days"],
+    uploadedAt: "2026-07-02 10:44"
   }
 ];
 
@@ -103,3 +178,204 @@ export const portfolio: PortfolioItem[] = [
   { msmeId: "msme-kaveri", exposure: 1800000, riskBand: "low", earlyWarnings: [], dynamicLimitDelta: 250000 },
   { msmeId: "msme-saral", exposure: 5200000, riskBand: "high", earlyWarnings: ["GST turnover down 18%", "Cash-flow compression"], dynamicLimitDelta: -900000 }
 ];
+
+const relationshipManagers: RelationshipManagerAssignment[] = [
+  {
+    msmeId: "msme-aurora",
+    name: "Priya Deshmukh",
+    employeeId: "RM-4412",
+    branch: "IDBI Pune Industrial",
+    phone: "+91 98220 11407",
+    since: "2023-04-01"
+  }
+];
+
+const loanHistory: LoanHistoryRecord[] = [
+  {
+    id: "loan-aurora-wc-22",
+    msmeId: "msme-aurora",
+    product: "Cash Credit Limit",
+    sanctionedAmount: 2500000,
+    outstanding: 1840000,
+    status: "active",
+    sanctionedDate: "2023-06-15",
+    tenureMonths: 12
+  },
+  {
+    id: "loan-aurora-tl-24",
+    msmeId: "msme-aurora",
+    product: "Term Loan — Machinery",
+    sanctionedAmount: 1200000,
+    outstanding: 620000,
+    status: "active",
+    sanctionedDate: "2024-02-10",
+    tenureMonths: 36
+  },
+  {
+    id: "loan-aurora-od-21",
+    msmeId: "msme-aurora",
+    product: "Overdraft Facility",
+    sanctionedAmount: 800000,
+    outstanding: 0,
+    status: "closed",
+    sanctionedDate: "2021-09-01",
+    tenureMonths: 12
+  }
+];
+
+const previousDecisions: PreviousCreditDecision[] = [
+  {
+    id: "dec-aurora-24",
+    msmeId: "msme-aurora",
+    applicationId: "app-0884",
+    date: "2024-02-08",
+    action: "approve",
+    amount: 1200000,
+    officer: "Anil Mehta",
+    rationale: "Machinery term loan approved with quarterly GST monitoring.",
+    aiRecommendation: "approve"
+  },
+  {
+    id: "dec-aurora-23",
+    msmeId: "msme-aurora",
+    applicationId: "app-0612",
+    date: "2023-06-12",
+    action: "reduce",
+    amount: 2500000,
+    officer: "Anil Mehta",
+    rationale: "Working capital limit reduced from requested INR 30 L to INR 25 L due to receivable concentration.",
+    aiRecommendation: "reduce"
+  }
+];
+
+const crmNotes: CrmNote[] = [
+  {
+    id: "note-aurora-1",
+    msmeId: "msme-aurora",
+    author: "Priya Deshmukh",
+    role: "Relationship Manager",
+    date: "2026-07-01",
+    content: "Owner confirmed new OEM contract from June. Expects receivable cycle to stretch by 12–15 days for two quarters.",
+    pinned: true
+  },
+  {
+    id: "note-aurora-2",
+    msmeId: "msme-aurora",
+    author: "Rohit Kulkarni",
+    role: "Customer",
+    date: "2026-07-02",
+    content: "Submitted bank statement and GST via portal. Udyam upload pending — certificate renewal in progress.",
+    pinned: false
+  },
+  {
+    id: "note-aurora-3",
+    msmeId: "msme-aurora",
+    author: "Anil Mehta",
+    role: "Loan Officer",
+    date: "2026-06-28",
+    content: "Prior sanction conduct satisfactory. No SMA history. Recommend continuity subject to invoice matching on May credits.",
+    pinned: false
+  }
+];
+
+const relationshipTimeline: RelationshipTimelineEvent[] = [
+  {
+    id: "evt-aurora-1",
+    msmeId: "msme-aurora",
+    date: "2026-07-02 10:44",
+    kind: "document",
+    title: "Financial statements uploaded",
+    summary: "Customer uploaded audited statements via portal. OCR flagged receivables ageing for review.",
+    actor: "Rohit Kulkarni",
+    channel: "portal"
+  },
+  {
+    id: "evt-aurora-2",
+    msmeId: "msme-aurora",
+    date: "2026-07-02 09:10",
+    kind: "credit",
+    title: "Working capital application opened",
+    summary: "New request for INR 42 L working capital term loan linked to CNC inventory and receivables bridge.",
+    actor: "System",
+    channel: "portal"
+  },
+  {
+    id: "evt-aurora-3",
+    msmeId: "msme-aurora",
+    date: "2026-07-01 15:30",
+    kind: "relationship",
+    title: "RM site visit",
+    summary: "Priya Deshmukh visited Chakan plant. Production utilization at 78%. Two new export orders discussed.",
+    actor: "Priya Deshmukh",
+    channel: "site-visit"
+  },
+  {
+    id: "evt-aurora-4",
+    msmeId: "msme-aurora",
+    date: "2026-06-28 11:00",
+    kind: "note",
+    title: "Officer pre-sanction note",
+    summary: "Anil Mehta recorded satisfactory conduct on existing limits ahead of renewal cycle.",
+    actor: "Anil Mehta",
+    channel: "branch-visit"
+  },
+  {
+    id: "evt-aurora-5",
+    msmeId: "msme-aurora",
+    date: "2026-06-15 09:00",
+    kind: "alert",
+    title: "Early warning — invoice concentration",
+    summary: "Portfolio monitor flagged rising share of receivables from top two buyers.",
+    actor: "Portfolio Intelligence",
+    channel: "portal"
+  },
+  {
+    id: "evt-aurora-6",
+    msmeId: "msme-aurora",
+    date: "2024-02-10",
+    kind: "decision",
+    title: "Machinery term loan sanctioned",
+    summary: "INR 12 L approved for CNC upgrade. AI and officer aligned on approve.",
+    actor: "Anil Mehta",
+    channel: "branch-visit"
+  },
+  {
+    id: "evt-aurora-7",
+    msmeId: "msme-aurora",
+    date: "2023-06-15",
+    kind: "decision",
+    title: "Cash credit limit enhanced",
+    summary: "Limit set at INR 25 L after reduce recommendation on receivable concentration.",
+    actor: "Anil Mehta",
+    channel: "branch-visit"
+  },
+  {
+    id: "evt-aurora-8",
+    msmeId: "msme-aurora",
+    date: "2023-04-01",
+    kind: "relationship",
+    title: "RM assignment",
+    summary: "Priya Deshmukh assigned as primary relationship manager for Pune industrial cluster.",
+    actor: "Branch Operations",
+    channel: "branch-visit"
+  }
+];
+
+const customer360Snapshots: Customer360Snapshot[] = [
+  {
+    msmeId: "msme-aurora",
+    relationshipManager: relationshipManagers[0],
+    timeline: relationshipTimeline,
+    loanHistory,
+    previousDecisions,
+    crmNotes
+  }
+];
+
+export function getPortfolioItem(msmeId: string) {
+  return portfolio.find((item) => item.msmeId === msmeId);
+}
+
+export function getCustomer360(msmeId: string) {
+  return customer360Snapshots.find((item) => item.msmeId === msmeId);
+}
