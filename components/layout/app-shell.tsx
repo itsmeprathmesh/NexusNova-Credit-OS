@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BriefcaseBusiness, ClipboardList, LayoutDashboard, ShieldCheck } from "lucide-react";
+import { BarChart3, BriefcaseBusiness, ClipboardList, FileText, LayoutDashboard, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import type { UserRole } from "@/domain/types";
 import { cn } from "@/lib/utils";
@@ -7,7 +7,9 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { href: "/command-center", label: "Command Center", icon: LayoutDashboard },
   { href: "/applications", label: "Applications", icon: ClipboardList },
-  { href: "/portfolio", label: "Portfolio", icon: BriefcaseBusiness }
+  { href: "/portfolio", label: "Portfolio", icon: BriefcaseBusiness },
+  { href: "/audit", label: "Audit", icon: FileText },
+  { href: "/reporting", label: "Reporting", icon: BarChart3 }
 ];
 
 const roleLabels: Record<UserRole, string> = {
@@ -21,7 +23,7 @@ export function AppShell({
   role = "loan-officer"
 }: {
   children: ReactNode;
-  active: "command-center" | "applications" | "portfolio";
+  active: "command-center" | "applications" | "portfolio" | "audit" | "reporting";
   role?: UserRole;
 }) {
   return (

@@ -1,4 +1,4 @@
-import type { BusinessRegistration, DecisionAction, DocumentRecord, DocumentType, LoanApplication, NotificationEvent, TimelineStage } from "@/domain/types";
+import type { AuditEvent, BusinessRegistration, DecisionAction, DocumentRecord, DocumentType, LoanApplication, NotificationEvent, TimelineStage, UserRole } from "@/domain/types";
 import { documents as staticDocuments, financialSignals as staticSignals, msmes as staticMsmes } from "@/data/mock-data";
 
 export type CustomerSession = {
@@ -229,6 +229,25 @@ export function triggerOfficerDecision(applicationId: string, action: DecisionAc
       : `Your application status has been updated to: ${action}.`,
     timestamp: now
   });
+}
+
+let auditEvents: AuditEvent[] = [
+  { id: "audit-001", actor: "LO-1187", role: "loan-officer", action: "Application reviewed", timestamp: new Date(Date.now() - 86400000 * 2).toISOString(), rationale: "Initial document verification completed. All documents present." },
+  { id: "audit-002", actor: "AI-Committee", role: "loan-officer", action: "Committee consensus generated", timestamp: new Date(Date.now() - 86400000 * 1.5).toISOString(), rationale: "Risk Officer: Approve, Business Growth: Approve, Compliance: Conditional. Consensus: Approve with conditions." },
+  { id: "audit-003", actor: "LO-1187", role: "loan-officer", action: "Decision recorded", timestamp: new Date(Date.now() - 86400000).toISOString(), rationale: "Approved for INR 75,00,000 at 12.5% for 36 months. Conditions: invoice verification, quarterly monitoring." },
+  { id: "audit-004", actor: "MGR-2041", role: "manager", action: "Oversight review completed", timestamp: new Date(Date.now() - 43200000).toISOString(), rationale: "Reviewed committee consensus and officer decision. No override needed. Approved." },
+  { id: "audit-005", actor: "AI-Fraud-Scanner", role: "loan-officer", action: "Fraud re-screening triggered", timestamp: new Date(Date.now() - 21600000).toISOString(), rationale: "Automated fraud re-screening completed. No new indicators detected." },
+  { id: "audit-006", actor: "LO-1187", role: "loan-officer", action: "Sanction letter generated", timestamp: new Date(Date.now() - 10800000).toISOString(), rationale: "Sanction letter for Aurora Precision Tools generated and queued for digital signature." },
+  { id: "audit-007", actor: "MGR-2041", role: "manager", action: "Portfolio limit rebalancing", timestamp: new Date(Date.now() - 7200000).toISOString(), rationale: "Quarterly portfolio rebalancing: Pune Industrial exposure reduced by 8% per risk policy." }
+];
+
+export function getAuditEvents(): AuditEvent[] {
+  return [...auditEvents].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+}
+
+export function recordAuditEvent(event: Omit<AuditEvent, "id" | "timestamp">) {
+  const id = `audit-${Date.now()}-${auditEvents.length}`;
+  auditEvents.unshift({ ...event, id, timestamp: new Date().toISOString() });
 }
 
 function formatShortAmount(amount: number) {

@@ -210,6 +210,32 @@ export interface CommitteeAuditEntry {
   timestamp: string;
 }
 
+export interface AuditFilter {
+  roles: UserRole[];
+  actions: string[];
+  fromDate: string | null;
+  toDate: string | null;
+  search: string;
+}
+
+export interface ReportDefinition {
+  id: string;
+  title: string;
+  description: string;
+  category: "portfolio" | "credit" | "risk" | "compliance" | "executive";
+  icon: string;
+  sections: string[];
+}
+
+export interface TimelineDetail {
+  stageId: string;
+  label: string;
+  status: "pending" | "active" | "complete" | "skipped";
+  timestamp: string | null;
+  detail: string;
+  subItems: { label: string; value: string; status: "passed" | "warning" | "failed" | "pending" }[];
+}
+
 export interface BusinessRegistration {
   businessName: string;
   ownerName: string;

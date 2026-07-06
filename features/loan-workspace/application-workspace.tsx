@@ -258,7 +258,7 @@ export function ApplicationWorkspace({
         </div>
       </Panel>
 
-      <Panel title="Human Decision Workflow" action={<Link className="text-sm font-semibold text-trust" href={`/applications/${application.id}/memo`}>Preview memo</Link>}>
+      <Panel title="Human Decision Workflow" action={<div className="flex flex-wrap gap-2"><Link className="text-sm font-semibold text-trust" href={`/applications/${application.id}/memo`}>Preview memo</Link><Link className="text-sm font-semibold text-trust" href={`/applications/${application.id}/production-memo`}>Production memo</Link><Link className="text-sm font-semibold text-trust" href={`/applications/${application.id}/timeline`}>Timeline</Link></div>}>
         <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="text-sm text-muted">
