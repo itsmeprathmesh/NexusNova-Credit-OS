@@ -3,6 +3,10 @@ import { BarChart3, BriefcaseBusiness, ClipboardList, FileText, LayoutDashboard,
 import type { ReactNode } from "react";
 import type { UserRole } from "@/domain/types";
 import { cn } from "@/lib/utils";
+import { SearchBar } from "@/components/ui/search-bar";
+import { NotificationCenter } from "@/components/ui/notification-center";
+import { UserMenu } from "@/components/ui/user-menu";
+import { QuickActions } from "@/components/ui/quick-actions";
 
 const navItems = [
   { href: "/command-center", label: "Command Center", icon: LayoutDashboard },
@@ -73,26 +77,35 @@ export function AppShell({
       </aside>
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-10 border-b border-line bg-white/90 px-4 py-3 backdrop-blur-md sm:px-6">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="animate-fade-in">
+        <header className="sticky top-0 z-20 border-b border-line bg-white/90 px-4 py-2.5 backdrop-blur-md sm:px-6">
+          <div className="flex items-center justify-between gap-3">
+            <div className="hidden min-w-0 lg:block">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted">IDBI Innovate 2026 PS-3</p>
-              <h1 className="text-xl font-semibold text-ink">NexusNova Credit Intelligence OS</h1>
+              <h1 className="text-sm font-semibold text-ink">NexusNova Credit Intelligence OS</h1>
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
-              <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-amber-800">
-                1 urgent case under 6h SLA
-              </span>
-              <span className="rounded-md border border-sky-200 bg-sky-50 px-2.5 py-1 text-sky-800">
-                {roleLabels[role]}
-              </span>
-              <span className="rounded-md border border-line bg-slate-50 px-2.5 py-1 text-muted">Bank Confidential</span>
+            <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
+              <SearchBar />
+              <NotificationCenter />
+              <div className="hidden sm:flex flex-wrap items-center gap-2 text-xs font-medium">
+                <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-amber-800">
+                  1 urgent
+                </span>
+                <span className="rounded-md border border-sky-200 bg-sky-50 px-2 py-1 text-sky-800">
+                  {roleLabels[role]}
+                </span>
+                <span className="hidden rounded-md border border-line bg-slate-50 px-2 py-1 text-muted md:inline">
+                  Confidential
+                </span>
+              </div>
+              <UserMenu currentRole={role} />
             </div>
           </div>
         </header>
 
         <PageTransition>{children}</PageTransition>
       </div>
+
+      <QuickActions />
     </div>
   );
 }

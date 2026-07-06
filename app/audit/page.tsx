@@ -1,5 +1,7 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { AuditCenter } from "@/features/audit/audit-center";
+import { PageHeader } from "@/components/ui/page-header";
+import { Badge } from "@/components/ui/primitives";
 import { parseRole } from "@/lib/utils";
 
 export default async function AuditPage({
@@ -12,6 +14,11 @@ export default async function AuditPage({
 
   return (
     <AppShell active="audit" role={role}>
+      <PageHeader
+        title="Audit Center"
+        description="Enterprise audit trail — every decision, override, and system event is recorded immutably."
+        badges={<Badge tone="info">Live · immutable</Badge>}
+      />
       <AuditCenter />
     </AppShell>
   );

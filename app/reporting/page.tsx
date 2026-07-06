@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { ReportingCenter } from "@/features/reporting/reporting-center";
+import { PageHeader } from "@/components/ui/page-header";
 import { parseRole } from "@/lib/utils";
 
 export default async function ReportingPage({
@@ -12,6 +13,10 @@ export default async function ReportingPage({
 
   return (
     <AppShell active="reporting" role={role}>
+      <PageHeader
+        title="Reporting Center"
+        description="Pre-built enterprise reports for portfolio health, sector intelligence, risk migration, and compliance."
+      />
       <ReportingCenter />
     </AppShell>
   );

@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { PortfolioDashboard } from "@/features/portfolio/portfolio-dashboard";
+import { PageHeader } from "@/components/ui/page-header";
 import { parseRole } from "@/lib/utils";
 
 export default async function PortfolioPage({ searchParams }: { searchParams: Promise<{ role?: string }> }) {
@@ -8,6 +9,10 @@ export default async function PortfolioPage({ searchParams }: { searchParams: Pr
 
   return (
     <AppShell active="portfolio" role={role}>
+      <PageHeader
+        title="Portfolio Intelligence"
+        description="AI-powered MSME portfolio monitoring, sector intelligence, and early warning detection."
+      />
       <PortfolioDashboard role={role} />
     </AppShell>
   );
