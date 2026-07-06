@@ -6,6 +6,7 @@ import type { TimelineStage } from "@/domain/types";
 import { getTimelineStages } from "@/services/app-data";
 import { cn } from "@/lib/utils";
 import { Badge, Panel } from "@/components/ui/primitives";
+import { AIBadge } from "@/components/ai/ai-status";
 
 const stageIcons: Record<string, typeof Circle> = {
   submitted: CheckCircle2,
@@ -87,7 +88,9 @@ export function CustomerTimeline({ applicationId, status }: { applicationId: str
                   >
                     {stage.label}
                   </p>
-                  {isActive && <Badge tone="info">In progress</Badge>}
+                  {isActive && stage.id === "ai-review" && <AIBadge tone="analyzing">AI Reviewing</AIBadge>}
+                  {isActive && stage.id !== "ai-review" && <Badge tone="info">In progress</Badge>}
+                  {isComplete && stage.id === "ai-review" && <AIBadge tone="complete">AI Complete</AIBadge>}
                   {isComplete && stage.timestamp && (
                     <span className="text-xs text-muted">
                       {new Date(stage.timestamp).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}

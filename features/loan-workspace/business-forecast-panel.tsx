@@ -1,7 +1,7 @@
 import type { FinancialSignals, IntelligenceResult } from "@/domain/types";
 import { formatPercent } from "@/lib/format";
 import { Metric, Panel, ProgressBar, RiskBadge } from "@/components/ui/primitives";
-import { SimpleLineChart } from "@/components/ui/charts";
+import { PremiumLineChart } from "@/components/charts";
 
 function projectedCashFlow(signals: FinancialSignals) {
   const data = signals.monthlyRevenue;
@@ -68,7 +68,7 @@ export function BusinessForecastPanel({
             <Metric label="Confidence" value={`${cashFlow.confidence}%`} />
           </div>
           <p className="mb-2 text-sm text-muted">{cashFlow.reason}</p>
-          <SimpleLineChart data={chartData} xKey="month" yKey="revenue" />
+          <PremiumLineChart data={chartData} lines={[{ dataKey: "revenue", label: "Revenue" }]} xKey="month" showArea />
           <p className="text-xs text-muted">Actual (M1–M6) and projected cash flow in lakh INR.</p>
         </div>
       </div>

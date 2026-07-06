@@ -4,6 +4,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -14,6 +15,7 @@ import {
 } from "recharts";
 import type { PortfolioItem, RiskBand } from "@/domain/types";
 import { cn } from "@/lib/utils";
+import { PremiumTooltip, PremiumLegend } from "@/components/charts";
 
 type ChartDatum = Record<string, string | number>;
 
@@ -25,17 +27,11 @@ const riskClasses: Record<RiskBand, string> = {
 };
 
 function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-lg border border-line bg-panel px-3 py-2 shadow-elevated">
-      <p className="text-xs font-medium text-muted">{label}</p>
-      {payload.map((entry) => (
-        <p key={entry.name} className="text-sm font-semibold text-ink" style={{ color: entry.color }}>
-          {entry.value?.toLocaleString("en-IN")}
-        </p>
-      ))}
-    </div>
-  );
+  return <PremiumTooltip active={active} payload={payload} label={label} />;
+}
+
+function ChartLegend({ payload }: { payload?: { color: string; value: string }[] }) {
+  return <PremiumLegend payload={payload} />;
 }
 
 export function SimpleBarChart({ data, xKey, yKey }: { data: ChartDatum[]; xKey: string; yKey: string }) {
@@ -53,6 +49,7 @@ export function SimpleBarChart({ data, xKey, yKey }: { data: ChartDatum[]; xKey:
           <XAxis dataKey={xKey} tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#667085" }} />
           <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#667085" }} />
           <Tooltip content={<ChartTooltip />} cursor={{ fill: "#f5f7fa" }} />
+          <Legend content={<ChartLegend />} />
           <Bar dataKey={yKey} fill="url(#barGradient)" radius={[4, 4, 0, 0]} animationDuration={600} animationEasing="ease-out" />
         </BarChart>
       </ResponsiveContainer>

@@ -4,6 +4,9 @@ import { msmes, portfolio, financialSignals } from "@/data/mock-data";
 import type { UserRole } from "@/domain/types";
 import { formatCurrency } from "@/lib/format";
 import { PortfolioCommandCenter } from "./portfolio-command-center";
+import { AIBadge } from "@/components/ai/ai-status";
+import { FadeInView, SlideUpView } from "@/components/ui/motion";
+import { DonutChart, ExposureTreemap } from "@/components/charts";
 import { InteractiveRiskHeatmap } from "./interactive-risk-heatmap";
 import { SectorIntelligence } from "./sector-intelligence";
 import { BranchPerformance } from "./branch-performance";
@@ -39,6 +42,14 @@ export function PortfolioDashboard({ role }: { role: UserRole }) {
 
   return (
     <div className="space-y-6">
+      <FadeInView>
+        <div className="mb-2 flex items-center gap-2">
+          <AIBadge tone="complete">AI Intelligence Engine</AIBadge>
+          <AIBadge tone={health.band === "low" ? "complete" : "warning"}>Portfolio Health: {health.overallScore}%</AIBadge>
+          <span className="text-xs text-muted">Last updated: {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+        </div>
+      </FadeInView>
+
       <PortfolioCommandCenter health={health} role={role} />
 
       <ExecutiveCreditBoard health={health} sectors={sectors} topWarnings={warnings.length} />
@@ -47,7 +58,27 @@ export function PortfolioDashboard({ role }: { role: UserRole }) {
 
       <div className="grid gap-6 xl:grid-cols-2">
         <SectorIntelligence sectors={sectors} />
-        <BranchPerformance branches={branches} />
+        <div className="space-y-6">
+          <SlideUpView>
+            <div className="rounded-lg border border-line bg-panel p-5 shadow-sm">
+              <h2 className="mb-4 text-base font-semibold text-ink">Risk Distribution</h2>
+              <DonutChart
+                data={[
+                  { name: "Low", value: enriched.filter((e) => e.riskBand === "low").length, color: "#13795b" },
+                  { name: "Medium", value: enriched.filter((e) => e.riskBand === "medium").length, color: "#e68a2e" },
+                  { name: "High", value: enriched.filter((e) => e.riskBand === "high").length, color: "#d9534f" },
+                  { name: "Critical", value: enriched.filter((e) => e.riskBand === "critical").length, color: "#9b1c1c" }
+                ]}
+                height={180}
+                innerRadius={44}
+                outerRadius={72}
+                centerLabel={`${enriched.length}`}
+              />
+              <p className="mt-2 text-center text-xs text-muted">Portfolio risk distribution across {enriched.length} MSMEs</p>
+            </div>
+          </SlideUpView>
+          <BranchPerformance branches={branches} />
+        </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
@@ -57,8 +88,27 @@ export function PortfolioDashboard({ role }: { role: UserRole }) {
 
       <RiskMigrationTimeline migration={migration} />
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
         <PortfolioAnalytics analytics={analytics} />
+        <SlideUpView>
+          <div className="rounded-lg border border-line bg-panel p-5 shadow-sm">
+            <h2 className="mb-4 text-base font-semibold text-ink">Sector Exposure Treemap</h2>
+            <ExposureTreemap
+              items={sectors.map((s) => ({
+                id: s.sector,
+                label: s.sector,
+                value: s.totalExposure,
+                band: s.dominantBand,
+                subtitle: `${s.count} MSMEs`
+              }))}
+              maxHeight={240}
+            />
+          </div>
+        </SlideUpView>
+      </div>
+
+      <div className="rounded-lg border border-line bg-panel p-5 shadow-sm">
+        <h2 className="mb-4 text-base font-semibold text-ink">Sector & Branch Exposure</h2>
         <div className="rounded-lg border border-line bg-panel p-5 shadow-sm">
           <h2 className="mb-4 text-base font-semibold text-ink">Sector & Branch Exposure</h2>
           <div className="overflow-hidden rounded-lg border border-line">

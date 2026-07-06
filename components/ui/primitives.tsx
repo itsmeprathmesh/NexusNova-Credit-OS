@@ -1,7 +1,9 @@
 import { type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode, forwardRef } from "react";
+import { motion } from "framer-motion";
 import type { RiskBand } from "@/domain/types";
 import { cn } from "@/lib/utils";
 import { riskLabel } from "@/lib/format";
+import { CountUp } from "./count-up";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "ghost" | "danger";
@@ -48,6 +50,7 @@ export function Badge({ className, tone = "neutral", ...props }: BadgeProps) {
         tones[tone],
         className
       )}
+      role="status"
       {...props}
     />
   );
@@ -70,20 +73,26 @@ export function Panel({
   title,
   action,
   hover,
+  glass,
   ...props
-}: HTMLAttributes<HTMLElement> & { title?: string; action?: ReactNode; hover?: boolean }) {
+}: HTMLAttributes<HTMLElement> & { title?: string; action?: ReactNode; hover?: boolean; glass?: boolean }) {
+  const panelId = title ? `panel-${title.toLowerCase().replace(/\s+/g, "-")}` : undefined;
   return (
     <section
       className={cn(
-        "rounded-lg border border-line bg-panel p-5 shadow-panel transition-all duration-200",
-        hover && "cursor-pointer hover:-translate-y-0.5 hover:shadow-elevated",
+        glass ? "glass rounded-xl shadow-glass" : "rounded-lg border border-line bg-panel shadow-panel",
+        "p-5 transition-all duration-200",
+        hover && !glass && "cursor-pointer hover:-translate-y-0.5 hover:shadow-elevated",
+        hover && glass && "cursor-pointer hover:-translate-y-0.5 hover:shadow-elevated",
         className
       )}
+      aria-labelledby={panelId}
+      role="region"
       {...props}
     >
       {(title || action) && (
         <div className="mb-4 flex items-start justify-between gap-4">
-          {title ? <h2 className="text-base font-semibold text-ink">{title}</h2> : <div />}
+          {title ? <h2 id={panelId} className="text-base font-semibold text-ink">{title}</h2> : <div />}
           {action}
         </div>
       )}
@@ -96,19 +105,28 @@ export function Metric({
   label,
   value,
   hint,
+  animate,
   className
 }: {
   label: string;
   value: ReactNode;
   hint?: string;
+  animate?: boolean;
   className?: string;
 }) {
   return (
-    <div className={cn("min-w-0", className)}>
+    <motion.div
+      className={cn("min-w-0", className)}
+      initial={animate ? { opacity: 0, y: 12 } : undefined}
+      animate={animate ? { opacity: 1, y: 0 } : undefined}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      role="group"
+      aria-label={label}
+    >
       <p className="text-xs font-medium uppercase tracking-wide text-muted">{label}</p>
       <p className="mt-1 truncate text-2xl font-semibold text-ink">{value}</p>
       {hint ? <p className="mt-1 text-sm text-muted">{hint}</p> : null}
-    </div>
+    </motion.div>
   );
 }
 
@@ -122,8 +140,8 @@ export function ProgressBar({ value, className }: { value: number; className?: s
   );
 }
 
-export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("skeleton-shimmer rounded-md", className)} aria-hidden="true" />;
+export function Skeleton({ className, style, ...props }: { className?: string; style?: React.CSSProperties }) {
+  return <div className={cn("skeleton-shimmer rounded-md", className)} aria-hidden="true" style={style} {...props} />;
 }
 
 export function EmptyState({
@@ -138,7 +156,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-line bg-panel px-6 py-12 text-center">
+    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-line bg-panel px-6 py-12 text-center" role="status" aria-live="polite">
       {icon && <div className="mb-4 grid h-12 w-12 place-items-center rounded-xl bg-slate-100 text-muted">{icon}</div>}
       <h3 className="text-base font-semibold text-ink">{title}</h3>
       <p className="mt-2 max-w-sm text-sm leading-6 text-muted">{description}</p>

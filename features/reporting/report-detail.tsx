@@ -6,7 +6,7 @@ import { applications, financialSignals, msmes, portfolio } from "@/data/mock-da
 import { computePortfolioHealth, computeSectorSummaries, computeBranchSummaries, computeRiskMigration, computeEarlyWarnings, computePortfolioAnalytics } from "@/services/portfolio-intelligence";
 import { formatCurrency } from "@/lib/format";
 import { Badge, Metric, Panel, RiskBadge } from "@/components/ui/primitives";
-import { SimpleBarChart, SimpleLineChart } from "@/components/ui/charts";
+import { PremiumBarChart, PremiumLineChart, DonutChart, ExposureTreemap, RiskMatrix } from "@/components/charts";
 
 const reportMeta: Record<string, { title: string; description: string; category: string }> = {
   "portfolio-health": { title: "Portfolio Health Report", description: "Overall portfolio risk score, exposure, watchlist count, and limit movement across all MSMEs.", category: "portfolio" },
@@ -71,54 +71,92 @@ export function ReportDetail({ reportId }: { reportId: string }) {
             <Panel><Metric label="Limit Movement" value={`${formatCurrency(health.limitExpansionTotal)} / ${formatCurrency(health.limitReductionTotal)}`} hint="Expansion / Reduction" /></Panel>
           </div>
           <Panel title="Risk Distribution">
-            <SimpleBarChart data={riskDistData} xKey="band" yKey="count" />
+            <div className="flex gap-6">
+              <div className="w-48">
+                <DonutChart data={riskDistData.map((d) => ({ name: d.band, value: d.count }))} height={180} innerRadius={36} outerRadius={70} centerLabel={`${portfolio.length}`} />
+              </div>
+              <div className="flex-1">
+                <PremiumBarChart data={riskDistData} bars={[{ dataKey: "count", label: "Count" }]} xKey="band" height={180} />
+              </div>
+            </div>
           </Panel>
         </>
       )}
 
       {reportId === "sector-analysis" && (
-        <Panel title="Sector Exposure">
-          <SimpleBarChart data={sectorChartData} xKey="sector" yKey="exposure" />
-          <div className="mt-4 space-y-2">
-            {sectors.map((s) => (
-              <div key={s.sector} className="flex items-center justify-between rounded-lg border border-line p-3">
-                <div>
-                  <p className="font-semibold">{s.sector}</p>
-                  <p className="text-xs text-muted">{s.count} MSMEs · {s.earlyWarningCount} warnings</p>
+        <div className="grid gap-6 xl:grid-cols-2">
+          <Panel title="Sector Exposure">
+            <PremiumBarChart data={sectorChartData} bars={[{ dataKey: "exposure", label: "Exposure" }]} xKey="sector" height={256} />
+            <div className="mt-4 space-y-2">
+              {sectors.map((s) => (
+                <div key={s.sector} className="flex items-center justify-between rounded-lg border border-line p-3">
+                  <div>
+                    <p className="font-semibold">{s.sector}</p>
+                    <p className="text-xs text-muted">{s.count} MSMEs · {s.earlyWarningCount} warnings</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold">{formatCurrency(s.totalExposure)}</p>
+                    <RiskBadge band={s.dominantBand} />
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold">{formatCurrency(s.totalExposure)}</p>
-                  <RiskBadge band={s.dominantBand} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </Panel>
+              ))}
+            </div>
+          </Panel>
+          <Panel title="Sector Exposure Treemap">
+            <ExposureTreemap items={sectors.map((s) => ({ id: s.sector, label: s.sector, value: s.totalExposure, band: s.dominantBand, subtitle: `${s.count} MSMEs` }))} />
+          </Panel>
+        </div>
       )}
 
       {reportId === "branch-performance" && (
-        <Panel title="Branch Performance">
-          <SimpleBarChart data={branchChartData} xKey="branch" yKey="exposure" />
-          <div className="mt-4 space-y-2">
-            {branches.map((b) => (
-              <div key={b.branch} className="flex items-center justify-between rounded-lg border border-line p-3">
-                <div>
-                  <p className="font-semibold">{b.branch}</p>
-                  <p className="text-xs text-muted">{b.count} MSMEs</p>
+        <div className="grid gap-6 xl:grid-cols-2">
+          <Panel title="Branch Performance">
+            <PremiumBarChart data={branchChartData} bars={[{ dataKey: "exposure", label: "Exposure" }]} xKey="branch" height={256} />
+            <div className="mt-4 space-y-2">
+              {branches.map((b) => (
+                <div key={b.branch} className="flex items-center justify-between rounded-lg border border-line p-3">
+                  <div>
+                    <p className="font-semibold">{b.branch}</p>
+                    <p className="text-xs text-muted">{b.count} MSMEs</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold">{formatCurrency(b.totalExposure)}</p>
+                    <p className="text-xs text-muted">Risk bands: {Object.entries(b.riskDistribution).filter(([, v]) => v > 0).map(([k, v]) => `${k}:${v}`).join(" · ")}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold">{formatCurrency(b.totalExposure)}</p>
-                  <p className="text-xs text-muted">Risk bands: {Object.entries(b.riskDistribution).filter(([, v]) => v > 0).map(([k, v]) => `${k}:${v}`).join(" · ")}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Panel>
+              ))}
+            </div>
+          </Panel>
+          <RiskMatrix
+            items={branches.flatMap((b) =>
+              Object.entries(b.riskDistribution)
+                .filter(([, v]) => v > 0)
+                .map(([band, count]) => ({
+                  id: `${b.branch}-${band}`,
+                  label: b.branch,
+                  likelihood: band === "critical" ? "high" : band === "high" ? "high" : band === "medium" ? "medium" : "low",
+                  impact: band === "critical" || band === "high" ? "high" : band === "medium" ? "medium" : "low",
+                  detail: `${count} MSMEs in ${band} risk`
+                }))
+            )}
+          />
+        </div>
       )}
 
       {reportId === "risk-migration" && (
         <Panel title="Risk Migration Over Time">
-          <SimpleLineChart data={migration.map((m) => ({ period: m.period, low: m.low, medium: m.medium, high: m.high, critical: m.critical }))} xKey="period" yKey="critical" />
+          <PremiumLineChart
+            data={migration.map((m) => ({ period: m.period, Low: m.low, Medium: m.medium, High: m.high, Critical: m.critical }))}
+            lines={[
+              { dataKey: "Low", label: "Low", color: "#13795b" },
+              { dataKey: "Medium", label: "Medium", color: "#e68a2e" },
+              { dataKey: "High", label: "High", color: "#d9534f" },
+              { dataKey: "Critical", label: "Critical", color: "#9b1c1c" }
+            ]}
+            xKey="period"
+            height={200}
+            showArea={false}
+          />
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {migration.map((m) => (
               <div key={m.period} className="rounded-lg border border-line p-3">

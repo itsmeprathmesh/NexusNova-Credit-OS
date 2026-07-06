@@ -1,7 +1,11 @@
 {
   "name": "nexusnova-credit-intelligence-os",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "AI-assisted MSME lending workspace — IDBI Innovate 2026 PS-3",
+  "author": "NexusNova Team",
+  "license": "UNLICENSED",
+  "keywords": ["credit-intelligence", "msme-lending", "ai-underwriting", "idbi-innovate", "nextjs"],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

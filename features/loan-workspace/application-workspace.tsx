@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { AlertTriangle, CheckCircle2, Scale, XCircle } from "lucide-react";
 import type { DecisionAction, DocumentRecord, FinancialSignals, LoanApplication, MsmeProfile, RiskBand } from "@/domain/types";
@@ -16,6 +16,7 @@ import {
   type AiReadiness
 } from "@/services/intelligence";
 import { formatCurrency, formatPercent } from "@/lib/format";
+import { useDemoMode } from "@/contexts/demo-mode";
 import { Badge, Button, Metric, Panel, ProgressBar, RiskBadge } from "@/components/ui/primitives";
 import { AiReadinessPanel } from "./ai-readiness-panel";
 import { AiCreditCommittee } from "./ai-credit-committee";
@@ -24,6 +25,13 @@ import { BusinessForecastPanel } from "./business-forecast-panel";
 import { StressSimulatorPanel } from "./stress-simulator-panel";
 import { ExplainabilityPanel } from "./explainability-panel";
 import { RecommendationCard } from "./recommendation-card";
+import { AICompleted, AIWarning } from "@/components/ai/ai-status";
+import { AIThinkingPanel } from "@/components/ai/ai-thinking";
+import { ConfidenceIndicators } from "@/components/ai/confidence-indicator";
+import { AIRecommendationCard } from "@/components/ai/ai-recommendation-card";
+import { AIInsightsPanel } from "@/components/ai/ai-insights-panel";
+import { AITimeline } from "@/components/ai/ai-timeline";
+import { DonutChart } from "@/components/charts";
 
 const actions: { value: DecisionAction; label: string }[] = [
   { value: "approve", label: "Approve" },
@@ -99,6 +107,13 @@ export function ApplicationWorkspace({
   const [rationale, setRationale] = useState("");
   const overrideRequired = decision !== recommendation.action;
   const canRecord = !overrideRequired || rationale.trim().length > 0;
+  const { isDemoMode, triggerConfetti } = useDemoMode();
+
+  useEffect(() => {
+    if (isDemoMode && (decision === "approve" || decision === "reduce")) {
+      triggerConfetti();
+    }
+  }, [decision, isDemoMode, triggerConfetti]);
 
   return (
     <div className="space-y-6">
@@ -129,6 +144,8 @@ export function ApplicationWorkspace({
 
       <BusinessForecastPanel signals={signals} growth={growth} cashFlow={cashFlow} />
 
+      <AIThinkingPanel isAnalyzing={false} />
+
       <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <Panel title="Credit Intelligence Summary">
           <div className="grid gap-4 md:grid-cols-3">
@@ -148,14 +165,39 @@ export function ApplicationWorkspace({
               <RiskBadge band={fraud.band} className="mt-3" />
             </div>
           </div>
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
-            <Metric label="Lower Limit" value={formatCurrency(baseLimit.lowerLimit)} />
-            <Metric label="Safe Limit" value={formatCurrency(baseLimit.safeLimit)} />
-            <Metric label="Upper Limit" value={formatCurrency(baseLimit.upperLimit)} />
+          <div className="mt-5 grid gap-6 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-3">
+              <Metric label="Lower Limit" value={formatCurrency(baseLimit.lowerLimit)} />
+              <Metric label="Safe Limit" value={formatCurrency(baseLimit.safeLimit)} />
+              <Metric label="Upper Limit" value={formatCurrency(baseLimit.upperLimit)} />
+            </div>
+            <div className="space-y-4">
+              <ConfidenceIndicators
+                metrics={[
+                  { label: "Financial Health", score: health.confidence },
+                  { label: "Repayment Risk", score: repayment.confidence },
+                  { label: "Fraud Risk", score: fraud.confidence },
+                  { label: "Document Intelligence", score: readiness.score },
+                  { label: "Overall Recommendation", score: recommendation.confidence }
+                ]}
+              />
+              <DonutChart
+                data={[
+                  { name: "Financial Health", value: health.confidence, color: "#215f7a" },
+                  { name: "Repayment Risk", value: repayment.confidence, color: "#13795b" },
+                  { name: "Fraud Risk", value: fraud.confidence, color: "#e68a2e" },
+                  { name: "Document Intel", value: readiness.score, color: "#7c3aed" }
+                ]}
+                height={140}
+                innerRadius={34}
+                outerRadius={58}
+                centerLabel={`${Math.round((health.confidence + repayment.confidence + fraud.confidence + readiness.score) / 4)}%`}
+              />
+            </div>
           </div>
         </Panel>
 
-        <RecommendationCard recommendation={recommendation} health={health} />
+        <AIRecommendationCard recommendation={recommendation} health={health} />
       </div>
 
       <Panel title="Alternate Data Intelligence">
@@ -166,6 +208,8 @@ export function ApplicationWorkspace({
           <Metric label="Customer Concentration" value={formatPercent(signals.customerConcentrationPercent)} />
         </div>
       </Panel>
+
+      <AIInsightsPanel signals={signals} health={health} />
 
       <div className="grid gap-6 xl:grid-cols-2">
         <ExplainabilityPanel
@@ -179,36 +223,17 @@ export function ApplicationWorkspace({
         <StressSimulatorPanel application={application} msme={msme} signals={signals} />
       </div>
 
-      <Panel title="AI Readiness Gate">
+      <Panel title="AI Readiness Gate" action={<Badge tone={readiness.readyLabel === "AI-ready" ? "success" : readiness.readyLabel === "review-needed" ? "warning" : "danger"}>{readiness.score}% readiness</Badge>}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             {readiness.readyLabel === "AI-ready" ? (
-              <CheckCircle2 className="h-8 w-8 text-growth" />
+              <span className="inline-flex items-center gap-2"><AICompleted label="AI Ready"><>AI analysis is complete. The officer can proceed with the decision.</></AICompleted></span>
             ) : readiness.readyLabel === "review-needed" ? (
-              <AlertTriangle className="h-8 w-8 text-caution" />
+              <span className="inline-flex items-center gap-2"><AIWarning label="Needs Manual Review"><>Review items exist. Manual officer assessment is required before proceeding.</></AIWarning></span>
             ) : (
-              <XCircle className="h-8 w-8 text-danger" />
+              <span className="inline-flex items-center gap-2"><AlertTriangle className="h-8 w-8 text-danger" /><div><p className="text-lg font-semibold text-danger">Blocked</p><p className="text-sm text-muted">Missing documents are blocking AI analysis.</p></div></span>
             )}
-            <div>
-              <p className="text-lg font-semibold">
-                {readiness.readyLabel === "AI-ready"
-                  ? "AI Ready"
-                  : readiness.readyLabel === "review-needed"
-                    ? "Needs Manual Review"
-                    : "Blocked"}
-              </p>
-              <p className="text-sm text-muted">
-                {readiness.readyLabel === "AI-ready"
-                  ? "AI analysis is complete. The officer can proceed with the decision."
-                  : readiness.readyLabel === "review-needed"
-                    ? "Review items exist. Manual officer assessment is required before proceeding."
-                    : "Missing documents are blocking AI analysis. Collect documents before proceeding."}
-              </p>
-            </div>
           </div>
-          <Badge tone={readiness.readyLabel === "AI-ready" ? "success" : readiness.readyLabel === "review-needed" ? "warning" : "danger"}>
-            {readiness.score}% readiness
-          </Badge>
         </div>
         {readiness.reviewItems.length > 0 && (
           <div className="mt-4 space-y-2">
@@ -229,31 +254,43 @@ export function ApplicationWorkspace({
       <AiCreditCommittee application={application} msme={msme} signals={signals} />
 
       <Panel title="Intelligence Timeline">
-        <div className="overflow-hidden rounded-lg border border-line">
-          <div className="hidden grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] gap-2 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
-            <span>Period</span>
-            <span>Revenue</span>
-            <span>GST</span>
-            <span>Cash Flow</span>
-            <span>UPI</span>
-            <span>Risk</span>
-            <span>Confidence</span>
-          </div>
-          <div className="divide-y divide-line">
-            {timeline.map((entry) => (
-              <div
-                key={entry.period}
-                className="grid gap-2 px-4 py-3 text-sm lg:grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] lg:items-center"
-              >
-                <span className="font-semibold">{entry.period}</span>
-                <span className="text-muted">₹{entry.revenue}L</span>
-                <span className="text-muted">₹{entry.gst}L</span>
-                <span className="text-muted">₹{entry.cashFlow}L</span>
-                <span className="text-muted">₹{entry.upi}L</span>
-                <RiskBadge band={entry.band} />
-                <span className="text-muted">{entry.confidence}%</span>
-              </div>
-            ))}
+        <div className="grid gap-6 md:grid-cols-[1fr_1.5fr]">
+          <AITimeline
+            stages={[
+              { id: "customer", label: "Customer", status: "complete", detail: "Application received" },
+              { id: "documents", label: "Documents", status: "complete", detail: `${documents.length} documents uploaded` },
+              { id: "financial", label: "Financial Analysis", status: "complete", detail: `${formatPercent(health.score)} health, ${formatPercent(repayment.score)} repayment` },
+              { id: "fraud", label: "Fraud", status: "complete", detail: `${formatPercent(fraud.score)} risk score` },
+              { id: "recommendation", label: "Recommendation", status: "complete", detail: `${recommendation.action}` },
+              { id: "officer", label: "Officer Review", status: "pending", detail: "Awaiting decision" }
+            ]}
+          />
+          <div className="overflow-hidden rounded-lg border border-line">
+            <div className="hidden grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] gap-2 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
+              <span>Period</span>
+              <span>Revenue</span>
+              <span>GST</span>
+              <span>Cash Flow</span>
+              <span>UPI</span>
+              <span>Risk</span>
+              <span>Confidence</span>
+            </div>
+            <div className="divide-y divide-line">
+              {timeline.map((entry) => (
+                <div
+                  key={entry.period}
+                  className="grid gap-2 px-4 py-3 text-sm lg:grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] lg:items-center"
+                >
+                  <span className="font-semibold">{entry.period}</span>
+                  <span className="text-muted">₹{entry.revenue}L</span>
+                  <span className="text-muted">₹{entry.gst}L</span>
+                  <span className="text-muted">₹{entry.cashFlow}L</span>
+                  <span className="text-muted">₹{entry.upi}L</span>
+                  <RiskBadge band={entry.band} />
+                  <span className="text-muted">{entry.confidence}%</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </Panel>

@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { AlertTriangle, ArrowUpRight, Clock, IndianRupee } from "lucide-react";
-import { applications, msmes, portfolio } from "@/data/mock-data";
+import { applications, msmes, portfolio, financialSignals } from "@/data/mock-data";
 import type { UserRole } from "@/domain/types";
 import { formatCurrency } from "@/lib/format";
 import { Badge, Metric, Panel, RiskBadge } from "@/components/ui/primitives";
+import { AIBadge, AICompleted } from "@/components/ai/ai-status";
+import { ConfidenceIndicators } from "@/components/ai/confidence-indicator";
+import { computePortfolioHealth } from "@/services/portfolio-intelligence";
 
 function getMsme(msmeId: string) {
   return msmes.find((item) => item.id === msmeId);
@@ -20,9 +23,20 @@ export function CommandCenterView({ role }: { role: UserRole }) {
   );
   const totalExposure = portfolio.reduce((sum, item) => sum + item.exposure, 0);
   const watchlist = portfolio.filter((item) => item.riskBand === "high" || item.riskBand === "critical").length;
+  const health = computePortfolioHealth(msmes, portfolio, financialSignals);
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <AIBadge tone="complete">AI Portfolio Scan Active</AIBadge>
+          <AIBadge tone={health.band === "low" ? "complete" : "warning"}>
+            Health: {health.overallScore}%
+          </AIBadge>
+        </div>
+        <span className="text-xs text-muted">{health.msmeCount} MSMEs monitored</span>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-3">
         <Panel>
           <Metric label="Portfolio Exposure" value={formatCurrency(totalExposure)} hint="Across monitored MSMEs" />
@@ -34,6 +48,15 @@ export function CommandCenterView({ role }: { role: UserRole }) {
           <Metric label="Watchlist MSMEs" value={watchlist} hint="High or critical risk bands" />
         </Panel>
       </div>
+
+      <ConfidenceIndicators
+        metrics={[
+          { label: "Portfolio Health", score: health.overallScore },
+          { label: "Sector Coverage", score: Math.round(health.msmeCount * 10) },
+          { label: "Early Warning Detection", score: Math.max(10, 100 - health.earlyWarningCount * 10) },
+          { label: "Data Completeness", score: 92 }
+        ]}
+      />
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <Panel title={role === "manager" ? "Manager Command Center" : "Loan Officer Command Center"}>

@@ -6,7 +6,7 @@ import { applications, financialSignals, msmes, portfolio } from "@/data/mock-da
 import { computePortfolioHealth, computeSectorSummaries, computeBranchSummaries, getEnrichedPortfolio } from "@/services/portfolio-intelligence";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { Badge, Metric, Panel, ProgressBar, RiskBadge } from "@/components/ui/primitives";
-import { SimpleBarChart, SimpleLineChart } from "@/components/ui/charts";
+import { PremiumBarChart, PremiumLineChart, DonutChart, SectorComparisonChart, ExposureTreemap } from "@/components/charts";
 
 export function ExecutiveDashboard() {
   const enriched = useMemo(() => getEnrichedPortfolio(msmes, portfolio, financialSignals), []);
@@ -24,6 +24,7 @@ export function ExecutiveDashboard() {
     { band: "High", count: enriched.filter((e) => e.riskBand === "high").length },
     { band: "Critical", count: enriched.filter((e) => e.riskBand === "critical").length }
   ];
+  const donutData = riskDistData.map((d) => ({ name: d.band, value: d.count }));
 
   return (
     <div className="space-y-6">
@@ -72,7 +73,7 @@ export function ExecutiveDashboard() {
         </Panel>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-3">
         <Panel title="Risk Distribution">
           <div className="grid grid-cols-4 gap-3">
             {riskDistData.map((item) => (
@@ -82,14 +83,14 @@ export function ExecutiveDashboard() {
               </div>
             ))}
           </div>
-          <div className="mt-4 h-48">
-            <SimpleBarChart data={riskDistData} xKey="band" yKey="count" />
+          <div className="mt-4 h-40">
+            <DonutChart data={donutData} height={160} innerRadius={40} outerRadius={65} centerLabel={`${enriched.length}`} />
           </div>
         </Panel>
 
         <Panel title="Sector Exposure">
           <div className="h-48">
-            <SimpleBarChart data={sectorChartData} xKey="sector" yKey="exposure" />
+            <SectorComparisonChart data={sectors.map((s) => ({ sector: s.sector, exposure: Math.round(s.totalExposure / 100000), count: s.count, avgScore: s.averageRiskScore }))} />
           </div>
           <div className="mt-4 space-y-2">
             {sectors.slice(0, 4).map((s) => (
@@ -103,12 +104,19 @@ export function ExecutiveDashboard() {
             ))}
           </div>
         </Panel>
+
+        <Panel title="Sector Exposure Treemap">
+          <ExposureTreemap
+            items={sectors.map((s) => ({ id: s.sector, label: s.sector, value: s.totalExposure, band: s.dominantBand, subtitle: `${s.count} MSMEs` }))}
+            maxHeight={320}
+          />
+        </Panel>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
         <Panel title="Branch Performance">
           <div className="h-48">
-            <SimpleBarChart data={branchChartData} xKey="branch" yKey="exposure" />
+            <PremiumBarChart data={branchChartData} bars={[{ dataKey: "exposure", label: "Exposure" }]} xKey="branch" height={192} />
           </div>
           <div className="mt-4 space-y-2">
             {branches.slice(0, 4).map((b) => (

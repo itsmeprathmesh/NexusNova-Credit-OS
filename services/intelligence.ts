@@ -101,6 +101,7 @@ function monthlyPayment(principal: number, annualRate: number, tenureMonths: num
   return Math.round(principal * factor);
 }
 
+/** Returns per-document intelligence for all required document types. */
 export function getDocumentIntelligence(applicationId: string): DocumentIntelligenceItem[] {
   return requiredDocumentTypes.map((type) => {
     const record = documentRecordFor(applicationId, type);
@@ -134,6 +135,7 @@ export function getDocumentIntelligence(applicationId: string): DocumentIntellig
   });
 }
 
+/** Computes AI readiness score, missing documents, review items, and gate status. */
 export function calculateAiReadiness(applicationId: string): AiReadiness {
   const review = getDocumentIntelligence(applicationId);
   const missingDocuments = review.filter((item) => item.uploadStatus === "missing").map((item) => item.type);
@@ -154,6 +156,7 @@ export function calculateAiReadiness(applicationId: string): AiReadiness {
   };
 }
 
+/** Scores financial health based on revenue trend, GST alignment, balance coverage, customer concentration, and business age. */
 export function calculateFinancialHealth(msme: MsmeProfile, signals: FinancialSignals): IntelligenceResult {
   const revenueTrend = trend(signals.monthlyRevenue);
   const gstTrend = trend(signals.gstTurnover);
@@ -199,6 +202,7 @@ export function calculateFinancialHealth(msme: MsmeProfile, signals: FinancialSi
   };
 }
 
+/** Estimates repayment risk from EMI coverage, failed transactions, and cash-flow volatility. */
 export function calculateRepaymentRisk(signals: FinancialSignals): IntelligenceResult {
   const monthlyRevenue = average(signals.monthlyRevenue);
   const emiCoverage = monthlyRevenue / Math.max(signals.existingObligations, 1);
@@ -231,6 +235,7 @@ export function calculateRepaymentRisk(signals: FinancialSignals): IntelligenceR
   };
 }
 
+/** Evaluates fraud risk from document confidence, mismatch warnings, tamper indicators, and concentration anomalies. */
 export function calculateFraudRisk(applicationId: string, signals: FinancialSignals): IntelligenceResult {
   const docs = documents.filter((document) => document.applicationId === applicationId);
   const issues = docs.flatMap((document) => [
@@ -269,6 +274,7 @@ export function calculateFraudRisk(applicationId: string, signals: FinancialSign
   };
 }
 
+/** Projects business growth trajectory from revenue, GST, UPI trends, and concentration risk. */
 export function calculateBusinessGrowthForecast(signals: FinancialSignals): IntelligenceResult {
   const revenueTrend = trend(signals.monthlyRevenue);
   const gstTrend = trend(signals.gstTurnover);
@@ -311,6 +317,7 @@ export function calculateBusinessGrowthForecast(signals: FinancialSignals): Inte
   };
 }
 
+/** Forecasts cash-flow stability from monthly inflow consistency, obligation coverage, and volatility. */
 export function calculateCashFlowForecast(signals: FinancialSignals): IntelligenceResult {
   const monthlyRevenue = average(signals.monthlyRevenue);
   const volatility = Math.max(...signals.monthlyRevenue) - Math.min(...signals.monthlyRevenue);
@@ -349,6 +356,7 @@ export function calculateCashFlowForecast(signals: FinancialSignals): Intelligen
   };
 }
 
+/** Computes dynamic credit limit range from revenue, volatility, concentration, and existing obligations. */
 export function calculateDynamicCreditLimit(signals: FinancialSignals): CreditLimitRange {
   const averageRevenue = average(signals.monthlyRevenue);
   const volatility = Math.max(...signals.monthlyRevenue) - Math.min(...signals.monthlyRevenue);
@@ -366,6 +374,7 @@ export function calculateDynamicCreditLimit(signals: FinancialSignals): CreditLi
   };
 }
 
+/** Produces a full loan recommendation (action, amount, conditions, mitigants) from application, MSME, and signals data. */
 export function createLoanRecommendation(
   application: LoanApplication,
   msme: MsmeProfile,
@@ -402,6 +411,7 @@ export function createLoanRecommendation(
   };
 }
 
+/** Applies revenue, EMI, and receivable stress to compute stressed credit limit range. */
 export function runStressScenario(signals: FinancialSignals, stress: StressInput): CreditLimitRange {
   const stressedSignals: FinancialSignals = {
     ...signals,
@@ -412,6 +422,7 @@ export function runStressScenario(signals: FinancialSignals, stress: StressInput
   return calculateDynamicCreditLimit(stressedSignals);
 }
 
+/** Runs a full loan-level stress scenario with revenue, receivable, and seasonality shocks. */
 export function runLoanStressScenario(
   application: LoanApplication,
   msme: MsmeProfile,

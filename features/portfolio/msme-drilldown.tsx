@@ -4,7 +4,7 @@ import type { Customer360Snapshot, FinancialSignals, LoanApplication, MsmeProfil
 import { calculateDynamicCreditLimit, calculateFinancialHealth } from "@/services/intelligence";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { Panel, RiskBadge } from "@/components/ui/primitives";
-import { SimpleLineChart } from "@/components/ui/charts";
+import { PremiumLineChart } from "@/components/charts";
 import { RelationshipTimeline } from "@/features/loan-workspace/relationship-timeline";
 import { CustomerSummary } from "./customer-summary";
 import { LoanHistoryTable } from "./loan-history-table";
@@ -128,7 +128,7 @@ export function MsmeDrilldown({
 
         <div className="space-y-6">
           <Panel title="Risk Timeline">
-            <SimpleLineChart data={revenueTrend} xKey="month" yKey="revenue" />
+            <PremiumLineChart data={revenueTrend} lines={[{ dataKey: "revenue", label: "Revenue" }]} xKey="month" showArea />
             <p className="mt-2 text-xs text-muted">Monthly revenue trend shown in lakh INR.</p>
             <div className="mt-4 space-y-2">
               {riskProgression.map((item) => (

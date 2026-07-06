@@ -75,6 +75,7 @@ function bandFromScore(score: number): RiskBand {
 
 const msmeLookup = new Map<string, MsmeProfile>();
 
+/** Merges portfolio items with MSME profiles and financial signals for unified rendering. */
 export function getEnrichedPortfolio(
   msmes: MsmeProfile[],
   portfolio: PortfolioItem[],
@@ -88,6 +89,7 @@ export function getEnrichedPortfolio(
   });
 }
 
+/** Aggregates portfolio-level health score, exposure, watchlist, limit movements, and early warnings. */
 export function computePortfolioHealth(
   msmes: MsmeProfile[],
   portfolio: PortfolioItem[],
@@ -124,6 +126,7 @@ export function computePortfolioHealth(
   };
 }
 
+/** Computes per-sector exposure, risk score, dominant band, limit delta, and early warning count. */
 export function computeSectorSummaries(
   msmes: MsmeProfile[],
   portfolio: PortfolioItem[],
@@ -165,6 +168,7 @@ export function computeSectorSummaries(
   });
 }
 
+/** Aggregates branch-level exposure, count, risk distribution, and limit delta. */
 export function computeBranchSummaries(
   msmes: MsmeProfile[],
   portfolio: PortfolioItem[]
@@ -194,6 +198,7 @@ export function computeBranchSummaries(
   });
 }
 
+/** Tracks risk-band transitions month-over-month from revenue volatility, failures, and early warnings. */
 export function computeRiskMigration(
   msmes: MsmeProfile[],
   portfolio: PortfolioItem[],
@@ -250,6 +255,7 @@ export function computeRiskMigration(
   return items;
 }
 
+/** Flattens portfolio early warnings into a display-friendly item list with MSME and risk-band context. */
 export function computeEarlyWarnings(
   msmes: MsmeProfile[],
   portfolio: PortfolioItem[]
@@ -272,6 +278,7 @@ export function computeEarlyWarnings(
   return items;
 }
 
+/** Computes per-branch performance metrics including utilization, risk distribution, and watchlist share. */
 export function computeBranchPerformance(
   msmes: MsmeProfile[],
   portfolio: PortfolioItem[],
@@ -317,6 +324,7 @@ export function computeBranchPerformance(
   return Array.from(branchGroups.values());
 }
 
+/** Builds high-level KPI cards (avg exposure, watchlist %, limit trend, diversity) from portfolio data. */
 export function computePortfolioAnalytics(
   msmes: MsmeProfile[],
   portfolio: PortfolioItem[]
