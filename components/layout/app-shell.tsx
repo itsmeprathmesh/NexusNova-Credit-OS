@@ -28,9 +28,9 @@ export function AppShell({
 }) {
   return (
     <div className="min-h-screen bg-canvas text-ink">
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-line bg-white px-4 py-5 lg:block">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-lg bg-trust text-white">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-line bg-white px-4 py-5 shadow-panel lg:block">
+        <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
+          <div className="grid h-10 w-10 place-items-center rounded-lg bg-trust text-white shadow-sm">
             <ShieldCheck className="h-5 w-5" />
           </div>
           <div>
@@ -39,7 +39,7 @@ export function AppShell({
           </div>
         </Link>
 
-        <nav className="mt-8 space-y-1">
+        <nav className="mt-8 space-y-0.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const selected = active === item.href.slice(1);
@@ -49,28 +49,33 @@ export function AppShell({
                 key={item.href}
                 href={`${item.href}?role=${role}`}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-muted transition hover:bg-slate-50 hover:text-ink",
-                  selected && "bg-slate-100 text-ink"
+                  "group relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                  selected
+                    ? "bg-trust-light text-trust"
+                    : "text-muted hover:bg-slate-50 hover:text-ink"
                 )}
               >
-                <Icon className="h-4 w-4" />
+                {selected && (
+                  <span className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-trust" />
+                )}
+                <Icon className={cn("h-4 w-4 transition-transform duration-150", !selected && "group-hover:scale-110")} />
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        <div className="absolute bottom-5 left-4 right-4 rounded-lg border border-line bg-slate-50 p-3">
+        <div className="absolute bottom-5 left-4 right-4 rounded-lg border border-line bg-slate-50 p-3 transition-colors hover:bg-slate-100">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">Active Role</p>
           <p className="mt-1 text-sm font-semibold text-ink">{roleLabels[role]}</p>
-          <p className="mt-2 text-xs text-muted">Bank-confidential prototype data</p>
+          <p className="mt-2 text-xs text-muted">Bank-confidential data</p>
         </div>
       </aside>
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-10 border-b border-line bg-white/95 px-4 py-3 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-10 border-b border-line bg-white/90 px-4 py-3 backdrop-blur-md sm:px-6">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
+            <div className="animate-fade-in">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted">IDBI Innovate 2026 PS-3</p>
               <h1 className="text-xl font-semibold text-ink">NexusNova Credit Intelligence OS</h1>
             </div>
@@ -86,8 +91,16 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <PageTransition>{children}</PageTransition>
       </div>
+    </div>
+  );
+}
+
+function PageTransition({ children }: { children: ReactNode }) {
+  return (
+    <div className="animate-fade-in">
+      <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
     </div>
   );
 }
