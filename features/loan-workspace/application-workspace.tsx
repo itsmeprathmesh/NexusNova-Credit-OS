@@ -2,18 +2,27 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, FileText, Scale, SlidersHorizontal } from "lucide-react";
-import type { DecisionAction, DocumentRecord, FinancialSignals, LoanApplication, MsmeProfile } from "@/domain/types";
+import { AlertTriangle, CheckCircle2, Scale, XCircle } from "lucide-react";
+import type { DecisionAction, DocumentRecord, FinancialSignals, LoanApplication, MsmeProfile, RiskBand } from "@/domain/types";
 import {
+  calculateAiReadiness,
+  calculateBusinessGrowthForecast,
+  calculateCashFlowForecast,
   calculateDynamicCreditLimit,
   calculateFinancialHealth,
   calculateFraudRisk,
   calculateRepaymentRisk,
   createLoanRecommendation,
-  runStressScenario
+  getDocumentIntelligence,
+  type AiReadiness
 } from "@/services/intelligence";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { Badge, Button, Metric, Panel, ProgressBar, RiskBadge } from "@/components/ui/primitives";
+import { AiReadinessPanel } from "./ai-readiness-panel";
+import { BusinessForecastPanel } from "./business-forecast-panel";
+import { StressSimulatorPanel } from "./stress-simulator-panel";
+import { ExplainabilityPanel } from "./explainability-panel";
+import { RecommendationCard } from "./recommendation-card";
 
 const actions: { value: DecisionAction; label: string }[] = [
   { value: "approve", label: "Approve" },
@@ -23,10 +32,45 @@ const actions: { value: DecisionAction; label: string }[] = [
   { value: "escalate", label: "Escalate" }
 ];
 
-function documentTone(status: DocumentRecord["status"]) {
-  if (status === "verified") return "success";
-  if (status === "review-needed" || status === "stale") return "warning";
-  return "danger";
+type TimelineEntry = {
+  period: string;
+  revenue: number;
+  gst: number;
+  cashFlow: number;
+  upi: number;
+  riskScore: number;
+  band: RiskBand;
+  confidence: number;
+};
+
+function computeIntelligenceTimeline(signals: FinancialSignals): TimelineEntry[] {
+  const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return signals.monthlyRevenue.map((rev, i) => {
+    const gst = signals.gstTurnover[i];
+    const upi = signals.upiInflow[i];
+    const avg = signals.monthlyRevenue.reduce((s, v) => s + v, 0) / signals.monthlyRevenue.length;
+    const volatility = Math.max(...signals.monthlyRevenue) - Math.min(...signals.monthlyRevenue);
+    const dropPenalty = rev < avg * 0.9 ? 15 : 0;
+    const failedPenalty = signals.failedTransactions > 5 ? 8 : 0;
+    const score = Math.max(10, Math.min(100, 75 - dropPenalty - failedPenalty));
+    let band: RiskBand;
+    if (score >= 78) band = "low";
+    else if (score >= 58) band = "medium";
+    else if (score >= 38) band = "high";
+    else band = "critical";
+    const confidence = Math.round(80 - Math.abs(rev - avg) / avg * 20);
+    const monthIndex = new Date().getMonth() - (signals.monthlyRevenue.length - 1 - i);
+    return {
+      period: monthLabels[((monthIndex % 12) + 12) % 12],
+      revenue: Math.round(rev / 100000),
+      gst: Math.round(gst / 100000),
+      cashFlow: Math.round(rev / 100000),
+      upi: Math.round(upi / 100000),
+      riskScore: score,
+      band,
+      confidence: Math.max(50, Math.min(95, confidence))
+    };
+  });
 }
 
 export function ApplicationWorkspace({
@@ -45,16 +89,13 @@ export function ApplicationWorkspace({
   const fraud = useMemo(() => calculateFraudRisk(application.id, signals), [application.id, signals]);
   const recommendation = useMemo(() => createLoanRecommendation(application, msme, signals), [application, msme, signals]);
   const baseLimit = useMemo(() => calculateDynamicCreditLimit(signals), [signals]);
-  const [revenueDrop, setRevenueDrop] = useState(10);
-  const [emiIncrease, setEmiIncrease] = useState(5);
-  const [receivableDelay, setReceivableDelay] = useState(15);
+  const readiness = useMemo(() => calculateAiReadiness(application.id), [application.id]);
+  const growth = useMemo(() => calculateBusinessGrowthForecast(signals), [signals]);
+  const cashFlow = useMemo(() => calculateCashFlowForecast(signals), [signals]);
+  const timeline = useMemo(() => computeIntelligenceTimeline(signals), [signals]);
+
   const [decision, setDecision] = useState<DecisionAction>(recommendation.action);
   const [rationale, setRationale] = useState("");
-  const stressedLimit = runStressScenario(signals, {
-    revenueDropPercent: revenueDrop,
-    emiIncreasePercent: emiIncrease,
-    receivableDelayDays: receivableDelay
-  });
   const overrideRequired = decision !== recommendation.action;
   const canRecord = !overrideRequired || rationale.trim().length > 0;
 
@@ -83,39 +124,11 @@ export function ApplicationWorkspace({
         </div>
       </Panel>
 
-      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <Panel title="Document Intelligence">
-          <div className="space-y-3">
-            {documents.map((document) => (
-              <div key={document.id} className="rounded-lg border border-line p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex gap-3">
-                    <FileText className="mt-1 h-5 w-5 text-trust" />
-                    <div>
-                      <p className="font-semibold">{document.type}</p>
-                      <p className="mt-1 text-sm text-muted">OCR confidence {formatPercent(document.ocrConfidence)}</p>
-                    </div>
-                  </div>
-                  <Badge tone={documentTone(document.status)}>{document.status}</Badge>
-                </div>
-                <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-                  {Object.entries(document.extractedFields).map(([key, value]) => (
-                    <div key={key}>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-muted">{key}</dt>
-                      <dd className="mt-1 text-ink">{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-                {document.issues.length > 0 ? (
-                  <div className="mt-4 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
-                    {document.issues.join("; ")}
-                  </div>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        </Panel>
+      <AiReadinessPanel readiness={readiness} />
 
+      <BusinessForecastPanel signals={signals} growth={growth} cashFlow={cashFlow} />
+
+      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <Panel title="Credit Intelligence Summary">
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-lg border border-line p-4">
@@ -140,9 +153,11 @@ export function ApplicationWorkspace({
             <Metric label="Upper Limit" value={formatCurrency(baseLimit.upperLimit)} />
           </div>
         </Panel>
+
+        <RecommendationCard recommendation={recommendation} health={health} />
       </div>
 
-      <Panel title="Alternative Data Intelligence">
+      <Panel title="Alternate Data Intelligence">
         <div className="grid gap-4 md:grid-cols-4">
           <Metric label="Avg Monthly Balance" value={formatCurrency(signals.averageMonthlyBalance)} />
           <Metric label="Obligations" value={formatCurrency(signals.existingObligations)} />
@@ -152,60 +167,93 @@ export function ApplicationWorkspace({
       </Panel>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <Panel title="Explainability Workbench">
-          <div className="space-y-5">
-            {[health, repayment, fraud].map((result) => (
-              <div key={result.reason} className="rounded-lg border border-line p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <RiskBadge band={result.band} />
-                  <span className="text-sm font-semibold text-muted">{result.confidence}% confidence</span>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-muted">{result.reason}</p>
-                <ul className="mt-3 space-y-2 text-sm">
-                  {result.evidence.map((evidence) => (
-                    <li key={`${result.reason}-${evidence.label}`} className="flex items-start gap-2">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 text-growth" />
-                      <span>
-                        <strong>{evidence.label}:</strong> {evidence.value} · {evidence.source}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+        <ExplainabilityPanel
+          results={[
+            { label: "Financial Health", result: health },
+            { label: "Repayment Risk", result: repayment },
+            { label: "Fraud Risk", result: fraud }
+          ]}
+        />
+
+        <StressSimulatorPanel application={application} msme={msme} signals={signals} />
+      </div>
+
+      <Panel title="AI Readiness Gate">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            {readiness.readyLabel === "AI-ready" ? (
+              <CheckCircle2 className="h-8 w-8 text-growth" />
+            ) : readiness.readyLabel === "review-needed" ? (
+              <AlertTriangle className="h-8 w-8 text-caution" />
+            ) : (
+              <XCircle className="h-8 w-8 text-danger" />
+            )}
+            <div>
+              <p className="text-lg font-semibold">
+                {readiness.readyLabel === "AI-ready"
+                  ? "AI Ready"
+                  : readiness.readyLabel === "review-needed"
+                    ? "Needs Manual Review"
+                    : "Blocked"}
+              </p>
+              <p className="text-sm text-muted">
+                {readiness.readyLabel === "AI-ready"
+                  ? "AI analysis is complete. The officer can proceed with the decision."
+                  : readiness.readyLabel === "review-needed"
+                    ? "Review items exist. Manual officer assessment is required before proceeding."
+                    : "Missing documents are blocking AI analysis. Collect documents before proceeding."}
+              </p>
+            </div>
+          </div>
+          <Badge tone={readiness.readyLabel === "AI-ready" ? "success" : readiness.readyLabel === "review-needed" ? "warning" : "danger"}>
+            {readiness.score}% readiness
+          </Badge>
+        </div>
+        {readiness.reviewItems.length > 0 && (
+          <div className="mt-4 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Review summary</p>
+            {readiness.reviewItems.slice(0, 3).map((item) => (
+              <p key={item} className="flex items-start gap-2 text-sm text-muted">
+                <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-caution" />
+                {item}
+              </p>
+            ))}
+            {readiness.reviewItems.length > 3 && (
+              <p className="text-xs text-muted">+{readiness.reviewItems.length - 3} more items</p>
+            )}
+          </div>
+        )}
+      </Panel>
+
+      <Panel title="Intelligence Timeline">
+        <div className="overflow-hidden rounded-lg border border-line">
+          <div className="hidden grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] gap-2 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
+            <span>Period</span>
+            <span>Revenue</span>
+            <span>GST</span>
+            <span>Cash Flow</span>
+            <span>UPI</span>
+            <span>Risk</span>
+            <span>Confidence</span>
+          </div>
+          <div className="divide-y divide-line">
+            {timeline.map((entry) => (
+              <div
+                key={entry.period}
+                className="grid gap-2 px-4 py-3 text-sm lg:grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] lg:items-center"
+              >
+                <span className="font-semibold">{entry.period}</span>
+                <span className="text-muted">₹{entry.revenue}L</span>
+                <span className="text-muted">₹{entry.gst}L</span>
+                <span className="text-muted">₹{entry.cashFlow}L</span>
+                <span className="text-muted">₹{entry.upi}L</span>
+                <RiskBadge band={entry.band} />
+                <span className="text-muted">{entry.confidence}%</span>
               </div>
             ))}
           </div>
-        </Panel>
-
-        <Panel title="Stress Simulator" action={<SlidersHorizontal className="h-5 w-5 text-muted" />}>
-          <div className="space-y-5">
-            {[
-              { label: "Revenue drop", value: revenueDrop, setValue: setRevenueDrop, suffix: "%", max: 40 },
-              { label: "EMI increase", value: emiIncrease, setValue: setEmiIncrease, suffix: "%", max: 30 },
-              { label: "Receivable delay", value: receivableDelay, setValue: setReceivableDelay, suffix: " days", max: 60 }
-            ].map((control) => (
-              <label key={control.label} className="block">
-                <span className="flex justify-between text-sm font-semibold">
-                  {control.label}
-                  <span>{control.value}{control.suffix}</span>
-                </span>
-                <input
-                  type="range"
-                  min={0}
-                  max={control.max}
-                  value={control.value}
-                  onChange={(event) => control.setValue(Number(event.target.value))}
-                  className="mt-3 w-full accent-trust"
-                />
-              </label>
-            ))}
-            <div className="grid gap-3 sm:grid-cols-3">
-              <Metric label="Stressed Lower" value={formatCurrency(stressedLimit.lowerLimit)} />
-              <Metric label="Stressed Safe" value={formatCurrency(stressedLimit.safeLimit)} />
-              <Metric label="Stressed Upper" value={formatCurrency(stressedLimit.upperLimit)} />
-            </div>
-          </div>
-        </Panel>
-      </div>
+        </div>
+      </Panel>
 
       <Panel title="Human Decision Workflow" action={<Link className="text-sm font-semibold text-trust" href={`/applications/${application.id}/memo`}>Preview memo</Link>}>
         <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
@@ -213,6 +261,9 @@ export function ApplicationWorkspace({
             <p className="text-sm text-muted">
               AI recommendation: <strong className="text-ink">{recommendation.action}</strong> for{" "}
               <strong className="text-ink">{formatCurrency(recommendation.recommendedAmount)}</strong>.
+              {readiness.readyLabel !== "AI-ready" && (
+                <span className="ml-2 text-caution">(Manual review required)</span>
+              )}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {actions.map((action) => (
@@ -237,12 +288,31 @@ export function ApplicationWorkspace({
                 />
               </label>
             ) : null}
+            <div className="mt-4 space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">What would improve this recommendation</p>
+              {readiness.missingDocuments.length > 0 && (
+                <p className="flex items-start gap-2 text-sm text-muted">
+                  <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-trust" />
+                  Collect missing documents: {readiness.missingDocuments.join(", ")}
+                </p>
+              )}
+              {health.band !== "low" && (
+                <p className="flex items-start gap-2 text-sm text-muted">
+                  <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-trust" />
+                  Strengthen financial health by reducing customer concentration and failed transactions.
+                </p>
+              )}
+              <p className="flex items-start gap-2 text-sm text-muted">
+                <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-trust" />
+                Invoice-level matching for large bank credits will increase AI confidence.
+              </p>
+            </div>
           </div>
           <div className="rounded-lg border border-line bg-slate-50 p-4">
             <div className="flex items-start gap-3">
               <Scale className="mt-1 h-5 w-5 text-trust" />
               <div>
-                <p className="font-semibold">Simulated audit event</p>
+                <p className="font-semibold">Officer decision</p>
                 {canRecord ? (
                   <p className="mt-2 text-sm leading-6 text-muted">
                     Loan Officer selected <strong>{decision}</strong> for {msme.name}.{" "}
