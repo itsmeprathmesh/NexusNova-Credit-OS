@@ -471,3 +471,5 @@ export function getPortfolioItem(msmeId: string) {
 export function getCustomer360(msmeId: string) {
   return customer360Snapshots.find((item) => item.msmeId === msmeId);
 }
+
+(globalThis as any).__applications = applications;

@@ -19,6 +19,7 @@ import { formatCurrency, formatPercent } from "@/lib/format";
 import { Badge, Button, Metric, Panel, ProgressBar, RiskBadge } from "@/components/ui/primitives";
 import { AiReadinessPanel } from "./ai-readiness-panel";
 import { AiCreditCommittee } from "./ai-credit-committee";
+import { requestDocument } from "@/services/app-data";
 import { BusinessForecastPanel } from "./business-forecast-panel";
 import { StressSimulatorPanel } from "./stress-simulator-panel";
 import { ExplainabilityPanel } from "./explainability-panel";
@@ -290,6 +291,30 @@ export function ApplicationWorkspace({
                 />
               </label>
             ) : null}
+            <div className="mt-4 rounded-lg border border-dashed border-trust/30 bg-trust/[0.02] p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">Customer Handoff</p>
+              <p className="mt-1 text-xs text-muted">Request missing documents from the customer. They will see this request immediately on their portal.</p>
+              {readiness.missingDocuments.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {readiness.missingDocuments.map((docType) => (
+                    <button
+                      key={docType}
+                      type="button"
+                      onClick={() => {
+                        requestDocument(application.id, [docType], "Please upload this document for verification.");
+                        alert(`Document request sent to customer for: ${docType}`);
+                      }}
+                      className="rounded-md border border-line bg-white px-2.5 py-1 text-xs font-semibold text-trust hover:bg-trust hover:text-white"
+                    >
+                      Request {docType}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-growth">All documents are present. No customer handoff needed.</p>
+              )}
+            </div>
+
             <div className="mt-4 space-y-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted">What would improve this recommendation</p>
               {readiness.missingDocuments.length > 0 && (

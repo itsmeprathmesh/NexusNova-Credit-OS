@@ -1,7 +1,17 @@
+"use client";
+
+import { useCallback, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, ClipboardCheck } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, ClipboardCheck, PlayCircle, UserRound } from "lucide-react";
+import { seedDemoData, isSeeded } from "@/services/demo-seed";
 
 const roles = [
+  {
+    label: "Customer",
+    href: "/customer/login",
+    icon: UserRound,
+    description: "Apply for a loan, upload documents, track status, and get BANK AI support."
+  },
   {
     label: "Loan Officer",
     href: "/command-center?role=loan-officer",
@@ -17,6 +27,13 @@ const roles = [
 ];
 
 export default function HomePage() {
+  const [demoActive, setDemoActive] = useState(isSeeded());
+
+  const handleDemo = useCallback(() => {
+    seedDemoData();
+    setDemoActive(true);
+  }, []);
+
   return (
     <main className="min-h-screen bg-canvas px-4 py-8 text-ink sm:px-6 lg:px-10">
       <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col justify-center">
@@ -29,7 +46,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-4 md:grid-cols-2">
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
           {roles.map((role) => {
             const Icon = role.icon;
 
@@ -50,6 +67,50 @@ export default function HomePage() {
               </Link>
             );
           })}
+        </div>
+
+        <div className="mt-6 rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <PlayCircle className={`h-8 w-8 ${demoActive ? "text-growth" : "text-trust"}`} />
+              <div>
+                <p className="font-semibold text-ink">{demoActive ? "Demo data is active" : "Demo Mode"}</p>
+                <p className="text-sm text-muted">
+                  {demoActive
+                    ? "Complete workflow seeded. Explore the Customer Portal, Loan Officer Workspace, and Portfolio."
+                    : "Seed the application with realistic data to experience the complete workflow in under five minutes."}
+                </p>
+              </div>
+            </div>
+            {!demoActive && (
+              <button
+                type="button"
+                onClick={handleDemo}
+                className="flex min-h-10 items-center justify-center gap-2 rounded-lg bg-trust px-6 text-sm font-semibold text-white transition hover:bg-[#1a526a]"
+              >
+                <PlayCircle className="h-4 w-4" />
+                Launch Demo Mode
+              </button>
+            )}
+          </div>
+          {demoActive && (
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {[
+                { label: "Customer", href: "/customer/dashboard", desc: "View pre-seeded application" },
+                { label: "Officer", href: "/applications/app-1001?role=loan-officer", desc: "Review AI + committee analysis" },
+                { label: "Manager", href: "/portfolio?role=manager", desc: "Portfolio intelligence dashboard" }
+              ].map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="rounded-lg border border-line p-3 text-center transition hover:border-trust hover:bg-slate-50"
+                >
+                  <p className="font-semibold text-trust">{item.label}</p>
+                  <p className="mt-1 text-xs text-muted">{item.desc}</p>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>
