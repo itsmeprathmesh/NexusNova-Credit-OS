@@ -13,12 +13,12 @@ import {
   calculateFraudRisk,
   calculateRepaymentRisk,
   createLoanRecommendation,
-  getDocumentIntelligence,
   type AiReadiness
 } from "@/services/intelligence";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { Badge, Button, Metric, Panel, ProgressBar, RiskBadge } from "@/components/ui/primitives";
 import { AiReadinessPanel } from "./ai-readiness-panel";
+import { AiCreditCommittee } from "./ai-credit-committee";
 import { BusinessForecastPanel } from "./business-forecast-panel";
 import { StressSimulatorPanel } from "./stress-simulator-panel";
 import { ExplainabilityPanel } from "./explainability-panel";
@@ -225,6 +225,8 @@ export function ApplicationWorkspace({
         )}
       </Panel>
 
+      <AiCreditCommittee application={application} msme={msme} signals={signals} />
+
       <Panel title="Intelligence Timeline">
         <div className="overflow-hidden rounded-lg border border-line">
           <div className="hidden grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] gap-2 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
@@ -259,7 +261,7 @@ export function ApplicationWorkspace({
         <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="text-sm text-muted">
-              AI recommendation: <strong className="text-ink">{recommendation.action}</strong> for{" "}
+              AI committee consensus: <strong className="text-ink">{recommendation.action}</strong> for{" "}
               <strong className="text-ink">{formatCurrency(recommendation.recommendedAmount)}</strong>.
               {readiness.readyLabel !== "AI-ready" && (
                 <span className="ml-2 text-caution">(Manual review required)</span>
@@ -316,7 +318,7 @@ export function ApplicationWorkspace({
                 {canRecord ? (
                   <p className="mt-2 text-sm leading-6 text-muted">
                     Loan Officer selected <strong>{decision}</strong> for {msme.name}.{" "}
-                    {overrideRequired ? `Rationale: ${rationale}` : "Decision follows AI recommendation."}
+                    {overrideRequired ? `Rationale: ${rationale}` : "Decision aligns with AI committee consensus."}
                   </p>
                 ) : (
                   <p className="mt-2 flex items-start gap-2 text-sm leading-6 text-amber-900">

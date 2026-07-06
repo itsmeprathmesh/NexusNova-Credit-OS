@@ -169,3 +169,43 @@ export interface Customer360Snapshot {
   previousDecisions: PreviousCreditDecision[];
   crmNotes: CrmNote[];
 }
+
+export type CommitteePersonaId = "risk-officer" | "business-growth" | "compliance";
+export type PersonaVote = "approve" | "conditional" | "reject";
+
+export interface PersonaRecommendation {
+  personaId: CommitteePersonaId;
+  label: string;
+  recommendation: PersonaVote;
+  confidence: number;
+  evidence: string[];
+  keyConcerns: string[];
+  suggestedActions: string[];
+}
+
+export interface CommitteeConsensus {
+  finalRecommendation: PersonaVote;
+  confidence: number;
+  suggestedAmount: number;
+  suggestedTenureMonths: number;
+  conditions: string[];
+  voteBreakdown: { approve: number; conditional: number; reject: number };
+  generatedAt: string;
+}
+
+export interface OfficerDecision {
+  action: DecisionAction;
+  amount: number;
+  rationale: string;
+  overrideRationale: string | null;
+  recordedAt: string;
+}
+
+export interface CommitteeAuditEntry {
+  id: string;
+  actor: string;
+  role: string;
+  action: string;
+  details: string;
+  timestamp: string;
+}
