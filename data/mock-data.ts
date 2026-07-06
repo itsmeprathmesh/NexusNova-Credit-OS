@@ -51,6 +51,45 @@ export const msmes: MsmeProfile[] = [
     udyam: "UDYAM-GJ-22-0029194",
     businessAgeYears: 11,
     relationshipYears: 6
+  },
+  {
+    id: "msme-lotus",
+    name: "Blue Lotus Pharma",
+    sector: "Pharmaceutical",
+    branch: "IDBI Hyderabad",
+    owner: "Sunita Reddy",
+    city: "Hyderabad",
+    pan: "DDEPR7766H",
+    gstin: "36DDEPR7766H1Z9",
+    udyam: "UDYAM-TS-28-0067134",
+    businessAgeYears: 14,
+    relationshipYears: 5
+  },
+  {
+    id: "msme-greenearth",
+    name: "Green Earth Logistics",
+    sector: "Logistics",
+    branch: "IDBI Mumbai",
+    owner: "Vikram Joshi",
+    city: "Mumbai",
+    pan: "EEFPS5511M",
+    gstin: "27EEFPS5511M1Z6",
+    udyam: "UDYAM-MH-32-0082156",
+    businessAgeYears: 6,
+    relationshipYears: 2
+  },
+  {
+    id: "msme-surya",
+    name: "Surya Electronics",
+    sector: "Electronics",
+    branch: "IDBI Bangalore",
+    owner: "Anita Krishnan",
+    city: "Bengaluru",
+    pan: "FFGPT3399B",
+    gstin: "29FFGPT3399B1Z7",
+    udyam: "UDYAM-KA-31-0054189",
+    businessAgeYears: 9,
+    relationshipYears: 4
   }
 ];
 
@@ -170,13 +209,66 @@ export const financialSignals: FinancialSignals[] = [
     customerConcentrationPercent: 38,
     existingObligations: 620000,
     averageMonthlyBalance: 1840000
+  },
+  {
+    msmeId: "msme-kaveri",
+    monthlyRevenue: [1820000, 1910000, 1880000, 1960000, 2040000, 2120000],
+    gstTurnover: [1710000, 1820000, 1790000, 1880000, 1950000, 2060000],
+    upiInflow: [320000, 335000, 348000, 360000, 372000, 385000],
+    failedTransactions: 2,
+    customerConcentrationPercent: 28,
+    existingObligations: 410000,
+    averageMonthlyBalance: 1250000
+  },
+  {
+    msmeId: "msme-saral",
+    monthlyRevenue: [3120000, 2980000, 2750000, 2640000, 2480000, 2350000],
+    gstTurnover: [3050000, 2890000, 2680000, 2520000, 2410000, 2280000],
+    upiInflow: [510000, 485000, 442000, 418000, 395000, 372000],
+    failedTransactions: 12,
+    customerConcentrationPercent: 52,
+    existingObligations: 1850000,
+    averageMonthlyBalance: 920000
+  },
+  {
+    msmeId: "msme-lotus",
+    monthlyRevenue: [3880000, 3950000, 4020000, 4110000, 4180000, 4250000],
+    gstTurnover: [3720000, 3810000, 3890000, 3960000, 4080000, 4160000],
+    upiInflow: [680000, 695000, 712000, 728000, 745000, 760000],
+    failedTransactions: 1,
+    customerConcentrationPercent: 42,
+    existingObligations: 980000,
+    averageMonthlyBalance: 2650000
+  },
+  {
+    msmeId: "msme-greenearth",
+    monthlyRevenue: [2150000, 2080000, 1950000, 1880000, 1820000, 1750000],
+    gstTurnover: [2020000, 1960000, 1850000, 1760000, 1710000, 1640000],
+    upiInflow: [380000, 365000, 342000, 328000, 315000, 301000],
+    failedTransactions: 9,
+    customerConcentrationPercent: 48,
+    existingObligations: 1250000,
+    averageMonthlyBalance: 680000
+  },
+  {
+    msmeId: "msme-surya",
+    monthlyRevenue: [1450000, 1520000, 1580000, 1650000, 1720000, 1810000],
+    gstTurnover: [1380000, 1440000, 1510000, 1580000, 1640000, 1720000],
+    upiInflow: [280000, 295000, 310000, 325000, 340000, 358000],
+    failedTransactions: 0,
+    customerConcentrationPercent: 22,
+    existingObligations: 280000,
+    averageMonthlyBalance: 1120000
   }
 ];
 
 export const portfolio: PortfolioItem[] = [
   { msmeId: "msme-aurora", exposure: 3100000, riskBand: "medium", earlyWarnings: ["Invoice concentration rising"], dynamicLimitDelta: 400000 },
   { msmeId: "msme-kaveri", exposure: 1800000, riskBand: "low", earlyWarnings: [], dynamicLimitDelta: 250000 },
-  { msmeId: "msme-saral", exposure: 5200000, riskBand: "high", earlyWarnings: ["GST turnover down 18%", "Cash-flow compression"], dynamicLimitDelta: -900000 }
+  { msmeId: "msme-saral", exposure: 5200000, riskBand: "high", earlyWarnings: ["GST turnover down 18%", "Cash-flow compression"], dynamicLimitDelta: -900000 },
+  { msmeId: "msme-lotus", exposure: 4100000, riskBand: "medium", earlyWarnings: ["Receivable ageing over 90 days for top buyer"], dynamicLimitDelta: 350000 },
+  { msmeId: "msme-greenearth", exposure: 2800000, riskBand: "high", earlyWarnings: ["Fuel cost margin compression", "Two cheque returns in last quarter"], dynamicLimitDelta: -450000 },
+  { msmeId: "msme-surya", exposure: 1900000, riskBand: "low", earlyWarnings: [], dynamicLimitDelta: 520000 }
 ];
 
 const relationshipManagers: RelationshipManagerAssignment[] = [
