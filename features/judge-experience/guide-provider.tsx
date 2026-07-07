@@ -96,10 +96,6 @@ export function GuideProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    setTourActive(false);
-  }, [pathname]);
-
-  useEffect(() => {
     if (pathname === "/") return;
     const guideId = pathname.replace(/^\//, "").replace(/\//g, "-").split("?")[0];
     const matched = CHECKLIST.find(
