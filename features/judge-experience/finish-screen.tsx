@@ -11,6 +11,12 @@ import {
 } from "lucide-react";
 import { useOnboarding } from "./onboarding-provider";
 
+const COLORS: Record<string, { bg: string; border: string; text: string }> = {
+  trust: { bg: "rgba(216,255,62,0.06)", border: "rgba(216,255,62,0.15)", text: "#D8FF3E" },
+  caution: { bg: "rgba(255,200,87,0.06)", border: "rgba(255,200,87,0.15)", text: "#FFC857" },
+  growth: { bg: "rgba(56,217,200,0.06)", border: "rgba(56,217,200,0.15)", text: "#38D9C8" },
+};
+
 function StatCard({
   icon: Icon,
   label,
@@ -24,14 +30,16 @@ function StatCard({
   suffix?: string;
   color: string;
 }) {
+  const c = COLORS[color] ?? COLORS.trust;
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`flex flex-col items-center rounded-xl border border-${color}/20 bg-${color}/5 p-3`}
+      className="flex flex-col items-center rounded-xl border p-3"
+      style={{ borderColor: c.border, background: c.bg }}
     >
-      <Icon className={`h-5 w-5 text-${color} mb-1`} />
+      <Icon className="h-5 w-5 mb-1" style={{ color: c.text }} />
       <span className="text-xl font-bold text-ink">
         {value}
         {suffix ?? ""}
@@ -54,7 +62,7 @@ export function FinishScreen() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) closeFinish();
           }}
@@ -67,7 +75,7 @@ export function FinishScreen() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 32, scale: 0.92 }}
             transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/20 bg-white shadow-glow"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-surface/40 bg-panel/95 shadow-glow backdrop-blur-2xl"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-growth/[0.03] via-transparent to-trust/[0.03] pointer-events-none" />
 
@@ -126,7 +134,7 @@ export function FinishScreen() {
                 />
               </div>
 
-              <div className="flex items-center justify-center gap-2 mb-5 rounded-xl border border-growth/20 bg-growth/5 px-4 py-3">
+              <div className="flex items-center justify-center gap-2 mb-5 rounded-xl border border-growth/15 bg-growth/[0.04] px-4 py-3">
                 <CheckCircle2 className="h-5 w-5 text-growth shrink-0" />
                 <p className="text-xs text-muted leading-relaxed">
                   This tour demonstrated key differentiators: explainable AI,
@@ -137,7 +145,7 @@ export function FinishScreen() {
 
               <button
                 onClick={closeFinish}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-trust px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-trust/90 active:scale-[0.98]"
+                className="btn-primary w-full"
               >
                 <Eye className="h-4 w-4" />
                 Continue Exploring

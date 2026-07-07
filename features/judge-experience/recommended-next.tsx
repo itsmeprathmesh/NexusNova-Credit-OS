@@ -21,7 +21,7 @@ export function RecommendedNext() {
     >
       <Link
         href={next.path}
-        className="group flex items-center justify-between rounded-xl border border-line/60 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-trust/30 hover:shadow-elevated"
+        className="group flex items-center justify-between rounded-xl border border-surface/40 bg-panel/90 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-trust/30 hover:shadow-glow"
       >
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-trust/10 text-trust transition-transform group-hover:scale-110">

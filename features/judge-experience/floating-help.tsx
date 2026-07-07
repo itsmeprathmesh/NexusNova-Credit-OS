@@ -18,7 +18,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { useJudge } from "./guide-provider";
-import { getGuide, CHECKLIST, GUIDES, TOUR_STEPS } from "./guide-config";
+import { getGuide, CHECKLIST, GUIDES } from "./guide-config";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -93,7 +93,7 @@ export function FloatingHelp() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:bg-transparent lg:backdrop-blur-none"
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] lg:bg-transparent lg:backdrop-blur-none"
             aria-hidden="true"
           />
         )}
@@ -107,14 +107,14 @@ export function FloatingHelp() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            className="fixed bottom-20 right-4 z-50 flex max-h-[80vh] w-[380px] flex-col overflow-hidden rounded-2xl border border-white/20 bg-white shadow-glow sm:right-6 sm:w-[420px] lg:bottom-24"
+            className="fixed bottom-20 right-4 z-50 flex max-h-[80vh] w-[380px] flex-col overflow-hidden rounded-2xl border border-surface/40 bg-panel/95 shadow-glow backdrop-blur-2xl sm:right-6 sm:w-[420px] lg:bottom-24"
             role="dialog"
             aria-label="Judge Guide Panel"
             aria-modal="true"
           >
             <div className="flex items-center justify-between border-b border-line/50 px-5 py-4">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-trust/10">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-trust/15">
                   <Eye className="h-4 w-4 text-trust" />
                 </div>
                 <div>
@@ -124,7 +124,7 @@ export function FloatingHelp() {
               </div>
               <button
                 onClick={closeHelp}
-                className="rounded-md p-1.5 text-muted transition-colors hover:bg-slate-100 hover:text-ink"
+                className="rounded-md p-1.5 text-muted transition-colors hover:bg-surface/80 hover:text-ink"
                 aria-label="Close guide"
               >
                 <X className="h-4 w-4" />
@@ -140,7 +140,7 @@ export function FloatingHelp() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search guides..."
-                    className="w-full rounded-lg border border-line bg-slate-50 py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-trust focus:outline-none focus:ring-1 focus:ring-trust"
+                    className="input-dark pl-9"
                     aria-label="Search guides"
                   />
                 </div>
@@ -162,7 +162,7 @@ export function FloatingHelp() {
                           key={g.id}
                           href={g.path}
                           onClick={closeHelp}
-                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-slate-50"
+                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-surface/60"
                         >
                           <ChevronRight className="h-3.5 w-3.5 text-trust" />
                           <span className="font-medium">{g.title}</span>
@@ -175,10 +175,10 @@ export function FloatingHelp() {
               ) : (
                 <div className="space-y-1 px-5 pb-4">
                   {guide && (
-                    <div className="mb-4 rounded-xl border border-trust/20 bg-trust/[0.03] p-4">
+                    <div className="mb-4 rounded-xl border border-trust/15 bg-surface/50 p-4">
                       <div className="mb-2 flex items-center justify-between">
                         <h3 className="text-sm font-semibold text-ink">{guide.title}</h3>
-                        <span className="flex items-center gap-1 rounded-full bg-trust/10 px-2 py-0.5 text-[10px] font-medium text-trust">
+                        <span className="flex items-center gap-1 rounded-full bg-trust/15 px-2 py-0.5 text-[10px] font-medium text-trust">
                           <Clock className="h-3 w-3" />
                           {guide.estimatedTime}
                         </span>
@@ -187,30 +187,33 @@ export function FloatingHelp() {
 
                       {guide.aiFeatures.length > 0 && (
                         <div className="mb-2">
-                          <p className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-trust">
+                          <p className="mb-1.5 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-trust">
                             <Brain className="h-3 w-3" />
                             AI Features
                           </p>
-                          <ul className="space-y-0.5">
+                          <div className="flex flex-wrap gap-1.5">
                             {guide.aiFeatures.map((f, i) => (
-                              <li key={i} className="flex items-start gap-1.5 text-xs text-muted">
-                                <span className="mt-1 block h-1 w-1 shrink-0 rounded-full bg-trust/50" />
+                              <span
+                                key={i}
+                                className="inline-flex items-center gap-1 rounded-md bg-trust/10 px-2 py-1 text-[10px] font-medium text-trust border border-trust/20 shadow-[0_0_8px_rgba(216,255,62,0.08)]"
+                              >
+                                <Sparkles className="h-2.5 w-2.5" />
                                 {f}
-                              </li>
+                              </span>
                             ))}
-                          </ul>
+                          </div>
                         </div>
                       )}
 
                       <div className="mb-2">
-                        <p className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-ink">
+                        <p className="mb-1.5 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-ink">
                           <MapPin className="h-3 w-3" />
                           Judge Observations
                         </p>
-                        <ul className="space-y-0.5">
+                        <ul className="space-y-1">
                           {guide.judgeObservations.map((obs, i) => (
-                            <li key={i} className="flex items-start gap-1.5 text-xs text-muted">
-                              <span className="mt-1 block h-1 w-1 shrink-0 rounded-full bg-growth/50" />
+                            <li key={i} className="flex items-start gap-2 text-xs text-muted">
+                              <span className="mt-0.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-growth shadow-[0_0_6px_rgba(56,217,200,0.4)]" />
                               {obs}
                             </li>
                           ))}
@@ -233,7 +236,7 @@ export function FloatingHelp() {
                       )}
 
                       {guide.innovationHighlight && (
-                        <div className="mt-3 rounded-lg border border-growth/20 bg-growth/[0.03] p-3">
+                        <div className="mt-3 rounded-lg border border-growth/15 bg-surface/60 p-3">
                           <p className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-growth">
                             <Lightbulb className="h-3 w-3" />
                             Innovation Highlight
@@ -246,7 +249,7 @@ export function FloatingHelp() {
                     </div>
                   )}
 
-                  <div className="mb-4 flex items-center justify-between rounded-lg border border-line/50 p-3">
+                  <div className="mb-4 flex items-center justify-between rounded-lg border border-line/30 bg-surface/40 p-3">
                     <div className="flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-caution" />
                       <span className="text-sm font-medium text-ink">Judge Mode</span>
@@ -254,7 +257,7 @@ export function FloatingHelp() {
                     <button
                       onClick={toggleJudgeMode}
                       className={`relative h-6 w-11 rounded-full transition-colors ${
-                        isJudgeMode ? "bg-trust" : "bg-slate-300"
+                        isJudgeMode ? "bg-trust" : "bg-line"
                       }`}
                       aria-label="Toggle judge mode"
                       role="switch"
@@ -269,8 +272,8 @@ export function FloatingHelp() {
                   </div>
 
                   {newFeatures.length > 0 && (
-                    <div className="mb-4 rounded-lg border border-amber-200/50 bg-amber-50/50 p-3">
-                      <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-amber-800">
+                    <div className="mb-4 rounded-lg border border-trust/15 bg-trust/[0.03] p-3">
+                      <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-trust">
                         <Sparkles className="h-3.5 w-3.5" />
                         What&apos;s New
                       </p>
@@ -283,9 +286,9 @@ export function FloatingHelp() {
                               markFeatureViewed(f.id);
                               closeHelp();
                             }}
-                            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-amber-900 transition-colors hover:bg-amber-100/50"
+                            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted transition-colors hover:bg-trust/10 hover:text-ink"
                           >
-                            <span className="rounded bg-amber-200 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-800">
+                            <span className="rounded bg-trust/20 px-1.5 py-0.5 text-[9px] font-bold uppercase text-trust">
                               New
                             </span>
                             {f.label}
@@ -300,11 +303,16 @@ export function FloatingHelp() {
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted">
                         Demo Checklist
                       </p>
-                      <span className="text-xs font-medium text-trust">{checklistProgress}%</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-trust">{checklistProgress}%</span>
+                        <span className="text-[10px] text-muted">
+                          ({completedPages.length}/{CHECKLIST.length})
+                        </span>
+                      </div>
                     </div>
-                    <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                    <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-surface">
                       <div
-                        className="h-full rounded-full bg-trust transition-all duration-500"
+                        className="h-full rounded-full bg-trust transition-all duration-500 shadow-[0_0_8px_rgba(216,255,62,0.3)]"
                         style={{ width: `${checklistProgress}%` }}
                       />
                     </div>
@@ -318,16 +326,16 @@ export function FloatingHelp() {
                             onClick={closeHelp}
                             className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors ${
                               done
-                                ? "text-muted hover:bg-slate-50"
-                                : "text-ink hover:bg-slate-50"
+                                ? "text-muted hover:bg-surface/60"
+                                : "text-ink hover:bg-surface/60"
                             }`}
                           >
                             {done ? (
                               <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-growth" />
                             ) : (
-                              <Circle className="h-3.5 w-3.5 shrink-0 text-slate-300" />
+                              <Circle className="h-3.5 w-3.5 shrink-0 text-line" />
                             )}
-                            <span className={done ? "line-through" : ""}>{item.label}</span>
+                            <span className={done ? "line-through text-muted/60" : ""}>{item.label}</span>
                           </Link>
                         );
                       })}
@@ -340,7 +348,7 @@ export function FloatingHelp() {
                         startTour();
                         closeHelp();
                       }}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-trust/90 active:scale-[0.97]"
+                      className="btn-primary w-full"
                     >
                       {completedPages.length > 0 ? (
                         <RefreshCw className="h-4 w-4" />
@@ -353,26 +361,26 @@ export function FloatingHelp() {
                     </button>
                   </div>
 
-                  <div className="mt-4 rounded-lg border border-line/50 p-3">
+                  <div className="mt-4 rounded-lg border border-line/20 bg-surface/30 p-3">
                     <p className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
                       <HelpCircle className="h-3 w-3" />
                       Tips for Judges
                     </p>
                     <ul className="space-y-1.5">
                       <li className="flex items-start gap-1.5 text-[11px] text-muted">
-                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust/50" />
-                        Press <kbd className="rounded border border-line/50 bg-slate-50 px-1 text-[9px] font-mono">?</kbd> to toggle this guide
+                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust shadow-[0_0_6px_rgba(216,255,62,0.4)]" />
+                        Press <kbd className="rounded border border-line/30 bg-surface px-1 text-[9px] font-mono text-ink">?</kbd> to toggle this guide
                       </li>
                       <li className="flex items-start gap-1.5 text-[11px] text-muted">
-                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust/50" />
-                        Use <kbd className="rounded border border-line/50 bg-slate-50 px-1 text-[9px] font-mono">←</kbd> <kbd className="rounded border border-line/50 bg-slate-50 px-1 text-[9px] font-mono">→</kbd> arrows during tour
+                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust shadow-[0_0_6px_rgba(216,255,62,0.4)]" />
+                        Use <kbd className="rounded border border-line/30 bg-surface px-1 text-[9px] font-mono text-ink">←</kbd> <kbd className="rounded border border-line/30 bg-surface px-1 text-[9px] font-mono text-ink">→</kbd> arrows during tour
                       </li>
                       <li className="flex items-start gap-1.5 text-[11px] text-muted">
-                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust/50" />
+                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust shadow-[0_0_6px_rgba(216,255,62,0.4)]" />
                         Enable Judge Mode for simplified explanations on every page
                       </li>
                       <li className="flex items-start gap-1.5 text-[11px] text-muted">
-                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust/50" />
+                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust shadow-[0_0_6px_rgba(216,255,62,0.4)]" />
                         Hover over AI badges to see data sources and confidence scores
                       </li>
                     </ul>
@@ -394,7 +402,7 @@ export function FloatingHelp() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={openHelp}
-              className="flex h-14 w-14 items-center justify-center rounded-full bg-trust text-white shadow-lg transition-all hover:bg-[#1a526a] active:scale-[0.95]"
+              className="flex h-14 w-14 items-center justify-center rounded-full bg-trust text-canvas shadow-[0_0_24px_rgba(216,255,62,0.3)] transition-all hover:bg-trust/90 hover:shadow-[0_0_32px_rgba(216,255,62,0.4)] active:scale-[0.95]"
               aria-label="Open judge guide (press ?)"
             >
               <Eye className="h-6 w-6" />
