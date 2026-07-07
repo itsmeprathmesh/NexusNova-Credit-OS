@@ -9,7 +9,7 @@ import {
   type ReactNode,
   useRef,
 } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export interface Shortcut {
   key: string;
@@ -100,7 +100,6 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   const [confettiTrigger, setConfettiTrigger] = useState(0);
-  const pathname = usePathname();
   const router = useRouter();
   const shortcutsRef = useRef(shortcuts);
   shortcutsRef.current = shortcuts;

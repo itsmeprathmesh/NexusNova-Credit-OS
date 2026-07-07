@@ -4,7 +4,7 @@ import { applications, msmes, portfolio, financialSignals } from "@/data/mock-da
 import type { UserRole } from "@/domain/types";
 import { formatCurrency } from "@/lib/format";
 import { Badge, Metric, Panel, RiskBadge } from "@/components/ui/primitives";
-import { AIBadge, AICompleted } from "@/components/ai/ai-status";
+import { AIBadge } from "@/components/ai/ai-status";
 import { ConfidenceIndicators } from "@/components/ai/confidence-indicator";
 import { computePortfolioHealth } from "@/services/portfolio-intelligence";
 

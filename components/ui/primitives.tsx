@@ -1,9 +1,10 @@
+"use client";
+
 import { type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode, forwardRef } from "react";
 import { motion } from "framer-motion";
 import type { RiskBand } from "@/domain/types";
 import { cn } from "@/lib/utils";
 import { riskLabel } from "@/lib/format";
-import { CountUp } from "./count-up";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "ghost" | "danger";

@@ -8,17 +8,18 @@ export function DemoKeyboardHandler() {
     toggleDemoMode,
     toggleShortcuts,
     endOnboarding,
-    isOnboardingActive,
     closeShortcuts,
-    showShortcuts,
   } = useDemoMode();
 
-  const initialized = useRef(false);
+  const isOnboardingActiveRef = useRef(false);
+  const showShortcutsRef = useRef(false);
+
+  const { isOnboardingActive, showShortcuts } = useDemoMode();
+
+  isOnboardingActiveRef.current = isOnboardingActive;
+  showShortcutsRef.current = showShortcuts;
 
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
-
     function handleKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement;
       const isInput =
@@ -44,11 +45,11 @@ export function DemoKeyboardHandler() {
       }
 
       if (e.key === "Escape") {
-        if (showShortcuts) {
+        if (showShortcutsRef.current) {
           closeShortcuts();
           return;
         }
-        if (isOnboardingActive) {
+        if (isOnboardingActiveRef.current) {
           endOnboarding();
           return;
         }
@@ -57,7 +58,7 @@ export function DemoKeyboardHandler() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleDemoMode, toggleShortcuts, closeShortcuts, endOnboarding, isOnboardingActive, showShortcuts]);
+  }, [toggleDemoMode, toggleShortcuts, closeShortcuts, endOnboarding]);
 
   return null;
 }
