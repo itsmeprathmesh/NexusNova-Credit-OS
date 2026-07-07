@@ -13,9 +13,12 @@ import {
   Brain,
   Eye,
   MapPin,
+  RefreshCw,
+  HelpCircle,
+  Lightbulb,
 } from "lucide-react";
 import { useJudge } from "./guide-provider";
-import { getGuide, CHECKLIST, GUIDES } from "./guide-config";
+import { getGuide, CHECKLIST, GUIDES, TOUR_STEPS } from "./guide-config";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -228,6 +231,18 @@ export function FloatingHelp() {
                           ))}
                         </div>
                       )}
+
+                      {guide.innovationHighlight && (
+                        <div className="mt-3 rounded-lg border border-growth/20 bg-growth/[0.03] p-3">
+                          <p className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-growth">
+                            <Lightbulb className="h-3 w-3" />
+                            Innovation Highlight
+                          </p>
+                          <p className="text-xs leading-relaxed text-muted">
+                            {guide.innovationHighlight}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -319,7 +334,7 @@ export function FloatingHelp() {
                     </div>
                   </div>
 
-                  <div className="mt-4">
+                  <div className="mt-2">
                     <button
                       onClick={() => {
                         startTour();
@@ -327,9 +342,40 @@ export function FloatingHelp() {
                       }}
                       className="flex w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-trust/90 active:scale-[0.97]"
                     >
-                      <Eye className="h-4 w-4" />
-                      Start Guided Tour ({CHECKLIST.length} stops)
+                      {completedPages.length > 0 ? (
+                        <RefreshCw className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                      {completedPages.length > 0
+                        ? "Restart Guided Tour"
+                        : `Start Guided Tour (${CHECKLIST.length} stops)`}
                     </button>
+                  </div>
+
+                  <div className="mt-4 rounded-lg border border-line/50 p-3">
+                    <p className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+                      <HelpCircle className="h-3 w-3" />
+                      Tips for Judges
+                    </p>
+                    <ul className="space-y-1.5">
+                      <li className="flex items-start gap-1.5 text-[11px] text-muted">
+                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust/50" />
+                        Press <kbd className="rounded border border-line/50 bg-slate-50 px-1 text-[9px] font-mono">?</kbd> to toggle this guide
+                      </li>
+                      <li className="flex items-start gap-1.5 text-[11px] text-muted">
+                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust/50" />
+                        Use <kbd className="rounded border border-line/50 bg-slate-50 px-1 text-[9px] font-mono">←</kbd> <kbd className="rounded border border-line/50 bg-slate-50 px-1 text-[9px] font-mono">→</kbd> arrows during tour
+                      </li>
+                      <li className="flex items-start gap-1.5 text-[11px] text-muted">
+                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust/50" />
+                        Enable Judge Mode for simplified explanations on every page
+                      </li>
+                      <li className="flex items-start gap-1.5 text-[11px] text-muted">
+                        <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust/50" />
+                        Hover over AI badges to see data sources and confidence scores
+                      </li>
+                    </ul>
                   </div>
                 </div>
               )}

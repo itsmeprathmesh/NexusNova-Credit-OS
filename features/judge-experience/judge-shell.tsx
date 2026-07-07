@@ -3,14 +3,13 @@
 import type { ReactNode } from "react";
 import { GuideProvider } from "./guide-provider";
 import { FloatingHelp } from "./floating-help";
-import { TourEngine } from "./tour-engine";
+import { OnboardingShell } from "./onboarding-shell";
 
 export function JudgeShell({ children }: { children: ReactNode }) {
   return (
     <GuideProvider>
       <FloatingHelp />
-      <TourEngine />
-      {children}
+      <OnboardingShell>{children}</OnboardingShell>
     </GuideProvider>
   );
 }
