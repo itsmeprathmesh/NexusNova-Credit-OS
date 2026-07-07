@@ -4,29 +4,31 @@ import { type ReactNode, type ComponentProps } from "react";
 import { motion, type Variants } from "framer-motion";
 import { Button, Panel } from "./primitives";
 
+const spring = { type: "spring" as const, stiffness: 120, damping: 20, mass: 0.8 };
+
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] } }
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.25, 0.1, 0.25, 1] } }
 };
 
 const fadeLeft: Variants = {
-  hidden: { opacity: 0, x: -12 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] } }
+  hidden: { opacity: 0, x: -16 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.45, ease: [0.25, 0.1, 0.25, 1] } }
 };
 
 const fadeRight: Variants = {
-  hidden: { opacity: 0, x: 12 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] } }
+  hidden: { opacity: 0, x: 16 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.45, ease: [0.25, 0.1, 0.25, 1] } }
 };
 
 const scaleUp: Variants = {
-  hidden: { opacity: 0, scale: 0.94 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } }
+  hidden: { opacity: 0, scale: 0.92 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] } }
 };
 
 const stagger: Variants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.05 } }
+  visible: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.06 } }
 };
 
 export function FadeInView({ children, className, delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
@@ -36,7 +38,7 @@ export function FadeInView({ children, className, delay = 0 }: { children: React
       variants={fadeUp}
       initial="hidden"
       animate="visible"
-      transition={{ delay, duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ delay, duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
     >
       {children}
     </motion.div>
@@ -47,9 +49,9 @@ export function SlideUpView({ children, className, delay = 0 }: { children: Reac
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ delay, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
     >
       {children}
     </motion.div>
@@ -102,7 +104,7 @@ export function AnimatedPanel({ children, className, title, action, delay = 0, .
       variants={fadeUp}
       initial="hidden"
       animate="visible"
-      transition={{ delay, duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ delay, duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
     >
       <Panel className={className} title={title} action={action} {...props}>
         {children}
@@ -114,11 +116,11 @@ export function AnimatedPanel({ children, className, title, action, delay = 0, .
 export function AnimatedButton({ className, delay = 0, ...props }: ComponentProps<typeof Button> & { delay?: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.96 }}
+      initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, duration: 0.2 }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.97 }}
+      transition={{ delay, ...spring }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.96 }}
       style={{ display: "inline-flex" }}
     >
       <Button className={className} {...props} />
@@ -128,7 +130,11 @@ export function AnimatedButton({ className, delay = 0, ...props }: ComponentProp
 
 export function PageTransition({ children }: { children: ReactNode }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+    >
       {children}
     </motion.div>
   );

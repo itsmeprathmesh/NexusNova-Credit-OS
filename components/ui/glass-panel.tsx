@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type GlassVariant = "default" | "strong" | "gradient-border";
+type GlassVariant = "default" | "strong" | "surface" | "gradient-border";
 
 export function GlassPanel({
   children,
@@ -12,10 +12,11 @@ export function GlassPanel({
   return (
     <div
       className={cn(
-        variant === "default" && "glass rounded-xl shadow-glass",
-        variant === "strong" && "glass-strong rounded-xl shadow-glass",
-        variant === "gradient-border" && "glass gradient-border rounded-xl shadow-glass",
-        "transition-all duration-300 hover:-translate-y-0.5 hover:shadow-elevated",
+        variant === "default" && "glass rounded-2xl shadow-glass",
+        variant === "strong" && "glass-strong rounded-2xl shadow-glass",
+        variant === "surface" && "glass-surface rounded-2xl shadow-glass",
+        variant === "gradient-border" && "glass gradient-border rounded-2xl shadow-glass",
+        "transition-all duration-300 hover:-translate-y-0.5 card-glow",
         className
       )}
       {...props}
@@ -27,7 +28,7 @@ export function GlassPanel({
 
 export function GlassCard({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <GlassPanel variant="strong" className={cn("p-6", className)} {...props}>
+    <GlassPanel variant="strong" className={cn("p-7", className)} {...props}>
       {children}
     </GlassPanel>
   );
