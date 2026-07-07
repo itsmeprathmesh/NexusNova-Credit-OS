@@ -6,12 +6,12 @@ import {
   BarChart3,
   BriefcaseBusiness,
   ClipboardList,
+  Eye,
   FileText,
   LayoutDashboard,
+  MonitorPlay,
   ShieldCheck,
   Sparkles,
-  Keyboard,
-  MonitorPlay,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { UserRole } from "@/domain/types";
@@ -21,6 +21,7 @@ import { NotificationCenter } from "@/components/ui/notification-center";
 import { UserMenu } from "@/components/ui/user-menu";
 import { QuickActions } from "@/components/ui/quick-actions";
 import { useDemoMode } from "@/contexts/demo-mode";
+import { useJudge, FeatureDiscoveryBar, RecommendedNext } from "@/features/judge-experience";
 
 const navItems = [
   { href: "/command-center", label: "Command Center", icon: LayoutDashboard, highlight: "AI Hub" },
@@ -45,6 +46,8 @@ export function AppShell({
   role?: UserRole;
 }) {
   const { isDemoMode, toggleDemoMode, startOnboarding, toggleShortcuts } = useDemoMode();
+  const { isJudgeMode, toggleJudgeMode, openHelp, startTour, newFeatures, markFeatureViewed } =
+    useJudge();
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
@@ -148,7 +151,7 @@ export function AppShell({
             <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
               {isDemoMode && (
                 <button
-                  onClick={startOnboarding}
+                  onClick={startTour}
                   className="flex items-center gap-1.5 rounded-lg border border-trust/20 bg-trust/5 px-3 py-1.5 text-xs font-medium text-trust transition-all hover:bg-trust/10 active:scale-[0.97]"
                   aria-label="Start guided tour"
                 >
@@ -157,14 +160,25 @@ export function AppShell({
                 </button>
               )}
               <button
-                onClick={toggleShortcuts}
-                className="flex items-center gap-1.5 rounded-lg border border-line bg-slate-50 px-3 py-1.5 text-xs font-medium text-muted transition-all hover:bg-slate-100 hover:text-ink active:scale-[0.97]"
-                aria-label="Toggle keyboard shortcuts"
+                onClick={openHelp}
+                className="flex items-center gap-1.5 rounded-lg border border-trust/20 bg-trust/5 px-3 py-1.5 text-xs font-medium text-trust transition-all hover:bg-trust/10 active:scale-[0.97]"
+                aria-label="Open judge guide"
               >
-                <Keyboard className="h-3.5 w-3.5" aria-hidden="true" />
-                <kbd className="rounded bg-slate-200 px-1 text-[10px] font-semibold text-muted">
-                  ?
-                </kbd>
+                <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+                <span className="hidden sm:inline">Guide</span>
+              </button>
+              <button
+                onClick={toggleJudgeMode}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all active:scale-[0.97]",
+                  isJudgeMode
+                    ? "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
+                    : "border-line bg-slate-50 text-muted hover:bg-slate-100 hover:text-ink"
+                )}
+                aria-label={isJudgeMode ? "Disable judge mode" : "Enable judge mode"}
+              >
+                <Eye className={cn("h-3.5 w-3.5", isJudgeMode && "text-amber-600")} aria-hidden="true" />
+                <span>{isJudgeMode ? "Judge On" : "Judge"}</span>
               </button>
               <button
                 onClick={toggleDemoMode}
@@ -201,7 +215,11 @@ export function AppShell({
         </header>
 
         <PageTransition>
-          <main id="main-content">{children}</main>
+          <div id="main-content">
+            <FeatureDiscoveryBar />
+            {children}
+            <RecommendedNext />
+          </div>
         </PageTransition>
       </div>
 

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { DemoShell } from "@/components/demo/demo-shell";
+import { JudgeShell } from "@/features/judge-experience";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <DemoShell>{children}</DemoShell>
+        <DemoShell><JudgeShell>{children}</JudgeShell></DemoShell>
       </body>
     </html>
   );

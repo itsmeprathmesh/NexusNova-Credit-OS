@@ -1,0 +1,10 @@
+export { GuideProvider, useJudge } from "./guide-provider";
+export { JudgeShell } from "./judge-shell";
+export { FloatingHelp } from "./floating-help";
+export { TourEngine } from "./tour-engine";
+export { AiTooltip } from "./tooltip";
+export { JudgeHighlight, JudgeBadge } from "./judge-mode";
+export { FeatureDiscoveryBadge, FeatureDiscoveryBar } from "./feature-discovery";
+export { RecommendedNext } from "./recommended-next";
+export { getGuide, GUIDES, CHECKLIST, AI_TOOLTIPS } from "./guide-config";
+export type { GuideEntry, TourStep, ChecklistItem, AiTooltipData } from "./types";

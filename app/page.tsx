@@ -6,11 +6,12 @@ import {
   ArrowRight,
   BriefcaseBusiness,
   ClipboardCheck,
+  Eye,
+  MonitorPlay,
   PlayCircle,
   Sparkles,
   TrendingUp,
   UserRound,
-  MonitorPlay,
 } from "lucide-react";
 import { seedDemoData, isSeeded } from "@/services/demo-seed";
 import { computePortfolioHealth, computeSectorSummaries } from "@/services/portfolio-intelligence";
@@ -21,6 +22,7 @@ import { CountUp } from "@/components/ui/count-up";
 import { Badge } from "@/components/ui/primitives";
 import { FeatureHighlight } from "@/components/demo/feature-highlight";
 import { useDemoMode } from "@/contexts/demo-mode";
+import { useJudge, FeatureDiscoveryBar, RecommendedNext } from "@/features/judge-experience";
 
 const roles = [
   {
@@ -46,13 +48,21 @@ const roles = [
 ];
 
 export default function HomePage() {
-  const { isDemoMode, enableDemoMode, startOnboarding } = useDemoMode();
+  const { isDemoMode, enableDemoMode } = useDemoMode();
+  const { startTour, toggleJudgeMode } = useJudge();
   const demoActive = isDemoMode || isSeeded();
 
   const handleDemo = useCallback(() => {
     seedDemoData();
     enableDemoMode();
   }, [enableDemoMode]);
+
+  const handleFullDemo = useCallback(() => {
+    seedDemoData();
+    enableDemoMode();
+    toggleJudgeMode();
+    setTimeout(() => startTour(), 500);
+  }, [enableDemoMode, toggleJudgeMode, startTour]);
 
   const health = useMemo(
     () => computePortfolioHealth(msmes, portfolio, financialSignals),
@@ -107,7 +117,7 @@ export default function HomePage() {
           <div className="flex items-center gap-2">
             {demoActive && (
               <button
-                onClick={startOnboarding}
+                onClick={startTour}
                 className="flex items-center gap-1.5 rounded-lg border border-trust/20 bg-trust/5 px-3 py-2 text-sm font-medium text-trust transition-all hover:bg-trust/10 active:scale-[0.97]"
               >
                 <MonitorPlay className="h-4 w-4" />
@@ -172,6 +182,7 @@ export default function HomePage() {
       </div>
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-10">
+        <FeatureDiscoveryBar />
         {isDemoMode && (
           <FadeInView>
             <div className="mb-8 flex flex-wrap items-center gap-3 rounded-2xl border border-trust/20 bg-trust/5 px-5 py-4">
@@ -181,7 +192,7 @@ export default function HomePage() {
                 pre-seeded data.
               </span>
               <button
-                onClick={startOnboarding}
+                onClick={startTour}
                 className="ml-auto flex items-center gap-1.5 rounded-lg bg-trust px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-trust/90 active:scale-[0.97]"
               >
                 <MonitorPlay className="h-3.5 w-3.5" />
@@ -247,14 +258,24 @@ export default function HomePage() {
                 </div>
               </div>
               {!demoActive && (
-                <button
-                  type="button"
-                  onClick={handleDemo}
-                  className="flex min-h-10 items-center justify-center gap-2 rounded-lg bg-trust px-6 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-[#1a526a] active:scale-[0.97]"
-                >
-                  <PlayCircle className="h-4 w-4" />
-                  Launch Demo Mode
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={handleDemo}
+                    className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 text-sm font-semibold text-ink shadow-sm transition-all duration-150 hover:bg-slate-50 active:scale-[0.97]"
+                  >
+                    <PlayCircle className="h-4 w-4" />
+                    Launch Demo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleFullDemo}
+                    className="flex min-h-10 items-center justify-center gap-2 rounded-lg bg-trust px-6 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-[#1a526a] active:scale-[0.97]"
+                  >
+                    <Eye className="h-4 w-4" />
+                    Start Full Demo
+                  </button>
+                </div>
               )}
             </div>
             {demoActive && (
@@ -303,6 +324,8 @@ export default function HomePage() {
             )}
           </GlassPanel>
         </SlideUpView>
+
+        <RecommendedNext />
 
         <FadeInView delay={0.4}>
           <footer className="mt-16 text-center text-sm text-muted">

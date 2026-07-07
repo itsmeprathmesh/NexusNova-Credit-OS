@@ -7,6 +7,7 @@ import { formatCurrency } from "@/lib/format";
 import { Badge, Panel, RiskBadge } from "@/components/ui/primitives";
 import { ConfidenceBar } from "./confidence-indicator";
 import { AIBadge } from "./ai-status";
+import { AiTooltip } from "@/features/judge-experience";
 
 function actionTone(action: LoanRecommendation["action"]) {
   if (action === "approve") return "success" as const;
@@ -34,7 +35,7 @@ export function AIRecommendationCard({
   health: IntelligenceResult;
 }) {
   return (
-    <Panel title="AI Recommendation" action={<AIBadge tone="complete">AI Generated</AIBadge>}>
+    <Panel title={<span className="inline-flex items-center gap-2">AI Recommendation <AiTooltip tooltipKey="financial-health" icon="brain" /></span>} action={<AIBadge tone="complete">AI Generated</AIBadge>}>
       <div className="space-y-5">
         <div className="rounded-lg border-2 border-line/60 p-5 transition-all hover:border-trust/20 hover:shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

@@ -76,8 +76,8 @@ export function Panel({
   hover,
   glass,
   ...props
-}: HTMLAttributes<HTMLElement> & { title?: string; action?: ReactNode; hover?: boolean; glass?: boolean }) {
-  const panelId = title ? `panel-${title.toLowerCase().replace(/\s+/g, "-")}` : undefined;
+}: Omit<HTMLAttributes<HTMLElement>, "title"> & { title?: ReactNode; action?: ReactNode; hover?: boolean; glass?: boolean }) {
+  const panelId = typeof title === "string" ? `panel-${title.toLowerCase().replace(/\s+/g, "-")}` : undefined;
   return (
     <section
       className={cn(
@@ -93,7 +93,7 @@ export function Panel({
     >
       {(title || action) && (
         <div className="mb-4 flex items-start justify-between gap-4">
-          {title ? <h2 id={panelId} className="text-base font-semibold text-ink">{title}</h2> : <div />}
+          {title ? (typeof title === "string" ? <h2 id={panelId} className="text-base font-semibold text-ink">{title}</h2> : <h2 className="text-base font-semibold text-ink">{title}</h2>) : <div />}
           {action}
         </div>
       )}
@@ -109,7 +109,7 @@ export function Metric({
   animate,
   className
 }: {
-  label: string;
+  label: ReactNode;
   value: ReactNode;
   hint?: string;
   animate?: boolean;
@@ -122,7 +122,6 @@ export function Metric({
       animate={animate ? { opacity: 1, y: 0 } : undefined}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       role="group"
-      aria-label={label}
     >
       <p className="text-xs font-medium uppercase tracking-wide text-muted">{label}</p>
       <p className="mt-1 truncate text-2xl font-semibold text-ink">{value}</p>

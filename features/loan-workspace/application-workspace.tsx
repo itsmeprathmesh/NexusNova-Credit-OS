@@ -17,6 +17,7 @@ import {
 } from "@/services/intelligence";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { useDemoMode } from "@/contexts/demo-mode";
+import { AiTooltip } from "@/features/judge-experience";
 import { Badge, Button, Metric, Panel, ProgressBar, RiskBadge } from "@/components/ui/primitives";
 import { AiReadinessPanel } from "./ai-readiness-panel";
 import { AiCreditCommittee } from "./ai-credit-committee";
@@ -147,20 +148,20 @@ export function ApplicationWorkspace({
       <AIThinkingPanel isAnalyzing={false} />
 
       <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <Panel title="Credit Intelligence Summary">
+        <Panel title={<span className="inline-flex items-center gap-2">Credit Intelligence Summary <AiTooltip tooltipKey="financial-health" icon="brain" /></span>}>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-lg border border-line p-4">
-              <Metric label="Financial Health" value={health.score} hint={health.reason} />
+              <Metric label={<span className="inline-flex items-center gap-1">Financial Health <AiTooltip tooltipKey="financial-health" /></span>} value={health.score} hint={health.reason} />
               <ProgressBar value={health.score} className="mt-4" />
               <RiskBadge band={health.band} className="mt-3" />
             </div>
             <div className="rounded-lg border border-line p-4">
-              <Metric label="Repayment Risk" value={repayment.score} hint={repayment.reason} />
+              <Metric label={<span className="inline-flex items-center gap-1">Repayment Risk <AiTooltip tooltipKey="repayment-risk" /></span>} value={repayment.score} hint={repayment.reason} />
               <ProgressBar value={repayment.score} className="mt-4" />
               <RiskBadge band={repayment.band} className="mt-3" />
             </div>
             <div className="rounded-lg border border-line p-4">
-              <Metric label="Fraud Risk" value={fraud.score} hint={fraud.reason} />
+              <Metric label={<span className="inline-flex items-center gap-1">Fraud Risk <AiTooltip tooltipKey="fraud-risk" /></span>} value={fraud.score} hint={fraud.reason} />
               <ProgressBar value={fraud.score} className="mt-4" />
               <RiskBadge band={fraud.band} className="mt-3" />
             </div>
