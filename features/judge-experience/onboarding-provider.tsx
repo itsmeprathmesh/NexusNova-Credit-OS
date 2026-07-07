@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useRef,
   type ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
@@ -89,15 +90,22 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [stored, setStored] = useState<StoredOnboarding>(loadStored);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showFinish, setShowFinish] = useState(false);
-  const [initialized, setInitialized] = useState(false);
+  const autoOpenTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!stored.welcomeDismissed && !stored.completed && !initialized) {
-      setInitialized(true);
-      const timer = setTimeout(() => setShowWelcome(true), 600);
-      return () => clearTimeout(timer);
-    }
-  }, [stored.welcomeDismissed, stored.completed, initialized]);
+    if (stored.welcomeDismissed || stored.completed) return;
+    if (autoOpenTimer.current) return;
+    autoOpenTimer.current = setTimeout(() => {
+      setShowWelcome(true);
+      autoOpenTimer.current = null;
+    }, 1200);
+    return () => {
+      if (autoOpenTimer.current) {
+        clearTimeout(autoOpenTimer.current);
+        autoOpenTimer.current = null;
+      }
+    };
+  }, [stored.welcomeDismissed, stored.completed]);
 
   useEffect(() => {
     saveStored(stored);

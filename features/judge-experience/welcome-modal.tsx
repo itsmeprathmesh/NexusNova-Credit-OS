@@ -2,47 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Eye,
-  Sparkles,
-  Braces,
-  BarChart,
-  Shield,
-  FileText,
-  Users,
-  Clock,
-  Monitor,
-  CheckCircle,
-  X,
-} from "lucide-react";
+import { Eye, Clock, X } from "lucide-react";
 import { useOnboarding } from "./onboarding-provider";
-import { TOUR_STEPS } from "./guide-config";
-
-const FEATURE_ICONS: Record<string, typeof Eye> = {
-  "Welcome to NexusNova": Monitor,
-  "Customer Dashboard": Users,
-  "Loan Application": FileText,
-  "Document Upload": Braces,
-  "Application Tracker": Clock,
-  "Command Center": Monitor,
-  "Application Workspace": Eye,
-  "Production Credit Memo": FileText,
-  "Customer 360": Users,
-  "Portfolio Intelligence": BarChart,
-  "Audit Trail": Shield,
-  "Reporting Center": FileText,
-  "Executive Dashboard": BarChart,
-};
 
 export function WelcomeModal() {
   const { showWelcome, dismissWelcome, startOnboardingTour } = useOnboarding();
   const [dontShowAgain, setDontShowAgain] = useState(false);
-
-  const totalEstimatedMinutes = TOUR_STEPS.reduce((acc, s) => {
-    const min = parseInt(s.estimatedTime ?? "30");
-    return acc + min;
-  }, 0);
-  const estimatedTotal = Math.ceil(totalEstimatedMinutes / 60);
 
   return (
     <AnimatePresence>
@@ -83,43 +48,18 @@ export function WelcomeModal() {
                   <Eye className="h-7 w-7 text-trust" />
                 </div>
                 <h1 className="text-xl font-semibold text-ink">
-                  Welcome to the Judge Experience
+                  Welcome to NexusNova Credit Intelligence OS
                 </h1>
                 <p className="mt-2 text-sm text-muted max-w-sm leading-relaxed">
-                  Explore NexusNova Credit Intelligence OS through a curator-led
-                  tour designed for IDBI Innovate 2026 judges.
+                  Explore the platform through a curator-led tour designed for
+                  IDBI Innovate 2026 judges.
                 </p>
               </div>
 
-              <div className="mb-5 grid grid-cols-2 gap-2">
-                {TOUR_STEPS.slice(0, 8).map((step) => {
-                  const Icon = FEATURE_ICONS[step.title] ?? Sparkles;
-                  return (
-                    <div
-                      key={step.pageId}
-                      className="flex items-center gap-2 rounded-lg border border-line/40 bg-slate-50/50 px-3 py-2"
-                    >
-                      <Icon className="h-3.5 w-3.5 shrink-0 text-trust/70" />
-                      <span className="text-[11px] font-medium text-ink truncate">
-                        {step.title}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="flex items-center justify-center gap-4 mb-5 text-xs text-muted">
+              <div className="flex items-center justify-center gap-4 mb-6 text-xs text-muted">
                 <span className="flex items-center gap-1">
                   <Clock className="h-3.5 w-3.5" />
-                  ~{estimatedTotal} min
-                </span>
-                <span className="flex items-center gap-1">
-                  <Monitor className="h-3.5 w-3.5" />
-                  {TOUR_STEPS.length} pages
-                </span>
-                <span className="flex items-center gap-1">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  8 AI features
+                  Estimated Demo Time: 5–7 minutes
                 </span>
               </div>
 
@@ -141,13 +81,13 @@ export function WelcomeModal() {
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-trust px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-trust/90 active:scale-[0.98]"
                 >
                   <Eye className="h-4 w-4" />
-                  Start Guided Tour
+                  Start Guided Demo
                 </button>
                 <button
                   onClick={() => dismissWelcome(dontShowAgain)}
                   className="flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-white px-5 py-2.5 text-sm font-medium text-muted transition-all hover:bg-slate-50 hover:text-ink active:scale-[0.98]"
                 >
-                  Explore on My Own
+                  Explore Freely
                 </button>
               </div>
             </div>
