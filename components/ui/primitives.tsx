@@ -2,6 +2,7 @@
 
 import { type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode, forwardRef } from "react";
 import { motion } from "framer-motion";
+import { ShieldCheck, FileText, ClipboardCheck, TrendingUp } from "lucide-react";
 import type { RiskBand } from "@/domain/types";
 import { cn } from "@/lib/utils";
 import { riskLabel } from "@/lib/format";
@@ -162,19 +163,63 @@ export function EmptyState({
   icon,
   title,
   description,
-  action
+  action,
+  compact
 }: {
   icon?: ReactNode;
   title: string;
   description: string;
   action?: ReactNode;
+  compact?: boolean;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.06] bg-panel px-6 py-14 text-center" role="status" aria-live="polite">
-      {icon && <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-white/[0.04] text-muted">{icon}</div>}
-      <h3 className="text-lg font-semibold text-ink">{title}</h3>
-      <p className="mt-2 max-w-sm text-sm leading-6 text-muted">{description}</p>
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.06] bg-panel text-center",
+        compact ? "px-6 py-10" : "px-6 py-14"
+      )}
+      role="status"
+      aria-live="polite"
+    >
+      {icon && (
+        <div className={cn(
+          "grid place-items-center rounded-2xl bg-white/[0.04] text-muted",
+          compact ? "mb-4 h-12 w-12" : "mb-5 h-14 w-14"
+        )}>
+          {icon}
+        </div>
+      )}
+      <h3 className={cn("font-semibold text-ink", compact ? "text-base" : "text-lg")}>{title}</h3>
+      <p className={cn("mt-2 max-w-sm text-sm leading-6 text-muted", compact && "max-w-xs")}>{description}</p>
       {action && <div className="mt-6">{action}</div>}
     </div>
   );
 }
+
+export const emptyStatePresets = {
+  noAlerts: {
+    icon: <ShieldCheck className="h-6 w-6" />,
+    title: "No alerts to review",
+    description: "All MSME applications are within normal parameters. No escalations or compliance flags at this time."
+  },
+  noFraud: {
+    icon: <ShieldCheck className="h-6 w-6" />,
+    title: "No fraud indicators detected",
+    description: "All recent applications have passed fraud screening. No suspicious patterns identified across the portfolio."
+  },
+  noDocuments: {
+    icon: <FileText className="h-6 w-6" />,
+    title: "No additional documents required",
+    description: "All required documents have been submitted and verified. No customer follow-up needed."
+  },
+  noApprovals: {
+    icon: <ClipboardCheck className="h-6 w-6" />,
+    title: "No pending approvals",
+    description: "All applications in your queue have been reviewed. Check back when new submissions arrive."
+  },
+  portfolioHealthy: {
+    icon: <TrendingUp className="h-6 w-6" />,
+    title: "Portfolio healthy",
+    description: "All active MSME accounts are performing within expected risk parameters. No interventions required."
+  },
+} as const;

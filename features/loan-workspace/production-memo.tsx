@@ -57,7 +57,7 @@ export function ProductionCreditMemo({
             <p className="text-sm font-semibold uppercase tracking-wide text-muted">Production Credit Memo</p>
             <h2 className="mt-1 text-2xl font-semibold">{msme.name}</h2>
             <p className="mt-2 text-sm text-muted">
-              {application.id} · Generated {new Date(now).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} · Bank Confidential
+              {application.id} · Generated {new Date(now).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} · MSME-Confidential
             </p>
           </div>
           <Badge tone="info">Final · audit-ready</Badge>
@@ -236,7 +236,7 @@ export function ProductionCreditMemo({
         ))}
       </Section>
 
-      <Section id="12" title="Document Review">
+      <Section id="12" title="Alternate Data Intelligence">
         <div className="space-y-3">
           {documents.map((doc) => (
             <div key={doc.id} className="flex items-center justify-between rounded-lg border border-line p-4">

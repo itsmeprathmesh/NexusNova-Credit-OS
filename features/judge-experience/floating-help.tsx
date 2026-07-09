@@ -119,7 +119,7 @@ export function FloatingHelp() {
                 </div>
                 <div>
                   <h2 className="text-sm font-semibold text-ink">Judge Guide</h2>
-                  <p className="text-[10px] text-muted">NexusNova Credit Intelligence OS</p>
+                  <p className="text-[10px] text-muted">NexusNova MSME Financial Health Card</p>
                 </div>
               </div>
               <button

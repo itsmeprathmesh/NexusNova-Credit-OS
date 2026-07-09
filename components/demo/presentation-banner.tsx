@@ -20,7 +20,7 @@ export function PresentationBanner() {
           <div className="relative flex items-center justify-center gap-3 bg-gradient-to-r from-trust/5 via-trust/10 to-growth/5 px-4 py-2.5 text-center text-sm">
             <Sparkles className="h-4 w-4 shrink-0 text-trust" aria-hidden="true" />
             <span className="font-medium text-ink">
-              <span className="font-semibold text-trust">Demo Mode</span> — Exploring NexusNova Credit Intelligence OS
+              <span className="font-semibold text-trust">Demo Mode</span> — NexusNova MSME Financial Health Card
             </span>
             <span className="hidden text-xs text-muted sm:inline">
               IDBI Innovate 2026 PS-3

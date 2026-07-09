@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -12,6 +12,23 @@ import {
   Sparkles,
   TrendingUp,
   UserRound,
+  Activity,
+  BarChart3,
+  Building2,
+  CreditCard,
+  FileText,
+  Globe,
+  Handshake,
+  IndianRupee,
+  ShieldCheck,
+  Smartphone,
+  Users,
+  Zap,
+  ChevronRight,
+  GraduationCap,
+  Lightbulb,
+  RefreshCw,
+  Target,
 } from "lucide-react";
 import { seedDemoData, isSeeded } from "@/services/demo-seed";
 import { computePortfolioHealth, computeSectorSummaries } from "@/services/portfolio-intelligence";
@@ -23,39 +40,53 @@ import { Badge } from "@/components/ui/primitives";
 import { FeatureHighlight } from "@/components/demo/feature-highlight";
 import { useDemoMode } from "@/contexts/demo-mode";
 import { useJudge, FeatureDiscoveryBar, RecommendedNext } from "@/features/judge-experience";
+import { FinancialHealthCard, AlternateDataGrid, CreditVisibilityScore, NtcDetection, EcosystemIntegrations } from "@/components/financial-health";
+import { computeAlternateDataSignals, computeNtcNtbProfile } from "@/services/alternate-data";
+import { cn } from "@/lib/utils";
 
 const roles = [
   {
     label: "Customer",
     href: "/customer/login",
     icon: UserRound,
-    description: "Apply for a loan, upload documents, track status, and get BANK AI support.",
+    description: "Connect alternate data sources, generate your Financial Health Card, and become loan-ready.",
   },
   {
     label: "Loan Officer",
     href: "/command-center?role=loan-officer",
     icon: ClipboardCheck,
     description:
-      "Review urgent MSME loan cases, inspect evidence, run stress scenarios, and record decisions.",
+      "Assess MSMEs with alternate data intelligence, evaluate financial health, and make informed credit decisions.",
   },
   {
     label: "Manager",
     href: "/command-center?role=manager",
     icon: BriefcaseBusiness,
     description:
-      "Monitor portfolio risk, early warnings, exposure drift, and dynamic credit limit changes.",
+      "Monitor portfolio health, alternate data coverage, credit visibility trends, and dynamic credit limits.",
   },
 ];
 
+const customerJourney = [
+  { step: "Connect GST", icon: FileText, desc: "Verify GST returns and filing consistency" },
+  { step: "Connect UPI", icon: Smartphone, desc: "Analyse real-time payment collections" },
+  { step: "Connect Bank (AA)", icon: Building2, desc: "Secure account aggregator integration" },
+  { step: "Connect EPFO", icon: Users, desc: "Validate payroll and employment data" },
+  { step: "Generate Health Card", icon: Activity, desc: "AI-powered unified credit assessment" },
+  { step: "Become Loan Ready", icon: Handshake, desc: "Apply with confidence and transparency" },
+];
+
 export default function HomePage() {
-  const { isDemoMode, enableDemoMode } = useDemoMode();
+  const { isDemoMode, enableDemoMode, startOnboarding } = useDemoMode();
   const { startTour, toggleJudgeMode } = useJudge();
   const demoActive = isDemoMode || isSeeded();
+  const [msmeIndex, setMsmeIndex] = useState(0);
 
   const handleDemo = useCallback(() => {
     seedDemoData();
     enableDemoMode();
-  }, [enableDemoMode]);
+    setTimeout(() => startOnboarding(), 300);
+  }, [enableDemoMode, startOnboarding]);
 
   const handleFullDemo = useCallback(() => {
     seedDemoData();
@@ -63,6 +94,13 @@ export default function HomePage() {
     toggleJudgeMode();
     setTimeout(() => startTour(), 500);
   }, [enableDemoMode, toggleJudgeMode, startTour]);
+
+  const currentMsme = msmes[msmeIndex];
+  const currentSignals = financialSignals[msmeIndex];
+  const ntcProfile = useMemo(
+    () => computeNtcNtbProfile(currentMsme, currentSignals),
+    [currentMsme, currentSignals]
+  );
 
   const health = useMemo(
     () => computePortfolioHealth(msmes, portfolio, financialSignals),
@@ -78,26 +116,30 @@ export default function HomePage() {
 
   const liveMetrics = [
     {
-      label: "Portfolio Exposure",
-      value: health.totalExposure,
-      format: true,
-      hint: `${health.msmeCount} MSMEs`,
-    },
-    {
-      label: "Risk Score",
+      label: "Financial Health Score",
       value: health.overallScore,
       suffix: "%",
       hint: health.band,
+      icon: Activity,
+    },
+    {
+      label: "Portfolio Exposure",
+      value: health.totalExposure,
+      format: true,
+      hint: `${health.msmeCount} MSMEs evaluated`,
+      icon: IndianRupee,
     },
     {
       label: "Sectors Covered",
       value: sectors.length,
       hint: "Industry verticals",
+      icon: BarChart3,
     },
     {
       label: "Active Pipeline",
       value: activeApps,
       hint: "Applications in review",
+      icon: TrendingUp,
     },
   ];
 
@@ -108,9 +150,9 @@ export default function HomePage() {
         <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
           <div className="flex items-center gap-3">
             <div className="grid h-9 w-9 place-items-center rounded-xl bg-trust text-canvas shadow-glow">
-              <ClipboardCheck className="h-5 w-5" />
+              <Activity className="h-5 w-5" />
             </div>
-            <span className="text-sm font-semibold text-ink">NexusNova OS</span>
+            <span className="text-sm font-semibold text-ink">NexusNova</span>
             {isDemoMode && (
               <FeatureHighlight label="Demo" icon="zap" className="ml-2" />
             )}
@@ -143,54 +185,65 @@ export default function HomePage() {
 
           <ScaleInView delay={0.1}>
             <h1 className="max-w-4xl text-center text-5xl font-bold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-              Credit Intelligence{" "}
+              AI-Powered MSME{" "}
               <span className="text-gradient">
-                Operating System
+                Financial Health Card
               </span>
             </h1>
           </ScaleInView>
 
           <FadeInView delay={0.2}>
-            <p className="mt-6 max-w-2xl text-center text-lg leading-8 text-muted">
-              A banking-grade MSME lending workspace with explainable AI, human
-              decision controls, portfolio intelligence, and enterprise audit.
+            <p className="mt-6 max-w-3xl text-center text-lg leading-8 text-muted">
+              Evaluate credit-invisible MSMEs using alternate data — GST, UPI, Account Aggregator,
+              EPFO, and utility bills — instead of traditional financial documents. One unified
+              AI-powered Financial Health Card for every MSME.
             </p>
           </FadeInView>
 
-          <StaggerContainer className="mt-12 grid w-full gap-5 md:grid-cols-4">
-            {liveMetrics.map((metric) => (
-              <StaggerItem key={metric.label}>
-                <GlassCard className="text-center card-glow">
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted/80">
-                    {metric.label}
-                  </p>
-                  <p className="mt-2 text-4xl font-bold text-ink tracking-tight">
-                    {metric.format ? (
-                      <span>
-                        <CountUp value={Math.round(metric.value / 100000)} />
-                        <span className="text-xl text-muted">L</span>
-                      </span>
-                    ) : (
-                      <CountUp value={metric.value} suffix={metric.suffix ?? ""} />
-                    )}
-                  </p>
-                  <p className="mt-1.5 text-xs text-muted">{metric.hint}</p>
-                </GlassCard>
-              </StaggerItem>
-            ))}
+          <div className="mt-6 flex items-center gap-2 rounded-2xl border border-trust/20 bg-trust-light/30 px-5 py-3">
+            <Sparkles className="h-4 w-4 text-trust" />
+            <span className="text-sm text-muted">
+              No ITR? No Audited Financials? No Problem. Our AI assesses MSMEs through their
+              digital footprint.
+            </span>
+          </div>
+
+          <StaggerContainer className="mt-12 grid w-full gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {liveMetrics.map((metric) => {
+              const Icon = metric.icon || Activity;
+              return (
+                <StaggerItem key={metric.label}>
+                  <GlassCard className="text-center card-glow">
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted/80">
+                      {metric.label}
+                    </p>
+                    <p className="mt-2 text-4xl font-bold text-ink tracking-tight">
+                      {metric.format ? (
+                        <span>
+                          <CountUp value={Math.round(metric.value / 100000)} />
+                          <span className="text-xl text-muted">L</span>
+                        </span>
+                      ) : (
+                        <CountUp value={metric.value} suffix={metric.suffix ?? ""} />
+                      )}
+                    </p>
+                    <p className="mt-1.5 text-xs text-muted">{metric.hint}</p>
+                  </GlassCard>
+                </StaggerItem>
+              );
+            })}
           </StaggerContainer>
         </section>
       </div>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-10 relative z-10">
+      <section className="relative z-10 mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-10">
         <FeatureDiscoveryBar />
         {isDemoMode && (
           <FadeInView>
             <div className="mb-8 flex flex-wrap items-center gap-3 rounded-2xl border border-trust/20 bg-trust-light/40 px-5 py-4">
               <Sparkles className="h-5 w-5 text-trust" aria-hidden="true" />
               <span className="text-sm font-medium text-ink">
-                Demo mode active — all features are fully functional with
-                pre-seeded data.
+                Demo mode active — explore the Financial Health Card for credit-invisible MSMEs.
               </span>
               <button
                 onClick={startTour}
@@ -203,12 +256,86 @@ export default function HomePage() {
           </FadeInView>
         )}
 
+        {demoActive ? (
+          <>
+            <div className="mb-8">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-bold text-ink">MSME Financial Health Card</h2>
+                  <p className="mt-1 text-sm text-muted">
+                    AI-powered unified credit assessment using alternate data
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">MSME:</span>
+                  <select
+                    value={msmeIndex}
+                    onChange={(e) => setMsmeIndex(Number(e.target.value))}
+                    className="rounded-xl border border-white/[0.1] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-ink outline-none"
+                  >
+                    {msmes.map((m, i) => (
+                      <option key={m.id} value={i}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <FinancialHealthCard
+              msme={currentMsme}
+              signals={currentSignals}
+              className="mb-8"
+            />
+
+            <AlternateDataGrid
+              signals={currentSignals}
+              className="mb-8"
+            />
+
+            <div className="mb-8 grid gap-6 lg:grid-cols-2">
+              <CreditVisibilityScore msme={currentMsme} signals={currentSignals} />
+              <NtcDetection msme={currentMsme} signals={currentSignals} />
+            </div>
+
+            <EcosystemIntegrations className="mb-8" />
+
+            <div className="mb-8 rounded-2xl border border-trust/20 bg-trust-light/20 p-6">
+              <div className="flex items-center gap-2.5">
+                <Lightbulb className="h-5 w-5 text-trust" />
+                <h3 className="text-base font-semibold text-ink">Customer Journey</h3>
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+                {customerJourney.map((step, i) => {
+                  const Icon = step.icon;
+                  return (
+                    <div
+                      key={step.step}
+                      className="relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-center"
+                    >
+                      {i < customerJourney.length - 1 && (
+                        <ChevronRight className="absolute -right-1.5 top-1/2 hidden h-4 w-4 -translate-y-1/2 text-muted/30 lg:block" />
+                      )}
+                      <div className="mx-auto grid h-10 w-10 place-items-center rounded-xl bg-trust-light text-trust">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <p className="mt-2 text-sm font-semibold text-ink">{step.step}</p>
+                      <p className="mt-0.5 text-[10px] text-muted">{step.desc}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        ) : null}
+
         <StaggerContainer className="grid gap-6 md:grid-cols-3">
           {roles.map((role, i) => {
             const Icon = role.icon;
             const highlights = [
               { icon: "ai" as const, label: "AI-Powered" },
-              { icon: "analytics" as const, label: "Real-time" },
+              { icon: "analytics" as const, label: "Alternate Data" },
               { icon: "shield" as const, label: "Secure" },
             ];
             return (
@@ -253,8 +380,8 @@ export default function HomePage() {
                   </p>
                   <p className="text-sm text-muted">
                     {demoActive
-                      ? "Complete workflow seeded. Explore Customer Portal, Loan Officer Workspace, and Portfolio."
-                      : "Seed realistic data to experience the complete workflow in under five minutes."}
+                      ? "Complete PS-3 workflow seeded. Explore the Financial Health Card, Alternate Data Intelligence, and MSME credit assessment."
+                      : "Seed realistic data to experience AI-powered alternate data assessment for credit-invisible MSMEs in under five minutes."}
                   </p>
                 </div>
               </div>
@@ -285,19 +412,19 @@ export default function HomePage() {
                   {
                     label: "Customer",
                     href: "/customer/dashboard",
-                    desc: "View pre-seeded application",
+                    desc: "View alternate data and health card",
                     icon: UserRound,
                   },
                   {
                     label: "Officer",
                     href: "/applications/app-1001?role=loan-officer",
-                    desc: "Review AI + committee analysis",
+                    desc: "Review AI financial assessment",
                     icon: ClipboardCheck,
                   },
                   {
                     label: "Manager",
                     href: "/portfolio?role=manager",
-                    desc: "Portfolio intelligence dashboard",
+                    desc: "Portfolio health dashboard",
                     icon: TrendingUp,
                   },
                 ].map((item) => {
@@ -330,9 +457,24 @@ export default function HomePage() {
 
         <FadeInView delay={0.4}>
           <footer className="mt-16 text-center text-sm text-muted">
+            <div className="mb-4 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/ps-3-alignment"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.06] px-3 py-1.5 text-xs font-medium text-muted transition-all hover:border-trust/20 hover:text-trust"
+              >
+                <Target className="h-3 w-3" />
+                PS-3 Alignment
+              </Link>
+              <Link
+                href="/business-impact"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.06] px-3 py-1.5 text-xs font-medium text-muted transition-all hover:border-trust/20 hover:text-trust"
+              >
+                <TrendingUp className="h-3 w-3" />
+                Business Impact
+              </Link>
+            </div>
             <p>
-              NexusNova Credit Intelligence OS · IDBI Innovate 2026 PS-3 · Bank
-              Confidential
+              NexusNova MSME Financial Health Card · IDBI Innovate 2026 PS-3 · MSME-Confidential
             </p>
           </footer>
         </FadeInView>

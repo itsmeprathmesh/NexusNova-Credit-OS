@@ -2,7 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  RotateCcw,
+  Clock,
+  Target,
+  TrendingUp,
+} from "lucide-react";
 import { useDemoMode } from "@/contexts/demo-mode";
 
 export function WalkthroughOverlay() {
@@ -10,10 +19,12 @@ export function WalkthroughOverlay() {
     isOnboardingActive,
     currentStep,
     totalSteps,
+    demoSteps,
     nextStep,
     prevStep,
     goToStep,
     endOnboarding,
+    startOnboarding,
   } = useDemoMode();
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
 
@@ -23,16 +34,7 @@ export function WalkthroughOverlay() {
       return;
     }
 
-    const targets = [
-      "",
-      '[href="/command-center"]',
-      '[href="/applications"]',
-      '[href="/portfolio"]',
-      '[href="/audit"]',
-      "",
-    ];
-
-    const sel = targets[currentStep];
+    const sel = demoSteps[currentStep]?.target;
     if (!sel) {
       setTargetRect(null);
       return;
@@ -46,9 +48,14 @@ export function WalkthroughOverlay() {
     } else {
       setTargetRect(null);
     }
-  }, [currentStep, isOnboardingActive]);
+  }, [currentStep, isOnboardingActive, demoSteps]);
 
   if (!isOnboardingActive) return null;
+
+  const step = demoSteps[currentStep];
+  const isFirst = currentStep === 0;
+  const isLast = currentStep === totalSteps - 1;
+  const progress = ((currentStep + 1) / totalSteps) * 100;
 
   return (
     <AnimatePresence>
@@ -58,12 +65,12 @@ export function WalkthroughOverlay() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 pb-12 sm:items-center sm:pb-0"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 pb-8 sm:items-center sm:pb-0"
           onClick={(e) => {
             if (e.target === e.currentTarget) endOnboarding();
           }}
           role="dialog"
-          aria-label="Feature walkthrough"
+          aria-label="Demo walkthrough"
           aria-modal="true"
         >
           <motion.div
@@ -71,43 +78,83 @@ export function WalkthroughOverlay() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            className="relative mx-4 w-full max-w-lg rounded-2xl border border-white/20 bg-white p-6 shadow-glow sm:mx-0"
+            className="relative mx-4 w-full max-w-2xl rounded-2xl border border-white/20 bg-white p-6 shadow-glow sm:mx-0"
           >
             <button
               onClick={endOnboarding}
               className="absolute right-4 top-4 rounded-md p-1 text-muted transition-colors hover:bg-slate-100 hover:text-ink"
-              aria-label="Close walkthrough"
+              aria-label="Exit walkthrough"
             >
               <X className="h-4 w-4" />
             </button>
 
-            <div className="mb-3 flex items-center gap-2">
-              <span
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-trust/10 text-xs font-bold text-trust"
-                aria-hidden="true"
-              >
-                {currentStep + 1}
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-wider text-trust">
-                {currentStep === 0
-                  ? "Welcome"
-                  : currentStep === totalSteps - 1
-                    ? "You're Ready"
-                    : `Feature ${currentStep} of ${totalSteps - 2}`}
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-trust/10 text-xs font-bold text-trust">
+                  {currentStep + 1}
+                </span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-trust">
+                  Step {currentStep + 1} of {totalSteps}
+                </span>
+              </div>
+              <span className="flex items-center gap-1 text-[10px] text-muted">
+                <Clock className="h-3 w-3" />
+                {step?.estimatedTime ?? "30 sec"}
               </span>
             </div>
 
-            <h2 className="text-lg font-semibold text-ink">
-              {currentStep === 0
-                ? "Welcome to NexusNova"
-                : currentStep === totalSteps - 1
-                  ? "Pro Tips"
-                  : stepTitles[currentStep]}
+            <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-slate-200">
+              <motion.div
+                initial={{ width: `${((currentStep) / totalSteps) * 100}%` }}
+                animate={{ width: `${progress}%` }}
+                className="h-full rounded-full bg-gradient-to-r from-trust to-growth"
+                transition={{ duration: 0.4 }}
+              />
+            </div>
+
+            <h2 className="text-xl font-bold text-ink">
+              {step?.title ?? "Welcome"}
             </h2>
 
             <p className="mt-2 text-sm leading-relaxed text-muted">
-              {stepDescriptions[currentStep]}
+              {step?.description ?? ""}
             </p>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-3">
+                <div className="flex items-center gap-1.5">
+                  <Target className="h-3.5 w-3.5 text-trust" />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-trust/80">
+                    Purpose
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-muted">
+                  {step?.purpose ?? ""}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-3">
+                <div className="flex items-center gap-1.5">
+                  <TrendingUp className="h-3.5 w-3.5 text-growth" />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-growth/80">
+                    Business Value
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-muted">
+                  {step?.businessValue ?? ""}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-3">
+                <div className="flex items-center gap-1.5">
+                  <RotateCcw className="h-3.5 w-3.5 text-caution" />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-caution/80">
+                    Next Action
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-muted">
+                  {step?.nextAction ?? ""}
+                </p>
+              </div>
+            </div>
 
             <div className="mt-6 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
@@ -135,7 +182,7 @@ export function WalkthroughOverlay() {
                     Back
                   </button>
                 )}
-                {currentStep < totalSteps - 1 ? (
+                {!isLast ? (
                   <button
                     onClick={nextStep}
                     className="flex items-center gap-1 rounded-lg bg-trust px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-trust/90 active:scale-[0.97]"
@@ -149,7 +196,7 @@ export function WalkthroughOverlay() {
                     className="flex items-center gap-1 rounded-lg bg-growth px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-growth/90 active:scale-[0.97]"
                   >
                     <Sparkles className="h-4 w-4" />
-                    Get Started
+                    Explore Freely
                   </button>
                 )}
               </div>
@@ -160,19 +207,3 @@ export function WalkthroughOverlay() {
     </AnimatePresence>
   );
 }
-
-const stepTitles: Record<number, string> = {
-  1: "Command Center",
-  2: "Smart Application Review",
-  3: "Portfolio Intelligence",
-  4: "Audit Trail",
-};
-
-const stepDescriptions: Record<number, string> = {
-  0: "An AI-powered MSME lending intelligence platform built for IDBI Innovate 2026. Explore AI-driven recommendations, enterprise visualizations, and complete audit trails — all in one place.",
-  1: "The Command Center gives you a real-time operational hub with AI-powered alerts, pending task summaries, and quick-decision widgets. Press 1 to jump here anytime.",
-  2: "Every loan application includes full AI explainability — confidence scores, risk factor breakdowns, improvement suggestions, and a simulated credit committee with multiple reviewer personas.",
-  3: "Portfolio Intelligence delivers enterprise-grade visualizations: risk heatmaps, sector comparisons, exposure treemaps, risk migration timelines, and branch performance analytics.",
-  4: "The Audit Trail ensures complete compliance with timestamps, AI rationale snapshots, role-based access logs, and exportable reports for regulatory review.",
-  5: "Press ? anytime for keyboard shortcuts, D to toggle demo mode, and ⌘K (Ctrl+K on Windows) for instant search across MSMEs, applications, and reports.",
-};

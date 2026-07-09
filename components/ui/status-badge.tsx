@@ -9,46 +9,46 @@ type Size = "sm" | "md" | "lg";
 
 const toneStyles: Record<StatusTone, Record<StatusVariant, string>> = {
   neutral: {
-    filled: "bg-slate-700 text-white border-transparent",
-    outlined: "border-slate-300 text-slate-700 bg-transparent",
-    subtle: "bg-slate-100 text-slate-700 border-transparent",
-    dot: "bg-slate-400 border-transparent"
+    filled: "bg-white/[0.12] text-ink border-transparent",
+    outlined: "border-white/[0.12] text-muted bg-transparent",
+    subtle: "bg-white/[0.04] text-muted border-transparent",
+    dot: "bg-muted border-transparent"
   },
   success: {
-    filled: "bg-emerald-600 text-white border-transparent",
-    outlined: "border-emerald-300 text-emerald-700 bg-transparent",
-    subtle: "bg-emerald-50 text-emerald-700 border-transparent",
-    dot: "bg-emerald-500 border-transparent"
+    filled: "bg-growth/20 text-growth border-transparent",
+    outlined: "border-growth/20 text-growth bg-transparent",
+    subtle: "bg-growth-light text-growth border-transparent",
+    dot: "bg-growth border-transparent"
   },
   warning: {
-    filled: "bg-amber-500 text-white border-transparent",
-    outlined: "border-amber-300 text-amber-800 bg-transparent",
-    subtle: "bg-amber-50 text-amber-800 border-transparent",
-    dot: "bg-amber-400 border-transparent"
+    filled: "bg-caution/20 text-caution border-transparent",
+    outlined: "border-caution/20 text-caution bg-transparent",
+    subtle: "bg-caution-light text-caution border-transparent",
+    dot: "bg-caution border-transparent"
   },
   danger: {
-    filled: "bg-red-600 text-white border-transparent",
-    outlined: "border-red-300 text-red-700 bg-transparent",
-    subtle: "bg-red-50 text-red-700 border-transparent",
-    dot: "bg-red-500 border-transparent"
+    filled: "bg-danger/20 text-danger border-transparent",
+    outlined: "border-danger/20 text-danger bg-transparent",
+    subtle: "bg-danger-light text-danger border-transparent",
+    dot: "bg-danger border-transparent"
   },
   info: {
-    filled: "bg-sky-600 text-white border-transparent",
-    outlined: "border-sky-300 text-sky-700 bg-transparent",
-    subtle: "bg-sky-50 text-sky-700 border-transparent",
-    dot: "bg-sky-500 border-transparent"
+    filled: "bg-trust/20 text-trust border-transparent",
+    outlined: "border-trust/20 text-trust bg-transparent",
+    subtle: "bg-trust-light text-trust border-transparent",
+    dot: "bg-trust border-transparent"
   },
   purple: {
-    filled: "bg-purple-600 text-white border-transparent",
-    outlined: "border-purple-300 text-purple-700 bg-transparent",
-    subtle: "bg-purple-50 text-purple-700 border-transparent",
-    dot: "bg-purple-500 border-transparent"
+    filled: "bg-purple-500/20 text-purple-400 border-transparent",
+    outlined: "border-purple-500/20 text-purple-400 bg-transparent",
+    subtle: "bg-purple-500/10 text-purple-400 border-transparent",
+    dot: "bg-purple-400 border-transparent"
   },
   slate: {
-    filled: "bg-slate-200 text-slate-800 border-transparent",
-    outlined: "border-slate-200 text-slate-600 bg-transparent",
-    subtle: "bg-slate-50 text-slate-600 border-transparent",
-    dot: "bg-slate-300 border-transparent"
+    filled: "bg-white/[0.08] text-muted border-transparent",
+    outlined: "border-white/[0.12] text-muted bg-transparent",
+    subtle: "bg-white/[0.04] text-muted border-transparent",
+    dot: "bg-muted border-transparent"
   }
 };
 
@@ -78,7 +78,7 @@ export function StatusBadge({ className, tone = "neutral", variant = "subtle", s
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-md border font-medium leading-none",
+        "inline-flex items-center rounded-lg border font-medium leading-none",
         toneStyles[tone][variant],
         sizeStyles[size],
         className

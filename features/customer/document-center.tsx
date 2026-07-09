@@ -2,12 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, FileUp, RefreshCw, UploadCloud } from "lucide-react";
+import { CheckCircle2, FileUp, RefreshCw, UploadCloud, Sparkles, Building2 } from "lucide-react";
 import { applications, documents, financialSignals } from "@/data/mock-data";
 import type { DocumentType, DocumentUploadStatus } from "@/domain/types";
 import { calculateCustomerReadiness } from "@/services/customer-support";
 import { addNotification, getOfficerRequests } from "@/services/app-data";
 import { Badge, Button, Panel } from "@/components/ui/primitives";
+import { GlassPanel } from "@/components/ui/glass-panel";
 
 const requiredDocuments: DocumentType[] = ["GST Returns", "Bank Statement", "Udyam", "PAN", "ITR", "Financial Statement"];
 const application = applications[0];
@@ -42,19 +43,28 @@ export function DocumentCenter() {
 
   return (
     <div className="space-y-5">
-      <Panel>
+      <GlassPanel className="p-6">
         <div className="flex items-start gap-4">
-          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-slate-100 text-trust">
-            <UploadCloud className="h-6 w-6" />
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-trust-light text-trust">
+            <Building2 className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold">Document center</h1>
+            <h1 className="text-2xl font-semibold">Business Information Review</h1>
             <p className="mt-2 text-sm leading-6 text-muted">
-              Upload documents requested by the bank. The officer is notified when documents are updated.
+              Review and upload business information documents. AI will extract key data automatically
+              — no manual data entry needed by the bank.
             </p>
           </div>
         </div>
-      </Panel>
+      </GlassPanel>
+
+      <div className="flex items-center gap-2 rounded-xl border border-trust/20 bg-trust-light/30 px-4 py-3">
+        <Sparkles className="h-4 w-4 text-trust" />
+        <span className="text-xs text-muted">
+          Our AI extracts key financial data from every document — turnover, GST filings, bank
+          balance, and more. No manual re-entry required.
+        </span>
+      </div>
 
       {officerRequests.length > 0 && (
         <div className="rounded-lg border border-caution/30 bg-caution/5 p-4">
@@ -100,7 +110,7 @@ export function DocumentCenter() {
                       {isRequested && <Badge tone="warning">Officer requested</Badge>}
                     </div>
                     <p className="mt-1 text-sm text-muted">
-                      {isUploading ? "Uploading..." : record ? `OCR confidence ${record.ocrConfidence}%` : "Not uploaded yet"}
+                      {isUploading ? "Uploading..." : record ? `AI confidence ${record.ocrConfidence}%` : "Not uploaded yet"}
                     </p>
                     {record?.issues.length ? <p className="mt-2 text-sm text-caution">{record.issues.join("; ")}</p> : null}
                   </div>
@@ -121,16 +131,16 @@ export function DocumentCenter() {
         })}
       </div>
 
-      <Panel title="BANK AI Readiness Tasks">
+      <Panel title="AI Review Summary">
         <div className="space-y-2">
           {readiness.nextActions.slice(0, 4).map((action) => (
-            <p key={action} className="rounded-lg bg-slate-50 p-3 text-sm font-medium text-ink">
+            <p key={action} className="rounded-lg bg-white/[0.02] border border-white/[0.06] p-3 text-sm font-medium text-ink">
               {action}
             </p>
           ))}
           {readiness.nextActions.length === 0 && (
-            <p className="rounded-lg bg-growth/5 p-3 text-sm font-medium text-growth">
-              All documents are in order. The bank will proceed with the review.
+            <p className="rounded-lg bg-growth/5 border border-growth/20 p-3 text-sm font-medium text-growth">
+              All information is in order. AI assessment can proceed.
             </p>
           )}
         </div>
@@ -139,7 +149,7 @@ export function DocumentCenter() {
             Track application status
           </Button>
           <Button type="button" variant="secondary" onClick={() => router.push("/customer/support")}>
-            Ask BANK AI
+            Ask AI
           </Button>
         </div>
       </Panel>

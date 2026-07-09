@@ -1,16 +1,24 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowUpRight, Clock, IndianRupee } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, Clock, IndianRupee, Sparkles, Eye } from "lucide-react";
 import { applications, msmes, portfolio, financialSignals } from "@/data/mock-data";
 import type { UserRole } from "@/domain/types";
+import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/format";
 import { Badge, Metric, Panel, RiskBadge } from "@/components/ui/primitives";
 import { AIBadge } from "@/components/ai/ai-status";
 import { ConfidenceIndicators } from "@/components/ai/confidence-indicator";
 import { computePortfolioHealth } from "@/services/portfolio-intelligence";
+import { FadeInView, ScaleInView, StaggerContainer, StaggerItem } from "@/components/ui/motion";
 
 function getMsme(msmeId: string) {
   return msmes.find((item) => item.id === msmeId);
 }
+
+const nextActions = [
+  { label: "Review AI Explainability", href: "/applications/APP-001", icon: Eye, description: "Understand how AI reached decisions" },
+  { label: "Generate Credit Memo", href: "/applications/APP-001/memo", icon: Sparkles, description: "Prepare officer assessment report" },
+  { label: "View Portfolio Analytics", href: "/portfolio", icon: ArrowUpRight, description: "Analyse portfolio health trends" },
+];
 
 export function CommandCenterView({ role }: { role: UserRole }) {
   const urgentApplications = applications.filter((application) => application.priority === "urgent");
@@ -27,132 +35,132 @@ export function CommandCenterView({ role }: { role: UserRole }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <AIBadge tone="complete">AI Portfolio Scan Active</AIBadge>
-          <AIBadge tone={health.band === "low" ? "complete" : "warning"}>
-            Health: {health.overallScore}%
-          </AIBadge>
+      <FadeInView>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <AIBadge tone="complete">AI Portfolio Scan Active</AIBadge>
+            <AIBadge tone={health.band === "low" ? "complete" : "warning"}>
+              Health: {health.overallScore}%
+            </AIBadge>
+          </div>
+          <span className="text-xs text-muted">{health.msmeCount} MSMEs monitored</span>
         </div>
-        <span className="text-xs text-muted">{health.msmeCount} MSMEs monitored</span>
-      </div>
+      </FadeInView>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Panel>
-          <Metric label="Portfolio Exposure" value={formatCurrency(totalExposure)} hint="Across monitored MSMEs" />
-        </Panel>
-        <Panel>
-          <Metric label="Urgent Applications" value={urgentApplications.length} hint="Action due today" />
-        </Panel>
-        <Panel>
-          <Metric label="Watchlist MSMEs" value={watchlist} hint="High or critical risk bands" />
-        </Panel>
-      </div>
+      <StaggerContainer>
+        <div className="grid gap-4 md:grid-cols-3">
+          <StaggerItem>
+            <Panel>
+              <Metric label="Portfolio Exposure" value={formatCurrency(totalExposure)} hint="Across monitored MSMEs" />
+            </Panel>
+          </StaggerItem>
+          <StaggerItem>
+            <Panel>
+              <Metric label="Urgent Applications" value={urgentApplications.length} hint="Action due today" />
+            </Panel>
+          </StaggerItem>
+          <StaggerItem>
+            <Panel>
+              <Metric label="Watchlist MSMEs" value={watchlist} hint="High or critical risk bands" />
+            </Panel>
+          </StaggerItem>
+        </div>
+      </StaggerContainer>
 
-      <ConfidenceIndicators
-        metrics={[
-          { label: "Portfolio Health", score: health.overallScore },
-          { label: "Sector Coverage", score: Math.round(health.msmeCount * 10) },
-          { label: "Early Warning Detection", score: Math.max(10, 100 - health.earlyWarningCount * 10) },
-          { label: "Data Completeness", score: 92 }
-        ]}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-        <Panel title={role === "manager" ? "Manager Command Center" : "Loan Officer Command Center"}>
-          <div className="space-y-3">
-            {urgentApplications.map((application) => {
-              const msme = getMsme(application.msmeId);
-
-              return (
-                <Link
-                  key={application.id}
-                  href={`/applications/${application.id}?role=${role}`}
-                  className="flex flex-col gap-3 rounded-lg border border-line p-4 transition hover:border-trust hover:bg-slate-50 md:flex-row md:items-center md:justify-between"
-                >
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-lg font-semibold">{msme?.name}</h2>
-                      <Badge tone="warning">Urgent</Badge>
-                      <Badge tone="info">{application.status}</Badge>
-                    </div>
-                    <p className="mt-2 text-sm text-muted">
-                      {application.product} for {formatCurrency(application.requestedAmount)} · {application.purpose}
-                    </p>
-                    <p className="mt-1 text-sm text-muted">
-                      {msme?.branch} · {application.slaHoursRemaining}h SLA remaining
-                    </p>
-                  </div>
-                  <ArrowUpRight className="h-5 w-5 text-trust" />
-                </Link>
-              );
-            })}
+      <Panel title="Performance Summary">
+        <div className="grid gap-6 md:grid-cols-2">
+          <div>
+            <Metric label="Portfolio Health Score" value={`${health.overallScore}%`} hint={`${health.msmeCount} MSMEs assessed across all branches`} />
+            <div className="mt-4">
+              <Metric label="Watchlist MSMEs" value={health.watchlistCount} hint="Accounts flagged as high or critical risk" />
+            </div>
           </div>
-        </Panel>
+          <div>
+            <Metric label="Total Exposure" value={formatCurrency(health.totalExposure)} hint="Aggregate across active MSME accounts" />
+            <div className="mt-4">
+              <Metric label="Early Warnings" value={health.earlyWarningCount} hint="Alerts requiring officer attention" />
+            </div>
+          </div>
+        </div>
+      </Panel>
 
-        <Panel title="SLA Breaches">
+      <Panel
+        title="Smart Actions"
+        action={<Badge tone="info">Recommended</Badge>}
+      >
+        <div className="grid gap-3 sm:grid-cols-3">
+          {nextActions.map((action) => {
+            const Icon = action.icon;
+            return (
+              <Link
+                key={action.href}
+                href={action.href}
+                className="group flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-trust/20 hover:shadow-glow card-lift"
+              >
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-trust-light text-trust transition-transform group-hover:scale-110">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-ink">{action.label}</p>
+                  <p className="mt-0.5 text-xs text-muted">{action.description}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </Panel>
+
+      <Panel
+        title="Financial Risk Assessment"
+        action={<Badge tone={health.band === "low" ? "success" : health.band === "medium" ? "warning" : "danger"}>{health.overallScore}%</Badge>}
+      >
+        <div className="grid gap-6 md:grid-cols-2">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted/80">Risk Distribution</p>
+            <div className="mt-3 space-y-2">
+              {(["low", "medium", "high", "critical"] as const).map((band) => {
+                const count = portfolio.filter((item) => item.riskBand === band).length;
+                if (count === 0) return null;
+                return (
+                  <div key={band} className="flex items-center gap-3">
+                    <RiskBadge band={band} />
+                    <div className="flex-1 h-2 rounded-full bg-white/[0.04] overflow-hidden">
+                      <div
+                        className={cn(
+                          "h-full rounded-full transition-all duration-1000",
+                          band === "low" && "bg-growth",
+                          band === "medium" && "bg-caution",
+                          band === "high" && "bg-danger",
+                          band === "critical" && "bg-danger/80"
+                        )}
+                        style={{ width: `${(count / portfolio.length) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted w-8 text-right">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
           <div className="space-y-4">
-            {urgentApplications.map((application) => (
-              <div key={application.id} className="flex items-start gap-3">
-                <Clock className="mt-1 h-5 w-5 text-amber-600" />
-                <div>
-                  <p className="font-semibold">{application.id}</p>
-                  <p className="text-sm text-muted">{application.slaHoursRemaining}h remaining before escalation threshold.</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Panel>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-2">
-        <Panel title="Early Warning Alerts">
-          <div className="space-y-3">
-            {alerts.map((alert) => (
-              <div key={`${alert.msme?.id}-${alert.warning}`} className="flex items-start justify-between gap-4 rounded-lg border border-line p-4">
-                <div className="flex gap-3">
-                  <AlertTriangle className="mt-1 h-5 w-5 text-amber-600" />
-                  <div>
-                    <p className="font-semibold">{alert.msme?.name}</p>
-                    <p className="mt-1 text-sm text-muted">{alert.warning}</p>
-                  </div>
-                </div>
-                <RiskBadge band={alert.riskBand} />
-              </div>
-            ))}
-          </div>
-        </Panel>
-
-        <Panel title="Portfolio Exposure">
-          <div className="space-y-3">
-            {portfolio.map((item) => {
-              const msme = getMsme(item.msmeId);
-
-              return (
+            <Metric label="Early Warnings" value={alerts.length} hint="Alerts requiring attention" />
+            <div className="max-h-48 space-y-2 overflow-y-auto">
+              {alerts.slice(0, 5).map((alert, i) => (
                 <Link
-                  key={item.msmeId}
-                  href={`/portfolio/${item.msmeId}?role=${role}`}
-                  className="flex items-center justify-between gap-4 rounded-lg border border-line p-4 transition hover:border-trust hover:bg-slate-50"
+                  key={i}
+                  href={`/portfolio/${alert.msme?.id}`}
+                  className="flex items-start gap-2 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2 text-xs transition-colors hover:bg-white/[0.04]"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="grid h-10 w-10 place-items-center rounded-lg bg-slate-100 text-trust">
-                      <IndianRupee className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-semibold">{msme?.name}</p>
-                      <p className="text-sm text-muted">{msme?.sector} · {msme?.branch}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold">{formatCurrency(item.exposure)}</p>
-                    <RiskBadge band={item.riskBand} className="mt-1" />
-                  </div>
+                  <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-caution" />
+                  <span className="text-muted">
+                    <span className="font-medium text-ink">{alert.msme?.name}</span> — {alert.warning}
+                  </span>
                 </Link>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </Panel>
-      </div>
+        </div>
+      </Panel>
     </div>
   );
 }

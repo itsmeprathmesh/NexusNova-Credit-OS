@@ -1,5 +1,5 @@
-import { AnalyticsLoading } from "@/components/ui/loading-shell";
+import { ReportLoading } from "@/components/ui/loading-shell";
 
 export default function Loading() {
-  return <AnalyticsLoading />;
+  return <ReportLoading />;
 }

@@ -79,6 +79,19 @@ export const msmes: MsmeProfile[] = [
     relationshipYears: 2
   },
   {
+    id: "msme-digibake",
+    name: "DigiBake Foods",
+    sector: "Food & Beverage",
+    branch: "IDBI Bangalore",
+    owner: "Kavya Ramesh",
+    city: "Bengaluru",
+    pan: "GGBPR1234H",
+    gstin: "29GGBPR1234H1Z5",
+    udyam: "UDYAM-KA-35-0023456",
+    businessAgeYears: 1,
+    relationshipYears: 0
+  },
+  {
     id: "msme-surya",
     name: "Surya Electronics",
     sector: "Electronics",
@@ -251,6 +264,16 @@ export const financialSignals: FinancialSignals[] = [
     averageMonthlyBalance: 680000
   },
   {
+    msmeId: "msme-digibake",
+    monthlyRevenue: [420000, 460000, 510000, 580000, 620000, 680000],
+    gstTurnover: [390000, 430000, 480000, 540000, 580000, 640000],
+    upiInflow: [180000, 195000, 210000, 240000, 265000, 290000],
+    failedTransactions: 1,
+    customerConcentrationPercent: 55,
+    existingObligations: 0,
+    averageMonthlyBalance: 380000
+  },
+  {
     msmeId: "msme-surya",
     monthlyRevenue: [1450000, 1520000, 1580000, 1650000, 1720000, 1810000],
     gstTurnover: [1380000, 1440000, 1510000, 1580000, 1640000, 1720000],
@@ -268,6 +291,7 @@ export const portfolio: PortfolioItem[] = [
   { msmeId: "msme-saral", exposure: 5200000, riskBand: "high", earlyWarnings: ["GST turnover down 18%", "Cash-flow compression"], dynamicLimitDelta: -900000 },
   { msmeId: "msme-lotus", exposure: 4100000, riskBand: "medium", earlyWarnings: ["Receivable ageing over 90 days for top buyer"], dynamicLimitDelta: 350000 },
   { msmeId: "msme-greenearth", exposure: 2800000, riskBand: "high", earlyWarnings: ["Fuel cost margin compression", "Two cheque returns in last quarter"], dynamicLimitDelta: -450000 },
+  { msmeId: "msme-digibake", exposure: 0, riskBand: "low", earlyWarnings: ["New-to-Credit — no loan history"], dynamicLimitDelta: 250000 },
   { msmeId: "msme-surya", exposure: 1900000, riskBand: "low", earlyWarnings: [], dynamicLimitDelta: 520000 }
 ];
 

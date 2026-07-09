@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, Scale, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronDown, Scale, XCircle } from "lucide-react";
 import type { DecisionAction, DocumentRecord, FinancialSignals, LoanApplication, MsmeProfile, RiskBand } from "@/domain/types";
 import {
   calculateAiReadiness,
@@ -17,7 +17,13 @@ import {
 } from "@/services/intelligence";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { useDemoMode } from "@/contexts/demo-mode";
+import { cn } from "@/lib/utils";
 import { AiTooltip } from "@/features/judge-experience";
+import {
+  DecisionTrace,
+  LoanEligibilityExplanation,
+  getDemoLoanEligibility,
+} from "@/features/xai";
 import { Badge, Button, Metric, Panel, ProgressBar, RiskBadge } from "@/components/ui/primitives";
 import { AiReadinessPanel } from "./ai-readiness-panel";
 import { AiCreditCommittee } from "./ai-credit-committee";
@@ -104,8 +110,10 @@ export function ApplicationWorkspace({
   const cashFlow = useMemo(() => calculateCashFlowForecast(signals), [signals]);
   const timeline = useMemo(() => computeIntelligenceTimeline(signals), [signals]);
 
+  const loanEligibility = useMemo(() => getDemoLoanEligibility(), []);
   const [decision, setDecision] = useState<DecisionAction>(recommendation.action);
   const [rationale, setRationale] = useState("");
+  const [showDecisionTrace, setShowDecisionTrace] = useState(false);
   const overrideRequired = decision !== recommendation.action;
   const canRecord = !overrideRequired || rationale.trim().length > 0;
   const { isDemoMode, triggerConfetti } = useDemoMode();
@@ -198,7 +206,10 @@ export function ApplicationWorkspace({
           </div>
         </Panel>
 
-        <AIRecommendationCard recommendation={recommendation} health={health} />
+        <div className="space-y-6">
+          <AIRecommendationCard recommendation={recommendation} health={health} />
+          <LoanEligibilityExplanation eligibility={loanEligibility} />
+        </div>
       </div>
 
       <Panel title="Alternate Data Intelligence">
@@ -222,6 +233,23 @@ export function ApplicationWorkspace({
         />
 
         <StressSimulatorPanel application={application} msme={msme} signals={signals} />
+      </div>
+
+      <div className="space-y-2">
+        <button
+          type="button"
+          onClick={() => setShowDecisionTrace(!showDecisionTrace)}
+          className="flex w-full items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-5 py-4 text-sm font-semibold text-ink transition hover:bg-white/[0.04]"
+        >
+          <span>How AI Reached This Decision</span>
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 text-muted transition-transform",
+              showDecisionTrace && "rotate-180"
+            )}
+          />
+        </button>
+        {showDecisionTrace && <DecisionTrace activeStep="recommendation" />}
       </div>
 
       <Panel title="AI Readiness Gate" action={<Badge tone={readiness.readyLabel === "AI-ready" ? "success" : readiness.readyLabel === "review-needed" ? "warning" : "danger"}>{readiness.score}% readiness</Badge>}>
@@ -351,6 +379,67 @@ export function ApplicationWorkspace({
               ) : (
                 <p className="mt-2 text-xs text-growth">All documents are present. No customer handoff needed.</p>
               )}
+            </div>
+
+            <div className="mt-6 rounded-xl border border-trust/20 bg-trust-light/20 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">Officer Decision Support</p>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-xs font-medium text-growth">Top Positive Factors</p>
+                  <ul className="mt-2 space-y-1">
+                    {health.band === "low" ? (
+                      <>
+                        <li className="flex items-start gap-1.5 text-xs text-muted"><CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-growth" />Stable revenue trend across 6 months</li>
+                        <li className="flex items-start gap-1.5 text-xs text-muted"><CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-growth" />GST compliance score above threshold</li>
+                        <li className="flex items-start gap-1.5 text-xs text-muted"><CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-growth" />UPI collections indicate active business</li>
+                      </>
+                    ) : (
+                      <>
+                        <li className="flex items-start gap-1.5 text-xs text-muted"><CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-growth" />Digital payment behaviour verified</li>
+                        <li className="flex items-start gap-1.5 text-xs text-muted"><CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-growth" />Alternate data coverage across 4+ sources</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-caution">Top Concerns</p>
+                  <ul className="mt-2 space-y-1">
+                    {signals.customerConcentrationPercent > 35 ? (
+                      <li className="flex items-start gap-1.5 text-xs text-muted"><AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-caution" />High customer concentration ({signals.customerConcentrationPercent}%)</li>
+                    ) : null}
+                    {signals.failedTransactions > 3 ? (
+                      <li className="flex items-start gap-1.5 text-xs text-muted"><AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-caution" />Failed transactions ({signals.failedTransactions}) indicate cash flow stress</li>
+                    ) : null}
+                    {health.band !== "low" ? (
+                      <li className="flex items-start gap-1.5 text-xs text-muted"><AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-caution" />Financial health score needs improvement</li>
+                    ) : (
+                      <li className="flex items-start gap-1.5 text-xs text-muted"><CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-growth" />No significant concerns identified</li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-4">
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-ink">Suggested Questions</p>
+                  <ul className="mt-1 space-y-0.5">
+                    <li className="text-xs text-muted">• What is the repayment source for this loan?</li>
+                    <li className="text-xs text-muted">• Are there any pending litigations?</li>
+                    <li className="text-xs text-muted">• How long has the business been operating?</li>
+                  </ul>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-ink">Recommended Actions</p>
+                  <ul className="mt-1 space-y-0.5">
+                    <li className="text-xs text-muted">• {recommendation.action === "approve" ? "Proceed with standard KYC verification" : "Request additional documents before decision"}</li>
+                    <li className="text-xs text-muted">• Verify bank statement for large credits</li>
+                    <li className="text-xs text-muted">• Check GST return consistency with bank data</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center gap-2 rounded-lg border border-trust/10 bg-white/[0.02] px-3 py-2">
+                <span className="text-xs text-muted">Approval Confidence:</span>
+                <span className="text-sm font-bold text-trust">{recommendation.confidence}%</span>
+              </div>
             </div>
 
             <div className="mt-4 space-y-2">

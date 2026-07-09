@@ -5,7 +5,7 @@ export const GUIDES: GuideEntry[] = [
     id: "home",
     title: "Home / Landing",
     path: "/",
-    purpose: "Launchpad for the entire NexusNova Credit Intelligence OS — role selection, live metrics, and demo mode entry.",
+    purpose: "Launchpad for the NexusNova MSME Financial Health Card — role selection, live metrics, and demo mode entry.",
     businessValue: "Demonstrates the breadth of the platform in under 30 seconds with real-time portfolio exposure, risk scores, and sector coverage.",
     aiFeatures: ["Live aggregate intelligence from portfolio computation", "AI-powered readiness indicators on role cards"],
     bankingWorkflow: ["Role selection (Customer / Loan Officer / Manager)", "Live metric preview without navigation", "One-click demo data seeding"],

@@ -50,3 +50,17 @@ export function seedDemoData() {
     appArray[0].slaHoursRemaining = 2;
   }
 }
+
+export function resetDemoData() {
+  seeded = false;
+  const store = (globalThis as any).__store;
+  if (store) {
+    store.notifications = [];
+    store.currentUser = null;
+    store.businesses = [];
+  }
+  const appArray = (globalThis as any).__applications;
+  if (Array.isArray(appArray)) {
+    appArray.length = 0;
+  }
+}

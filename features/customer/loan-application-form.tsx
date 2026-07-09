@@ -1,12 +1,17 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle, IndianRupee } from "lucide-react";
+import { CheckCircle, IndianRupee, Sparkles, Activity, Brain } from "lucide-react";
 import { getSession, submitApplication } from "@/services/app-data";
+import { financialSignals as allSignals, msmes as allMsmes } from "@/data/mock-data";
+import { computeOverallFinancialHealthScore } from "@/services/alternate-data";
+import { calculateCustomerReadiness } from "@/services/customer-support";
 import { loanProducts } from "@/domain/types";
 import { formatCurrency } from "@/lib/format";
 import { Badge, Button, Metric, Panel } from "@/components/ui/primitives";
+import { GlassPanel } from "@/components/ui/glass-panel";
+import { ProgressBar } from "@/components/ui/primitives";
 
 export function LoanApplicationForm() {
   const router = useRouter();
@@ -19,6 +24,13 @@ export function LoanApplicationForm() {
   const [submitted, setSubmitted] = useState(false);
 
   const selectedProduct = loanProducts.find((p) => p.id === productId)!;
+
+  const msmePreview = allMsmes[0];
+  const signalsPreview = allSignals[0];
+  const healthScore = useMemo(
+    () => computeOverallFinancialHealthScore(msmePreview, signalsPreview),
+    []
+  );
 
   const handleSubmit = useCallback(() => {
     const msmeId = session.msmeId ?? `msme-${Date.now()}`;
@@ -50,7 +62,7 @@ export function LoanApplicationForm() {
             <h1 className="mt-4 text-3xl font-semibold text-ink">Application Submitted</h1>
             <p className="mt-3 max-w-lg text-sm leading-6 text-muted">
               Your {selectedProduct.name} request for {formatCurrency(amount)} has been received.
-              The bank will review your application and documents.
+              Your Financial Health Card has been shared with the bank for review.
             </p>
             <div className="mt-6 flex gap-3">
               <Button type="button" onClick={() => router.push("/customer/documents")}>
@@ -68,23 +80,35 @@ export function LoanApplicationForm() {
 
   return (
     <div className="space-y-5">
-      <Panel>
+      <GlassPanel className="p-6">
         <div className="flex items-start gap-4">
-          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-slate-100 text-trust">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-trust-light text-trust">
             <IndianRupee className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold">Loan application</h1>
+            <h1 className="text-2xl font-semibold">Apply for Credit</h1>
             <p className="mt-2 text-sm leading-6 text-muted">
-              Select loan type, enter amount, choose tenure, and submit for bank review.
+              Select a loan product and submit your application. Your Financial Health Card
+              and alternate data assessment will accompany the request.
             </p>
           </div>
         </div>
-      </Panel>
+      </GlassPanel>
+
+      <div className="flex items-center gap-2 rounded-xl border border-trust/20 bg-trust-light/30 px-4 py-3">
+        <Sparkles className="h-4 w-4 text-trust" />
+        <span className="text-xs text-muted">
+          Your AI-assessed Financial Health Score is <span className="font-semibold text-ink">{healthScore.score}/100</span>.
+          This score helps the bank evaluate your application faster.
+        </span>
+      </div>
 
       {reg && (
-        <div className="rounded-lg border border-line bg-slate-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted">Registered as</p>
+        <div className="rounded-xl border border-trust/20 bg-trust-light/20 p-4">
+          <div className="flex items-center gap-2">
+            <Brain className="h-4 w-4 text-trust" />
+            <p className="text-xs font-semibold uppercase tracking-wide text-trust">Your Profile</p>
+          </div>
           <p className="mt-1 text-sm font-semibold text-ink">{reg.businessName} · {reg.ownerName} · {reg.city}</p>
         </div>
       )}
@@ -96,7 +120,7 @@ export function LoanApplicationForm() {
               key={product.id}
               type="button"
               onClick={() => { setProductId(product.id); setAmount(product.defaultTenureMonths === 12 ? Math.min(amount, product.maxAmount) : amount); }}
-              className={`rounded-lg border-2 p-4 text-left transition ${productId === product.id ? "border-trust bg-trust/[0.03]" : "border-line hover:border-trust/50"}`}
+              className={`rounded-lg border-2 p-4 text-left transition ${productId === product.id ? "border-trust bg-trust/[0.03]" : "border-white/[0.06] hover:border-trust/50"}`}
             >
               <div className="flex items-start justify-between">
                 <p className="font-semibold text-ink">{product.name}</p>
@@ -119,7 +143,7 @@ export function LoanApplicationForm() {
             <span className="text-sm font-semibold">Requested amount</span>
             <input
               type="number"
-              className="mt-2 min-h-12 w-full rounded-lg border border-line px-3 outline-none focus:border-trust"
+              className="mt-2 min-h-12 w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 outline-none focus:border-trust"
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value))}
               min={selectedProduct.minAmount}
@@ -129,7 +153,7 @@ export function LoanApplicationForm() {
           </label>
           <label className="block">
             <span className="text-sm font-semibold">Preferred tenure</span>
-            <select className="mt-2 min-h-12 w-full rounded-lg border border-line px-3 outline-none focus:border-trust" value={tenure} onChange={(e) => setTenure(Number(e.target.value))}>
+            <select className="mt-2 min-h-12 w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 outline-none focus:border-trust" value={tenure} onChange={(e) => setTenure(Number(e.target.value))}>
               <option value="12">12 months</option>
               <option value="24">24 months</option>
               <option value="36">36 months</option>
@@ -139,11 +163,11 @@ export function LoanApplicationForm() {
           </label>
           <label className="block sm:col-span-2">
             <span className="text-sm font-semibold">Purpose</span>
-            <textarea className="mt-2 min-h-24 w-full rounded-lg border border-line p-3 outline-none focus:border-trust" value={purpose} onChange={(e) => setPurpose(e.target.value)} />
+            <textarea className="mt-2 min-h-24 w-full rounded-lg border border-white/[0.08] bg-white/[0.02] p-3 outline-none focus:border-trust" value={purpose} onChange={(e) => setPurpose(e.target.value)} />
           </label>
         </div>
 
-        <div className="mt-5 grid grid-cols-3 gap-4 rounded-lg border border-line bg-slate-50 p-4">
+        <div className="mt-5 grid grid-cols-3 gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
           <Metric label="Product" value={selectedProduct.name} hint={`${selectedProduct.interestRate}% p.a.`} />
           <Metric label="Amount" value={formatCurrency(amount)} />
           <Metric label="Tenure" value={`${tenure} months`} />

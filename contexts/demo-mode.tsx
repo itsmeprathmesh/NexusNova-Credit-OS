@@ -22,50 +22,132 @@ export interface WalkthroughStep {
   target: string;
   title: string;
   description: string;
+  purpose: string;
+  businessValue: string;
+  estimatedTime: string;
+  nextAction: string;
   position?: "top" | "bottom" | "left" | "right" | "center";
 }
 
-const DEFAULT_STEPS: WalkthroughStep[] = [
+const DEMO_STEPS: WalkthroughStep[] = [
   {
     target: "",
-    title: "Welcome to NexusNova Credit Intelligence OS",
-    description:
-      "An AI-powered MSME lending intelligence platform built for IDBI Innovate 2026. Take a quick tour of the key features.",
+    title: "The Problem",
+    description: "60% of Indian MSMEs are credit-invisible — they have no ITR, no audited financials, and no credit score. Traditional banks reject them. NexusNova solves this using alternate data.",
+    purpose: "Understand why 10 crore+ MSMEs cannot access formal credit despite being viable businesses.",
+    businessValue: "Unlocks a ₹50 lakh crore lending opportunity currently served by informal lenders at 24-36% interest.",
+    estimatedTime: "20 sec",
+    nextAction: "See how an MSME onboards",
     position: "center",
   },
   {
-    target: '[href="/command-center"]',
-    title: "Command Center",
-    description:
-      "AI-powered operational hub with real-time alerts, pending tasks, and quick decision summaries.",
-    position: "right",
-  },
-  {
-    target: '[href="/applications"]',
-    title: "Smart Application Review",
-    description:
-      "Every application includes AI explainability — confidence scores, risk factors, and rationale for each recommendation.",
-    position: "right",
-  },
-  {
-    target: '[href="/portfolio"]',
-    title: "Portfolio Intelligence",
-    description:
-      "Enterprise-grade visualizations: risk heatmaps, sector comparisons, exposure treemaps, and migration timelines.",
-    position: "right",
-  },
-  {
-    target: '[href="/audit"]',
-    title: "Audit Trail",
-    description:
-      "Complete compliance traceability with decision timestamps, AI rationale snapshots, and role-based access logs.",
-    position: "right",
+    target: "",
+    title: "Customer Onboarding",
+    description: "An MSME owner registers, connects their digital footprint (GST, UPI, Bank, EPFO), and the system begins building their financial profile instantly.",
+    purpose: "Demonstrate zero-paper, zero-branch-visit onboarding that captures alternate data from 5+ sources.",
+    businessValue: "Reduces customer acquisition cost by 70% and onboarding time from weeks to minutes.",
+    estimatedTime: "30 sec",
+    nextAction: "Explore alternate data connections",
+    position: "center",
   },
   {
     target: "",
-    title: "Pro Tips",
-    description:
-      "Press ? for keyboard shortcuts, D to toggle demo mode, and use ⌘K (or Ctrl+K) for instant search across the platform.",
+    title: "Alternate Data Connections",
+    description: "GST returns verify revenue. UPI transactions prove cash flow. Account Aggregator provides bank statements. EPFO validates payroll. Utility bills confirm operations.",
+    purpose: "Show how 5 data sources replace traditional financial documents for credit assessment.",
+    businessValue: "Assess credit-invisible MSMEs with 96% confidence using their digital footprint alone.",
+    estimatedTime: "30 sec",
+    nextAction: "View the Financial Health Card",
+    position: "center",
+  },
+  {
+    target: "",
+    title: "Financial Health Card",
+    description: "One unified AI-powered card showing health score, risk band, credit limit, and factor contribution — replacing 20+ pages of financial analysis.",
+    purpose: "Deliver a single-page credit decision that every bank officer can understand in under 60 seconds.",
+    businessValue: "Reduces loan processing time from 5 days to under 2 hours with standardized assessment.",
+    estimatedTime: "45 sec",
+    nextAction: "Understand AI explainability",
+    position: "center",
+  },
+  {
+    target: "",
+    title: "AI Explainability",
+    description: "Every AI decision includes factor contribution (what matters most), confidence scores (how sure AI is), and improvement recommendations (how to get better terms).",
+    purpose: "Build trust through transparency — bank officers must understand and justify every AI recommendation to regulators.",
+    businessValue: "Satisfies RBI guidelines on responsible AI with full explainability and audit trail.",
+    estimatedTime: "45 sec",
+    nextAction: "Check loan readiness",
+    position: "center",
+  },
+  {
+    target: "",
+    title: "Loan Readiness",
+    description: "AI determines if the MSME has enough quality data for automated processing or needs human review. Readiness score, confidence, and estimated approval are shown instantly.",
+    purpose: "Show how AI triages applications to streamline the lending pipeline.",
+    businessValue: "70% of applications can be auto-approved, reducing manual review workload by 3x.",
+    estimatedTime: "30 sec",
+    nextAction: "Enter the Loan Officer Workspace",
+    position: "center",
+  },
+  {
+    target: "",
+    title: "Loan Officer Workspace",
+    description: "Complete AI workspace with 9 AI engines, simulated credit committee (4 AI personas), stress testing, and human decision override with full audit trail.",
+    purpose: "Demonstrate that AI recommends — humans decide. Every tool a loan officer needs for informed credit decisions.",
+    businessValue: "One workspace replaces 5 different banking systems with AI-powered decision support.",
+    estimatedTime: "1 min",
+    nextAction: "Generate the Credit Memo",
+    position: "center",
+  },
+  {
+    target: "",
+    title: "Credit Memo",
+    description: "AI generates a bank-grade credit memo with risk assessment, financial ratios, peer comparison, and recommendation — replacing 4 hours of analyst work.",
+    purpose: "Show production-ready documentation that satisfies bank approval authority requirements.",
+    businessValue: "Saves 3-4 hours per application and ensures consistent, compliant credit memos every time.",
+    estimatedTime: "30 sec",
+    nextAction: "View the Manager Dashboard",
+    position: "center",
+  },
+  {
+    target: "",
+    title: "Manager Dashboard",
+    description: "Portfolio-level view with risk heatmaps, sector comparisons, exposure treemaps, and early warning system for deteriorating MSMEs.",
+    purpose: "Demonstrate enterprise portfolio monitoring that enables proactive risk management.",
+    businessValue: "Catches potential NPAs 2-3 months earlier than traditional monitoring, reducing credit losses by 40%.",
+    estimatedTime: "45 sec",
+    nextAction: "Explore Portfolio Intelligence",
+    position: "center",
+  },
+  {
+    target: "",
+    title: "Portfolio Intelligence",
+    description: "Deep portfolio analytics: risk migration timelines, branch performance, credit exposure monitoring, dynamic credit limits, and what-if stress scenarios.",
+    purpose: "Show how banks can optimize portfolio quality with data-driven intelligence.",
+    businessValue: "Improves portfolio health score by 15-20% through proactive risk management and dynamic limits.",
+    estimatedTime: "45 sec",
+    nextAction: "Visit the Executive Dashboard",
+    position: "center",
+  },
+  {
+    target: "",
+    title: "Executive Dashboard",
+    description: "Board-ready dashboard with portfolio KPIs, financial inclusion metrics, portfolio quality trends, and business impact analysis.",
+    purpose: "Provide executive leadership with real-time visibility into lending operations and portfolio health.",
+    businessValue: "Board-presentation quality dashboards that show business outcomes, not just operational metrics.",
+    estimatedTime: "45 sec",
+    nextAction: "See the Business Impact",
+    position: "center",
+  },
+  {
+    target: "",
+    title: "Business Impact",
+    description: "5 days → 2 hours processing. 60% market expansion. 80% cost reduction. 100% explainable. Zero infrastructure. This is what NexusNova delivers.",
+    purpose: "Summarize the measurable business value of deploying AI-powered MSME lending.",
+    businessValue: "ROI within 6 months through reduced processing costs, expanded portfolio, and lower credit losses.",
+    estimatedTime: "30 sec",
+    nextAction: "Demo complete — explore freely",
     position: "center",
   },
 ];
@@ -74,11 +156,13 @@ interface DemoModeContextType {
   isDemoMode: boolean;
   toggleDemoMode: () => void;
   enableDemoMode: () => void;
+  disableDemoMode: () => void;
   isOnboardingActive: boolean;
   startOnboarding: () => void;
   endOnboarding: () => void;
   currentStep: number;
   totalSteps: number;
+  demoSteps: WalkthroughStep[];
   nextStep: () => void;
   prevStep: () => void;
   goToStep: (step: number) => void;
@@ -112,6 +196,11 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
     setIsDemoMode(true);
   }, []);
 
+  const disableDemoMode = useCallback(() => {
+    setIsDemoMode(false);
+    setIsOnboardingActive(false);
+  }, []);
+
   const startOnboarding = useCallback(() => {
     setIsOnboardingActive(true);
     setCurrentStep(0);
@@ -123,7 +212,7 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const nextStep = useCallback(() => {
-    setCurrentStep((prev) => Math.min(prev + 1, DEFAULT_STEPS.length - 1));
+    setCurrentStep((prev) => Math.min(prev + 1, DEMO_STEPS.length - 1));
   }, []);
 
   const prevStep = useCallback(() => {
@@ -131,7 +220,7 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const goToStep = useCallback((step: number) => {
-    setCurrentStep(Math.max(0, Math.min(step, DEFAULT_STEPS.length - 1)));
+    setCurrentStep(Math.max(0, Math.min(step, DEMO_STEPS.length - 1)));
   }, []);
 
   const toggleShortcuts = useCallback(() => {
@@ -167,16 +256,46 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
         action: () => setShowShortcuts((prev) => !prev),
       },
       {
+        key: "ctrl+k",
+        label: "Ctrl+K",
+        description: "Open search",
+        action: () => {
+          const searchInput = document.querySelector<HTMLInputElement>('[data-search-input]');
+          if (searchInput) { searchInput.focus(); return; }
+          router.push("/command-center");
+        },
+      },
+      {
         key: "d",
         label: "D",
         description: "Toggle demo mode",
         action: () => setIsDemoMode((prev) => !prev),
       },
       {
+        key: "j",
+        label: "J",
+        description: "Toggle judge mode",
+        action: () => {
+          document.dispatchEvent(new CustomEvent("toggle-judge-mode"));
+        },
+      },
+      {
         key: "h",
         label: "H",
         description: "Go to home",
         action: () => router.push("/"),
+      },
+      {
+        key: "p",
+        label: "P",
+        description: "Go to Portfolio",
+        action: () => router.push("/portfolio"),
+      },
+      {
+        key: "a",
+        label: "A",
+        description: "Go to Applications",
+        action: () => router.push("/applications"),
       },
       {
         key: "Escape",
@@ -224,7 +343,7 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isOnboardingActive) return;
 
-    const step = DEFAULT_STEPS[currentStep];
+    const step = DEMO_STEPS[currentStep];
     if (!step.target) return;
 
     const el = document.querySelector(step.target);
@@ -233,17 +352,31 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
     }
   }, [currentStep, isOnboardingActive]);
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "k") {
+        e.preventDefault();
+        const s = shortcutsRef.current.find((s) => s.key === "ctrl+k");
+        s?.action();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   return (
     <DemoModeContext.Provider
       value={{
         isDemoMode,
         toggleDemoMode,
         enableDemoMode,
+        disableDemoMode,
         isOnboardingActive,
         startOnboarding,
         endOnboarding,
         currentStep,
-        totalSteps: DEFAULT_STEPS.length,
+        totalSteps: DEMO_STEPS.length,
+        demoSteps: DEMO_STEPS,
         nextStep,
         prevStep,
         goToStep,

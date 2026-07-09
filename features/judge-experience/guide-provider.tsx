@@ -111,6 +111,12 @@ export function GuideProvider({ children }: { children: ReactNode }) {
     }
   }, [pathname, completedPages]);
 
+  useEffect(() => {
+    const handler = () => toggleJudgeMode();
+    document.addEventListener("toggle-judge-mode", handler);
+    return () => document.removeEventListener("toggle-judge-mode", handler);
+  }, [toggleJudgeMode]);
+
   return (
     <JudgeContext.Provider
       value={{

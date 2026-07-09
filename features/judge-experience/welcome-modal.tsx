@@ -48,7 +48,7 @@ export function WelcomeModal() {
                   <Eye className="h-7 w-7 text-trust" />
                 </div>
                 <h1 className="text-xl font-semibold text-ink">
-                  Welcome to NexusNova Credit Intelligence OS
+                  Welcome to NexusNova MSME Financial Health Card
                 </h1>
                 <p className="mt-2 text-sm text-muted max-w-sm leading-relaxed">
                   Explore the platform through a curator-led tour designed for
@@ -94,7 +94,7 @@ export function WelcomeModal() {
 
             <div className="border-t border-line/10 px-6 py-3">
               <p className="text-[10px] text-center text-muted/50">
-                NexusNova Credit Intelligence OS &middot; IDBI Innovate 2026 PS-3
+                NexusNova MSME Financial Health Card &middot; IDBI Innovate 2026 PS-3
               </p>
             </div>
           </motion.div>

@@ -25,7 +25,7 @@ export function SectorIntelligence({ sectors }: { sectors: SectorSummary[] }) {
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <Metric label="Exposure" value={formatCurrency(sector.totalExposure)} />
-              <Metric label="Risk Score" value={`${sector.averageRiskScore}%`} />
+              <Metric label="Financial Health Score" value={`${sector.averageRiskScore}%`} />
             </div>
             <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted">
               <span>

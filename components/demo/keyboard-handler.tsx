@@ -28,12 +28,20 @@ export function DemoKeyboardHandler() {
         target.tagName === "SELECT" ||
         target.isContentEditable;
 
-      if (isInput) return;
+      if (isInput && e.key !== "Escape") return;
 
       if (e.key === "?") {
         e.preventDefault();
         toggleShortcuts();
         return;
+      }
+
+      if (e.key === "j" || e.key === "J") {
+        if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+          e.preventDefault();
+          document.dispatchEvent(new CustomEvent("toggle-judge-mode"));
+          return;
+        }
       }
 
       if (e.key === "d" || e.key === "D") {

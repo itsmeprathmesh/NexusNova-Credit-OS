@@ -2,9 +2,10 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Building2 } from "lucide-react";
+import { ArrowRight, Building2, Sparkles } from "lucide-react";
 import { registerBusiness, getSession } from "@/services/app-data";
 import { Panel } from "@/components/ui/primitives";
+import { GlassPanel } from "@/components/ui/glass-panel";
 
 export function BusinessRegistration() {
   const router = useRouter();
@@ -49,19 +50,27 @@ export function BusinessRegistration() {
 
   return (
     <div className="space-y-5">
-      <Panel>
+      <GlassPanel className="p-6">
         <div className="flex items-start gap-4">
-          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-slate-100 text-trust">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-trust-light text-trust">
             <Building2 className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold">Business registration</h1>
+            <h1 className="text-2xl font-semibold">Understand Your Business</h1>
             <p className="mt-2 text-sm leading-6 text-muted">
-              Complete your business profile. All fields are required for the loan application.
+              Tell us about your business so AI can connect the right alternate data sources.
+              No financial documents needed — start with basic information.
             </p>
           </div>
         </div>
-      </Panel>
+      </GlassPanel>
+
+      <div className="flex items-center gap-2 rounded-xl border border-trust/20 bg-trust-light/30 px-4 py-3">
+        <Sparkles className="h-4 w-4 text-trust" />
+        <span className="text-xs text-muted">
+          Your PAN and GSTIN help us verify your business identity and connect to alternate data sources automatically.
+        </span>
+      </div>
 
       <Panel title="Business Profile">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -136,7 +145,7 @@ export function BusinessRegistration() {
         <button
           type="button"
           onClick={handleSave}
-          className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 text-sm font-semibold text-white"
+          className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 text-sm font-semibold text-white shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)]"
         >
           Save & continue to loan request
           <ArrowRight className="h-4 w-4" />
