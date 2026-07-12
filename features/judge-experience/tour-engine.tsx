@@ -6,7 +6,6 @@ import { X, ChevronLeft, ChevronRight, Eye, Sparkles } from "lucide-react";
 import { useJudge } from "./guide-provider";
 import { TOUR_STEPS } from "./guide-config";
 import { useRouter, usePathname } from "next/navigation";
-import { useOnboarding } from "./onboarding-provider";
 import { useDemoSession } from "@/contexts/demo-session";
 
 const TOUR_ROLE_MAP: Record<string, string> = {
@@ -128,8 +127,7 @@ function SpotlightOverlay({ selector, stepId }: { selector?: string; stepId: str
 export function TourEngine() {
   const { tourActive, tourStep, tourTotalSteps, nextTourStep, prevTourStep, endTour } =
     useJudge();
-  const { openFinish } = useOnboarding();
-  const { switchDemoRole, endDemoSession } = useDemoSession();
+  const { switchDemoRole } = useDemoSession();
   const router = useRouter();
   const pathname = usePathname();
   const step = TOUR_STEPS[tourStep];
@@ -163,9 +161,8 @@ export function TourEngine() {
 
   const handleFinish = useCallback(() => {
     endTour();
-    endDemoSession();
-    setTimeout(() => openFinish(), 300);
-  }, [endTour, endDemoSession, openFinish]);
+    router.push("/demo-complete");
+  }, [endTour, router]);
 
   useEffect(() => {
     if (!navigatingTo) return;
