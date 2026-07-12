@@ -3,6 +3,11 @@ import { AppShell } from "@/components/layout/app-shell";
 import { applications, financialSignals, getCustomer360, msmes, portfolio } from "@/data/mock-data";
 import { MsmeDrilldown } from "@/features/portfolio/msme-drilldown";
 import { parseRole } from "@/lib/utils";
+import type { Metadata } from "next";
+export async function generateMetadata({ params }: { params: Promise<{ msmeId: string }> }): Promise<Metadata> {
+  const { msmeId } = await params;
+  return { title: `${msmeId} — Portfolio Drilldown — NexusNova` };
+}
 
 export default async function PortfolioDrilldownPage({
   params,
@@ -25,7 +30,7 @@ export default async function PortfolioDrilldownPage({
   const application = applications.find((item) => item.msmeId === msmeId);
 
   return (
-    <AppShell active="portfolio" role={role}>
+    <AppShell active="portfolio" role={role} allowedRoles={["manager"]}>
       <MsmeDrilldown msme={msme} portfolioItem={portfolioItem} role={role} snapshot={snapshot} signals={signals} application={application} />
     </AppShell>
   );

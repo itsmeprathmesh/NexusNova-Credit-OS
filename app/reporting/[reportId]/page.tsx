@@ -4,6 +4,11 @@ import { ArrowLeft } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { ReportDetail } from "@/features/reporting/report-detail";
 import { parseRole } from "@/lib/utils";
+import type { Metadata } from "next";
+export async function generateMetadata({ params }: { params: Promise<{ reportId: string }> }): Promise<Metadata> {
+  const { reportId } = await params;
+  return { title: `${reportId.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())} — NexusNova` };
+}
 
 const validIds = ["portfolio-health", "sector-analysis", "branch-performance", "risk-migration", "credit-committee-summary", "early-warning", "limit-utilization", "ai-readiness", "executive-brief"];
 
@@ -20,7 +25,7 @@ export default async function ReportDetailPage({
   if (!validIds.includes(reportId)) notFound();
 
   return (
-    <AppShell active="reporting" role={role}>
+    <AppShell active="reporting" role={role} allowedRoles={["manager"]}>
       <div className="space-y-6">
         <Link href="/reporting" className="inline-flex items-center gap-2 text-sm font-semibold text-trust">
           <ArrowLeft className="h-4 w-4" />

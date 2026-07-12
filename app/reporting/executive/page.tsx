@@ -1,6 +1,10 @@
+import { lazy } from "react";
 import { AppShell } from "@/components/layout/app-shell";
-import { ExecutiveDashboard } from "@/features/reporting/executive-dashboard";
 import { parseRole } from "@/lib/utils";
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Executive Dashboard — NexusNova" };
+
+const ExecutiveDashboard = lazy(() => import("@/features/reporting/executive-dashboard").then((m) => ({ default: m.ExecutiveDashboard })));
 
 export default async function ExecutiveDashboardPage({
   searchParams
@@ -11,7 +15,7 @@ export default async function ExecutiveDashboardPage({
   const role = parseRole(query.role);
 
   return (
-    <AppShell active="reporting" role={role}>
+    <AppShell active="reporting" role={role} allowedRoles={["manager"]}>
       <ExecutiveDashboard />
     </AppShell>
   );

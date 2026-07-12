@@ -1,10 +1,10 @@
 import { CustomerShell } from "@/components/layout/customer-shell";
-import { DocumentCenter } from "@/features/customer/document-center";
+import { DocumentUploadCenter } from "@/features/customer/document-upload-center";
 
 export default function CustomerDocumentsPage() {
   return (
     <CustomerShell active="documents">
-      <DocumentCenter />
+      <DocumentUploadCenter />
     </CustomerShell>
   );
 }

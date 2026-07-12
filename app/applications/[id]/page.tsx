@@ -1,8 +1,15 @@
+import { lazy } from "react";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { applications, documents, financialSignals, msmes } from "@/data/mock-data";
-import { ApplicationWorkspace } from "@/features/loan-workspace/application-workspace";
 import { parseRole } from "@/lib/utils";
+import type { Metadata } from "next";
+
+const ApplicationWorkspace = lazy(() => import("@/features/loan-workspace/application-workspace").then((m) => ({ default: m.ApplicationWorkspace })));
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  return { title: `Application ${id} — NexusNova` };
+}
 
 export default async function ApplicationDetailPage({
   params,

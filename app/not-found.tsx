@@ -1,24 +1,25 @@
 import Link from "next/link";
-import { AlertTriangle } from "lucide-react";
+import { FileQuestion, ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <main className="grid min-h-screen place-items-center bg-canvas px-4 text-ink">
-      <section className="animate-scale-in max-w-md rounded-lg border border-line bg-white p-6 text-center shadow-panel">
-        <div className="mx-auto grid h-12 w-12 place-items-center rounded-lg bg-amber-50 text-amber-700">
-          <AlertTriangle className="h-6 w-6" />
+    <main id="main-content" className="flex min-h-screen flex-col items-center justify-center bg-canvas px-4">
+      <div className="w-full max-w-md text-center">
+        <div className="mx-auto mb-6 grid h-20 w-20 place-items-center rounded-3xl border border-white/[0.08] bg-white/[0.02]">
+          <FileQuestion className="h-10 w-10 text-muted" />
         </div>
-        <h1 className="mt-5 text-2xl font-semibold">Record not found</h1>
-        <p className="mt-3 text-sm leading-6 text-muted">
-          The requested application or MSME record is not available in the v1 prototype data set.
+        <h1 className="text-2xl font-bold text-ink">404 — Page Not Found</h1>
+        <p className="mt-2 text-sm text-muted">
+          This page does not exist or the record you are looking for is not available.
         </p>
         <Link
-          href="/applications"
-          className="mt-5 inline-flex min-h-10 items-center justify-center rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white transition-all duration-150 hover:bg-[#1a526a] active:scale-[0.97]"
+          href="/"
+          className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-trust px-5 py-2.5 text-sm font-semibold text-canvas shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)] active:scale-[0.98]"
         >
-          Back to applications
+          <ArrowLeft className="h-4 w-4" />
+          Back to Home
         </Link>
-      </section>
+      </div>
     </main>
   );
 }

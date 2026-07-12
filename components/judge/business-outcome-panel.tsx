@@ -86,6 +86,7 @@ export function BusinessOutcomePanel() {
               </span>
               <button
                 onClick={() => setIsOpen(false)}
+                aria-label="Close panel"
                 className="rounded-md p-1 text-muted transition-colors hover:bg-white/[0.06] hover:text-ink"
               >
                 <X className="h-4 w-4" />

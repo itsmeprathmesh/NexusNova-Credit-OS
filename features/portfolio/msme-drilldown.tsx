@@ -101,7 +101,7 @@ export function MsmeDrilldown({
   const riskProgression = computeRiskProgression(signals, snapshot?.timeline.map((t) => ({ date: t.date, title: t.title, summary: t.summary })) ?? []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-tour="customer-360">
       <CustomerSummary msme={msme} portfolioItem={portfolioItem} health={health} />
 
       <div className="grid gap-6 xl:grid-cols-2">

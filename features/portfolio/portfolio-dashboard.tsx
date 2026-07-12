@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import Link from "next/link";
+import { Inbox } from "lucide-react";
 import { msmes, portfolio, financialSignals } from "@/data/mock-data";
 import type { UserRole } from "@/domain/types";
 import { formatCurrency } from "@/lib/format";
@@ -111,6 +112,13 @@ export function PortfolioDashboard({ role }: { role: UserRole }) {
         <h2 className="mb-4 text-base font-semibold text-ink">Sector & Branch Exposure</h2>
         <div className="rounded-lg border border-line bg-panel p-5 shadow-sm">
           <h2 className="mb-4 text-base font-semibold text-ink">Sector & Branch Exposure</h2>
+          {enriched.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <Inbox className="mb-3 h-12 w-12 text-muted/30" />
+              <p className="text-base font-semibold text-muted">No MSME data available</p>
+              <p className="mt-1 text-sm text-muted/60">Portfolio data will appear once MSMEs are onboarded.</p>
+            </div>
+          ) : (
           <div className="overflow-hidden rounded-lg border border-line">
             <div className="grid grid-cols-[1.1fr_1fr_1fr_0.8fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted">
               <span>MSME</span>
@@ -133,6 +141,7 @@ export function PortfolioDashboard({ role }: { role: UserRole }) {
               ))}
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Bell } from "lucide-react";
+import Link from "next/link";
+import { Bell, ChevronRight } from "lucide-react";
 import { getNotifications, getUnreadCount, markAllNotificationsRead } from "@/services/app-data";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +57,7 @@ export function NotificationCenter() {
             {notifications.length === 0 && (
               <p className="px-5 py-10 text-center text-sm text-muted">No notifications yet</p>
             )}
-            {notifications.slice(0, 20).map((notif) => (
+            {notifications.slice(0, 5).map((notif) => (
               <div
                 key={notif.id}
                 className={cn(
@@ -75,6 +76,15 @@ export function NotificationCenter() {
               </div>
             ))}
           </div>
+
+          <Link
+            href="/notifications"
+            onClick={() => setOpen(false)}
+            className="flex items-center justify-between rounded-b-2xl border-t border-white/[0.06] px-5 py-3 text-xs font-medium text-trust transition-colors hover:bg-white/[0.02]"
+          >
+            View all notifications
+            <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
       )}
     </div>

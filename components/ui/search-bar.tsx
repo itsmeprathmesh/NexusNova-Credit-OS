@@ -104,9 +104,10 @@ export function SearchBar() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search MSMEs, applications, reports..."
+                aria-label="Search"
                 className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted"
               />
-              <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-muted hover:bg-white/[0.06] hover:text-ink transition-colors">
+              <button type="button" onClick={() => setOpen(false)} aria-label="Clear search" className="rounded-lg p-1.5 text-muted hover:bg-white/[0.06] hover:text-ink transition-colors">
                 <X className="h-4 w-4" />
               </button>
             </div>

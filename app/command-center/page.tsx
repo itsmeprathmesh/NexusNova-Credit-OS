@@ -2,6 +2,8 @@ import { AppShell } from "@/components/layout/app-shell";
 import { CommandCenterView } from "@/features/command-center/command-center-view";
 import { PageHeader } from "@/components/ui/page-header";
 import { parseRole } from "@/lib/utils";
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Command Center — NexusNova" };
 
 export default async function CommandCenterPage({ searchParams }: { searchParams: Promise<{ role?: string }> }) {
   const query = await searchParams;

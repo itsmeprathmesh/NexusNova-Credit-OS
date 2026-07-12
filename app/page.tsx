@@ -53,14 +53,14 @@ const roles = [
   },
   {
     label: "Loan Officer",
-    href: "/command-center?role=loan-officer",
+    href: "/staff-login",
     icon: ClipboardCheck,
     description:
       "Assess MSMEs with alternate data intelligence, evaluate financial health, and make informed credit decisions.",
   },
   {
     label: "Manager",
-    href: "/command-center?role=manager",
+    href: "/staff-login",
     icon: BriefcaseBusiness,
     description:
       "Monitor portfolio health, alternate data coverage, credit visibility trends, and dynamic credit limits.",
@@ -144,7 +144,7 @@ export default function HomePage() {
   ];
 
   return (
-    <main className="min-h-screen bg-canvas text-ink relative">
+    <main id="main-content" className="min-h-screen bg-canvas text-ink relative">
       <div className="noise-overlay fixed inset-0 z-0 pointer-events-none" />
       <div className="bg-hero-gradient relative z-10">
         <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
@@ -168,7 +168,7 @@ export default function HomePage() {
               </button>
             )}
             <Link
-              href="/command-center"
+              href="/staff-login"
               className="btn-secondary text-sm"
             >
               Staff Login

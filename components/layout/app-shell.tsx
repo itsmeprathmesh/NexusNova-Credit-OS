@@ -10,13 +10,16 @@ import {
   Clock,
   Eye,
   FileText,
+  HelpCircle,
   LayoutDashboard,
   MonitorPlay,
   PanelLeftClose,
   PanelLeftOpen,
   RefreshCw,
+  Settings,
   ShieldCheck,
   Sparkles,
+  UserRound,
   X,
 } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState, useCallback } from "react";
@@ -30,13 +33,15 @@ import { useDemoMode } from "@/contexts/demo-mode";
 import { useJudge, FeatureDiscoveryBar, RecommendedNext } from "@/features/judge-experience";
 import { BusinessOutcomePanel } from "@/components/judge/business-outcome-panel";
 import { resetDemoData } from "@/services/demo-seed";
+import { useAuth } from "@/contexts/auth-context";
+import { AccessDenied } from "@/components/auth/access-denied";
 
 const navItems = [
-  { href: "/command-center", label: "Command Center", icon: LayoutDashboard, highlight: "AI Hub", section: "main" },
-  { href: "/applications", label: "Applications", icon: ClipboardList, highlight: "Explainable AI", section: "main" },
-  { href: "/portfolio", label: "Portfolio", icon: BriefcaseBusiness, highlight: "Analytics", section: "main" },
-  { href: "/audit", label: "Audit", icon: FileText, highlight: "Compliance", section: "main" },
-  { href: "/reporting", label: "Reporting", icon: BarChart3, highlight: "Reports", section: "main" },
+  { href: "/command-center", label: "Command Center", icon: LayoutDashboard, highlight: "AI Hub", section: "main", managerOnly: false },
+  { href: "/applications", label: "Applications", icon: ClipboardList, highlight: "Explainable AI", section: "main", managerOnly: false },
+  { href: "/portfolio", label: "Portfolio", icon: BriefcaseBusiness, highlight: "Analytics", section: "main", managerOnly: true },
+  { href: "/audit", label: "Audit", icon: FileText, highlight: "Compliance", section: "main", managerOnly: true },
+  { href: "/reporting", label: "Reporting", icon: BarChart3, highlight: "Reports", section: "main", managerOnly: true },
 ];
 
 const roleLabels: Record<UserRole, string> = {
@@ -56,13 +61,16 @@ export function AppShell({
   children,
   active,
   role = "loan-officer",
+  allowedRoles,
 }: {
   children: ReactNode;
   active: "command-center" | "applications" | "portfolio" | "audit" | "reporting";
   role?: UserRole;
+  allowedRoles?: UserRole[];
 }) {
   const { isDemoMode, toggleDemoMode } = useDemoMode();
   const { isJudgeMode, toggleJudgeMode, openHelp, startTour } = useJudge();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -70,6 +78,11 @@ export function AppShell({
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const navRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+
+  const effectiveRole = user?.role ?? role;
+  const isManager = effectiveRole === "manager";
+  const visibleNavItems = navItems.filter((item) => !item.managerOnly || isManager);
+  const canAccess = !allowedRoles || allowedRoles.includes(effectiveRole);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 30000);
@@ -83,16 +96,16 @@ export function AppShell({
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setFocusedIndex((prev) => (prev < navItems.length - 1 ? prev + 1 : 0));
+      setFocusedIndex((prev) => (prev < visibleNavItems.length - 1 ? prev + 1 : 0));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setFocusedIndex((prev) => (prev > 0 ? prev - 1 : navItems.length - 1));
+      setFocusedIndex((prev) => (prev > 0 ? prev - 1 : visibleNavItems.length - 1));
     } else if (e.key === "Enter" && focusedIndex >= 0) {
       e.preventDefault();
       const link = navRef.current?.querySelector<HTMLAnchorElement>(`a[data-nav-index="${focusedIndex}"]`);
       link?.click();
     }
-  }, [focusedIndex]);
+  }, [focusedIndex, visibleNavItems.length]);
 
   useEffect(() => {
     if (focusedIndex >= 0) {
@@ -100,6 +113,29 @@ export function AppShell({
       link?.focus();
     }
   }, [focusedIndex]);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      window.location.href = "/staff-login";
+    }
+  }, [isLoading, isAuthenticated]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-canvas">
+        <div className="text-center">
+          <RefreshCw className="mx-auto h-6 w-6 animate-spin text-trust" />
+          <p className="mt-3 text-sm text-muted">Loading session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) return null;
+
+  if (!canAccess) {
+    return <AccessDenied role={effectiveRole} />;
+  }
 
   return (
     <div className="min-h-screen bg-canvas text-ink relative">
@@ -164,7 +200,7 @@ export function AppShell({
                 Main Menu
               </p>
             )}
-            {navItems.map((item, index) => {
+            {visibleNavItems.map((item, index) => {
               const Icon = item.icon;
               const selected = active === item.href.slice(1);
 
@@ -354,15 +390,15 @@ export function AppShell({
                 </button>
               )}
 
-              {/* Guide */}
-              <button
-                onClick={openHelp}
+              {/* Help */}
+              <Link
+                href="/help"
                 className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-muted transition-all hover:bg-white/[0.08] hover:text-ink active:scale-[0.97]"
-                aria-label="Open judge guide"
+                aria-label="Open help center"
               >
-                <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden sm:inline">Guide</span>
-              </button>
+                <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                <span className="hidden sm:inline">Help</span>
+              </Link>
 
               {/* Judge mode */}
               <button
@@ -423,11 +459,25 @@ export function AppShell({
                   1 urgent
                 </span>
                 <span className="rounded-lg border border-trust/20 bg-trust-light/50 px-2 py-1 text-[10px] font-semibold text-trust">
-                  {roleLabels[role]}
+                  {user?.name ?? roleLabels[role]}
                 </span>
               </div>
 
-              <UserMenu currentRole={role} />
+              <Link
+                href="/profile"
+                className="grid min-h-9 min-w-9 place-items-center rounded-xl text-muted transition-all duration-200 hover:bg-white/[0.06] hover:text-ink active:scale-[0.95]"
+                aria-label="Profile"
+              >
+                <UserRound className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/settings"
+                className="grid min-h-9 min-w-9 place-items-center rounded-xl text-muted transition-all duration-200 hover:bg-white/[0.06] hover:text-ink active:scale-[0.95]"
+                aria-label="Settings"
+              >
+                <Settings className="h-4 w-4" />
+              </Link>
+              <UserMenu currentRole={user?.role ?? role} user={user} />
             </div>
           </div>
         </header>

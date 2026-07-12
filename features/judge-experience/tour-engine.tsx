@@ -20,7 +20,7 @@ const GUIDE_MAP: Record<string, string> = {
   timeline: "/applications/app-1001/timeline?role=loan-officer",
   "command-center": "/command-center?role=loan-officer",
   portfolio: "/portfolio?role=manager",
-  "portfolio-msme": "/portfolio/MSME001?role=manager",
+  "portfolio-msme": "/portfolio/msme-aurora?role=manager",
   audit: "/audit?role=manager",
   reporting: "/reporting?role=manager",
   "executive-dashboard": "/reporting/executive?role=manager",
@@ -157,7 +157,18 @@ export function TourEngine() {
     const normalizedTarget = expectedPath.split("?")[0];
     const normalizedCurrent = pathname.split("?")[0];
     if (normalizedCurrent === normalizedTarget) {
-      console.log("Tour Step", navigatingTo, expectedPath, " — page loaded, advancing");
+      const nextStepConfig = TOUR_STEPS.find((s) => s.pageId === navigatingTo);
+      const selector = nextStepConfig?.highlightSelector;
+      if (selector) {
+        const el = document.querySelector(selector);
+        if (!el) {
+          console.log("Tour Step", navigatingTo, expectedPath, " — path matched but DOM element", selector, "not yet rendered, waiting...");
+          return;
+        }
+        console.log("Tour Step", navigatingTo, expectedPath, " — page + DOM element", selector, "ready, advancing");
+      } else {
+        console.log("Tour Step", navigatingTo, expectedPath, " — page loaded, advancing");
+      }
       setNavigatingTo(null);
       navigatingRef.current = null;
       nextTourStep();
@@ -166,13 +177,33 @@ export function TourEngine() {
 
   useEffect(() => {
     if (!navigatingTo) return;
+    const expectedPath = GUIDE_MAP[navigatingTo];
+    const nextStepConfig = TOUR_STEPS.find((s) => s.pageId === navigatingTo);
+    const selector = nextStepConfig?.highlightSelector;
+    const interval = setInterval(() => {
+      if (selector) {
+        const el = document.querySelector(selector);
+        if (el) {
+          console.log("Tour Step", navigatingTo, " — DOM element", selector, "found via poll, advancing");
+          setNavigatingTo(null);
+          navigatingRef.current = null;
+          nextTourStep();
+          clearInterval(interval);
+          return;
+        }
+      }
+    }, 300);
     const timer = setTimeout(() => {
-      console.log("Tour Step", navigatingTo, " — navigation timeout, continuing");
+      console.log("Tour Step", navigatingTo, " — navigation timeout (10s), continuing");
+      clearInterval(interval);
       setNavigatingTo(null);
       navigatingRef.current = null;
       nextTourStep();
     }, 10000);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
   }, [navigatingTo, nextTourStep]);
 
   useEffect(() => {

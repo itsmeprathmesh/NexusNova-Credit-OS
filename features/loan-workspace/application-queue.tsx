@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Filter } from "lucide-react";
+import { ArrowUpRight, Filter, Inbox } from "lucide-react";
 import { applications, msmes, portfolio } from "@/data/mock-data";
 import type { UserRole } from "@/domain/types";
 import { formatCurrency } from "@/lib/format";
@@ -64,6 +64,13 @@ export function ApplicationQueue({ role }: { role: UserRole }) {
       </Panel>
 
       <Panel title="Cases">
+        {applications.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <Inbox className="mb-3 h-12 w-12 text-muted/30" />
+            <p className="text-base font-semibold text-muted">No applications in queue</p>
+            <p className="mt-1 text-sm text-muted/60">New MSME credit applications will appear here.</p>
+          </div>
+        ) : (
         <div className="overflow-hidden rounded-lg border border-line">
           <div className="hidden grid-cols-[1.2fr_1fr_0.8fr_0.8fr_0.6fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
             <span>Borrower</span>
@@ -102,6 +109,7 @@ export function ApplicationQueue({ role }: { role: UserRole }) {
             })}
           </div>
         </div>
+        )}
       </Panel>
     </div>
   );

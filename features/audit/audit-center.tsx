@@ -69,6 +69,7 @@ export function AuditCenter() {
             <input
               className="min-h-11 w-full rounded-lg border border-line bg-white pl-10 pr-3 text-sm outline-none focus:border-trust"
               placeholder="Search actors, actions, rationale..."
+              aria-label="Search audit events"
               value={filter.search}
               onChange={(e) => setFilter((prev) => ({ ...prev, search: e.target.value }))}
             />

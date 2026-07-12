@@ -1,16 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import { LogOut, RefreshCw, User, UserRound } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { LogOut, Settings, User, UserRound } from "lucide-react";
 import type { UserRole } from "@/domain/types";
+import { useAuth, type AuthUser } from "@/contexts/auth-context";
 
-const employeeIds: Record<UserRole, string> = {
-  "loan-officer": "LO-1187",
-  manager: "MGR-2041"
-};
-
-export function UserMenu({ currentRole }: { currentRole: UserRole }) {
+export function UserMenu({ currentRole, user }: { currentRole: UserRole; user?: AuthUser | null }) {
+  const { logout } = useAuth();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -24,8 +23,15 @@ export function UserMenu({ currentRole }: { currentRole: UserRole }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleLogout = useCallback(() => {
+    logout();
+    setOpen(false);
+    router.push("/staff-login");
+  }, [logout, router]);
+
   const label = currentRole === "loan-officer" ? "Loan Officer" : "Manager";
-  const employeeId = employeeIds[currentRole];
+  const displayName = user?.name ?? label;
+  const displayId = user?.employeeId ?? (currentRole === "loan-officer" ? "LO-1187" : "MGR-2041");
 
   return (
     <div ref={ref} className="relative">
@@ -46,37 +52,27 @@ export function UserMenu({ currentRole }: { currentRole: UserRole }) {
                 <User className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-ink">{employeeId}</p>
-                <p className="text-xs text-muted">{label}</p>
+                <p className="text-sm font-semibold text-ink">{displayName}</p>
+                <p className="text-xs text-muted">{displayId} · {label}</p>
               </div>
             </div>
           </div>
 
           <div className="p-1.5">
-            <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">Switch Role</p>
-            {(["loan-officer", "manager"] as UserRole[]).map((role) => {
-              const roleLabel = role === "loan-officer" ? "Loan Officer" : "Manager";
-              const isCurrent = role === currentRole;
-              return (
-                <Link
-                  key={role}
-                  href={`/command-center?role=${role}`}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                    isCurrent ? "bg-trust-light text-trust font-medium" : "text-muted hover:bg-white/[0.04] hover:text-ink"
-                  }`}
-                >
-                  <RefreshCw className={`h-3.5 w-3.5 ${isCurrent ? "text-trust" : "text-muted"}`} />
-                  {roleLabel}
-                  {isCurrent && <span className="ml-auto text-[10px] text-trust">Active</span>}
-                </Link>
-              );
-            })}
+            <Link
+              href="/settings"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition-colors hover:bg-white/[0.04] hover:text-ink"
+            >
+              <Settings className="h-3.5 w-3.5" />
+              Settings
+            </Link>
           </div>
 
           <div className="border-t border-white/[0.06] p-1.5">
             <button
               type="button"
-              onClick={() => alert("[NexusNova] Logout placeholder. In production, this would end the session.")}
+              onClick={handleLogout}
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition-colors hover:bg-white/[0.04] hover:text-danger"
             >
               <LogOut className="h-3.5 w-3.5" />
