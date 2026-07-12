@@ -50,7 +50,7 @@ export function ApplicationQueue({ role }: { role: UserRole }) {
                     className={
                       index === 0
                         ? "rounded-md bg-trust px-3 py-1.5 text-xs font-semibold text-white"
-                        : "rounded-md border border-line bg-white px-3 py-1.5 text-xs font-semibold text-muted"
+                        : "rounded-md border border-line bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-muted"
                     }
                     type="button"
                   >
@@ -72,7 +72,7 @@ export function ApplicationQueue({ role }: { role: UserRole }) {
           </div>
         ) : (
         <div className="overflow-hidden rounded-lg border border-line">
-          <div className="hidden grid-cols-[1.2fr_1fr_0.8fr_0.8fr_0.6fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
+          <div className="hidden grid-cols-[1.2fr_1fr_0.8fr_0.8fr_0.6fr] gap-4 bg-white/[0.04] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
             <span>Borrower</span>
             <span>Request</span>
             <span>Priority</span>
@@ -88,7 +88,7 @@ export function ApplicationQueue({ role }: { role: UserRole }) {
                 <Link
                   key={application.id}
                   href={`/applications/${application.id}?role=${role}`}
-                  className="grid gap-3 px-4 py-4 transition hover:bg-slate-50 lg:grid-cols-[1.2fr_1fr_0.8fr_0.8fr_0.6fr] lg:items-center"
+                  className="grid gap-3 px-4 py-4 transition hover:bg-white/[0.04] lg:grid-cols-[1.2fr_1fr_0.8fr_0.8fr_0.6fr] lg:items-center"
                 >
                   <div>
                     <p className="font-semibold">{msme?.name}</p>

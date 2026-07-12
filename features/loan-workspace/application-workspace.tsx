@@ -295,7 +295,7 @@ export function ApplicationWorkspace({
             ]}
           />
           <div className="overflow-hidden rounded-lg border border-line">
-            <div className="hidden grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] gap-2 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
+            <div className="hidden grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] gap-2 bg-white/[0.04] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
               <span>Period</span>
               <span>Revenue</span>
               <span>GST</span>
@@ -352,7 +352,7 @@ export function ApplicationWorkspace({
                 <textarea
                   value={rationale}
                   onChange={(event) => setRationale(event.target.value)}
-                  className="mt-2 min-h-28 w-full rounded-md border border-line bg-white p-3 text-sm outline-none focus:border-trust"
+                  className="mt-2 min-h-28 w-full rounded-md border border-line bg-white/[0.04] p-3 text-sm text-ink outline-none focus:border-trust"
                   placeholder="Explain why the human decision differs from the AI recommendation."
                 />
               </label>
@@ -462,7 +462,7 @@ export function ApplicationWorkspace({
               </p>
             </div>
           </div>
-          <div className="rounded-lg border border-line bg-slate-50 p-4">
+          <div className="rounded-lg border border-line bg-white/[0.04] p-4">
             <div className="flex items-start gap-3">
               <Scale className="mt-1 h-5 w-5 text-trust" />
               <div>

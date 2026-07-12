@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { BackButton } from "@/components/ui/back-button";
 import { ReportDetail } from "@/features/reporting/report-detail";
 import { parseRole } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -26,11 +26,11 @@ export default async function ReportDetailPage({
 
   return (
     <AppShell active="reporting" role={role} allowedRoles={["manager"]}>
-      <div className="space-y-6">
-        <Link href="/reporting" className="inline-flex items-center gap-2 text-sm font-semibold text-trust">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Reporting Center
-        </Link>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <BackButton fallbackHref={`/reporting?role=${role}`} />
+          <Breadcrumbs />
+        </div>
         <ReportDetail reportId={reportId} />
       </div>
     </AppShell>

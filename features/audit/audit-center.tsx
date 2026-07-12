@@ -67,7 +67,7 @@ export function AuditCenter() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input
-              className="min-h-11 w-full rounded-lg border border-line bg-white pl-10 pr-3 text-sm outline-none focus:border-trust"
+              className="min-h-11 w-full rounded-lg border border-line bg-white/[0.04] pl-10 pr-3 text-sm text-ink outline-none focus:border-trust"
               placeholder="Search actors, actions, rationale..."
               aria-label="Search audit events"
               value={filter.search}
@@ -84,7 +84,7 @@ export function AuditCenter() {
                     type="button"
                     onClick={() => toggleRole(role)}
                     className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition ${
-                      filter.roles.includes(role) ? "border-trust bg-trust/10 text-trust" : "border-line bg-white text-muted hover:bg-slate-50"
+                      filter.roles.includes(role) ? "border-trust bg-trust/10 text-trust" : "border-line bg-white/[0.04] text-muted hover:bg-white/[0.08]"
                     }`}
                   >
                     {role === "loan-officer" ? "Loan Officer" : "Manager"}
@@ -101,7 +101,7 @@ export function AuditCenter() {
                     type="button"
                     onClick={() => toggleAction(action)}
                     className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition ${
-                      filter.actions.includes(action) ? "border-trust bg-trust/10 text-trust" : "border-line bg-white text-muted hover:bg-slate-50"
+                      filter.actions.includes(action) ? "border-trust bg-trust/10 text-trust" : "border-line bg-white/[0.04] text-muted hover:bg-white/[0.08]"
                     }`}
                   >
                     {action}
@@ -137,7 +137,7 @@ function AuditEventRow({ event }: { event: AuditEvent }) {
     <Panel className="cursor-pointer transition hover:border-trust/30" onClick={() => setExpanded(!expanded)}>
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-3">
-          <div className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-100">
+          <div className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/[0.06]">
             <Clock className="h-4 w-4 text-muted" />
           </div>
           <div>
@@ -152,7 +152,7 @@ function AuditEventRow({ event }: { event: AuditEvent }) {
         </div>
       </div>
       {expanded && (
-        <div className="mt-4 rounded-lg border border-line bg-slate-50 p-4">
+        <div className="mt-4 rounded-lg border border-line bg-white/[0.04] p-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">Rationale</p>
           <p className="mt-2 text-sm leading-6 text-ink">{event.rationale}</p>
           <div className="mt-3 grid grid-cols-3 gap-4 text-xs">

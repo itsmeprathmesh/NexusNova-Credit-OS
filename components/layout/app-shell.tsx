@@ -56,50 +56,60 @@ interface NavGroup {
   isExecutive?: boolean;
 }
 
-const navGroups: NavGroup[] = [
-  {
+function buildNavGroups(role: UserRole): NavGroup[] {
+  const groups: NavGroup[] = [];
+
+  groups.push({
     label: "Workspace",
-    roles: ["loan-officer"],
+    roles: ["loan-officer", "manager"],
     items: [
-      { href: "/command-center", label: "Dashboard", icon: LayoutDashboard, highlight: "AI Hub" },
-      { href: "/applications", label: "Applications Queue", icon: ClipboardList, highlight: "AI Ready" },
-      { href: "/applications/app-1001", label: "Financial Health Card", icon: Activity, highlight: "AI Score" },
-      { href: "/applications/app-1001/production-memo", label: "Credit Memo", icon: FileText, highlight: "Auto-Gen" },
-      { href: "/applications/app-1001/timeline", label: "Decision Timeline", icon: Clock, highlight: "Audit Trail" },
+      { href: "/command-center", label: role === "manager" ? "Command Center" : "Dashboard", icon: LayoutDashboard, highlight: "AI Hub" },
+      { href: "/applications", label: role === "manager" ? "Pending Approvals" : "Applications Queue", icon: ClipboardList, highlight: role === "manager" ? "Queue" : "AI Ready" },
     ],
-  },
-  {
-    label: "Intelligence",
-    roles: ["loan-officer"],
+  });
+
+  if (role === "loan-officer") {
+    groups.push({
+      label: "Credit Assessment",
+      roles: ["loan-officer"],
+      items: [
+        { href: "/applications/app-1001", label: "Financial Health Card", icon: Activity, highlight: "AI Score" },
+        { href: "/portfolio/msme-aurora", label: "Customer 360", icon: Users, highlight: "Full View" },
+        { href: "/applications/app-1001/production-memo", label: "Credit Memo", icon: FileText, highlight: "Auto-Gen" },
+        { href: "/applications/app-1001/timeline", label: "Decision Timeline", icon: Clock, highlight: "Audit Trail" },
+      ],
+    });
+  }
+
+  if (role === "manager") {
+    groups.push({
+      label: "Portfolio",
+      roles: ["manager"],
+      items: [
+        { href: "/portfolio", label: "Portfolio Intelligence", icon: BriefcaseBusiness, highlight: "Analytics" },
+        { href: "/portfolio/msme-aurora", label: "Customer 360", icon: Users, highlight: "Drilldown" },
+      ],
+    });
+  }
+
+  groups.push({
+    label: "Reports",
+    roles: ["loan-officer", "manager"],
     items: [
-      { href: "/portfolio/msme-aurora", label: "Customer 360", icon: Users, highlight: "Full View" },
-      { href: "/notifications", label: "Notifications", icon: Bell, highlight: "Alerts" },
-    ],
-  },
-  {
-    label: "Overview",
-    roles: ["manager"],
-    items: [
-      { href: "/command-center", label: "Command Center", icon: LayoutDashboard, highlight: "AI Hub" },
-      { href: "/applications", label: "Pending Approvals", icon: ClipboardList, highlight: "Queue" },
-      { href: "/portfolio", label: "Portfolio Intelligence", icon: BriefcaseBusiness, highlight: "Analytics" },
-      { href: "/portfolio/msme-aurora", label: "Customer 360", icon: Users, highlight: "Drilldown" },
-    ],
-  },
-  {
-    label: "Monitoring",
-    roles: ["manager"],
-    items: [
-      { href: "/reporting", label: "Reports", icon: BarChart3, highlight: "Summary" },
+      ...(role === "loan-officer" ? [{ href: "/notifications", label: "Notifications", icon: Bell, highlight: "Alerts" as const }] : []),
+      { href: "/reporting", label: "Reports Center", icon: BarChart3, highlight: "Summary" },
       { href: "/reporting/executive", label: "Executive Dashboard", icon: TrendingUp, highlight: "Board" },
       { href: "/audit", label: "Audit Center", icon: FileText, highlight: "Compliance" },
-      { href: "/notifications", label: "Notifications", icon: Bell, highlight: "Alerts" },
+      ...(role === "manager" ? [{ href: "/notifications", label: "Notifications", icon: Bell, highlight: "Alerts" as const }] : []),
     ],
-  },
-];
+  });
+
+  return groups;
+}
 
 function getVisibleGroups(role: UserRole): NavGroup[] {
-  return navGroups.filter((g) => g.roles.includes(role));
+  const allGroups = buildNavGroups(role);
+  return allGroups.filter((g) => g.roles.includes(role));
 }
 
 function getAllNavItems(role: UserRole): NavItem[] {
@@ -110,14 +120,6 @@ const roleLabels: Record<UserRole, string> = {
   "loan-officer": "Loan Officer",
   manager: "Manager",
 };
-
-function formatTime(date: Date) {
-  return date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
-}
-
-function getBranch(): string {
-  return "Mumbai Main Branch";
-}
 
 export function AppShell({
   children,
@@ -136,10 +138,10 @@ export function AppShell({
   const { user, isAuthenticated, isLoading } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [lastRefresh] = useState("2 min ago");
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [overflowOpen, setOverflowOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
+  const overflowRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -149,13 +151,19 @@ export function AppShell({
   const canAccess = !allowedRoles || allowedRoles.includes(effectiveRole);
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 30000);
-    return () => clearInterval(timer);
-  }, []);
+    setMobileOpen(false);
+    setOverflowOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+    function handleClickOutside(event: MouseEvent) {
+      if (overflowRef.current && !overflowRef.current.contains(event.target as Node)) {
+        setOverflowOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
@@ -410,7 +418,7 @@ export function AppShell({
       )}>
         <header className="sticky top-0 z-20 px-4 pt-3 sm:px-6">
           <div className="glass-surface flex items-center justify-between gap-2 rounded-2xl px-4 py-2.5 shadow-glass sm:gap-3 sm:px-5 sm:py-3">
-            {/* Left: Mobile menu + Brand */}
+            {/* Left: Mobile menu + Home */}
             <div className="flex items-center gap-3 min-w-0">
               <button
                 type="button"
@@ -420,116 +428,88 @@ export function AppShell({
               >
                 <LayoutDashboard className="h-4 w-4" />
               </button>
-              <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-                  IDBI Innovate 2026 PS-3
-                </p>
-                <h1 className="text-sm font-semibold text-ink truncate">
-                  NexusNova MSME Financial Health Card
-                </h1>
-              </div>
+              <Link
+                href="/"
+                className="flex items-center gap-2 rounded-xl px-2 py-1 text-xs font-semibold text-muted hover:text-ink transition-colors"
+                aria-label="Home"
+              >
+                <Activity className="h-4 w-4 text-trust" />
+                <span className="hidden sm:inline">Home</span>
+              </Link>
             </div>
 
             {/* Right: Actions */}
             <div className="flex items-center gap-1.5 sm:gap-2">
-              {/* Branch + Time */}
-              <div className="hidden items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-xs text-muted xl:flex">
-                <Clock className="h-3 w-3" aria-hidden="true" />
-                <span>{formatTime(currentTime)}</span>
-                <span className="text-white/[0.12]">|</span>
-                <span className="truncate max-w-[120px]" title={getBranch()}>{getBranch()}</span>
-              </div>
-
-              {/* AI Refresh */}
-              <div className="hidden items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-[10px] text-muted md:flex" title="Last AI model refresh">
-                <RefreshCw className="h-3 w-3 text-growth" aria-hidden="true" />
-                <span className="hidden sm:inline">AI</span>
-                <span>{lastRefresh}</span>
-              </div>
-
-              {/* Tour (demo only) */}
-              {isDemoMode && (
-                <button
-                  onClick={startTour}
-                  className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-muted transition-all hover:bg-white/[0.08] hover:text-ink active:scale-[0.97]"
-                  aria-label="Start guided tour"
-                >
-                  <MonitorPlay className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span className="hidden sm:inline">Tour</span>
-                </button>
-              )}
-
-              {/* Help */}
-              <Link
-                href="/help"
-                className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-muted transition-all hover:bg-white/[0.08] hover:text-ink active:scale-[0.97]"
-                aria-label="Open help center"
-              >
-                <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden sm:inline">Help</span>
-              </Link>
-
-              {/* Judge mode */}
-              <button
-                onClick={toggleJudgeMode}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium transition-all active:scale-[0.97]",
-                  isJudgeMode
-                    ? "border-trust/30 bg-trust-light text-trust"
-                    : "border-white/[0.06] bg-white/[0.04] text-muted hover:bg-white/[0.08] hover:text-ink"
-                )}
-                aria-label={isJudgeMode ? "Disable judge mode" : "Enable judge mode"}
-              >
-                <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className={cn(isJudgeMode ? "" : "hidden sm:inline")}>
-                  {isJudgeMode ? "Judge On" : "Judge"}
-                </span>
-              </button>
-
-              {/* Demo mode */}
-              <button
-                onClick={toggleDemoMode}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium transition-all active:scale-[0.97]",
-                  isDemoMode
-                    ? "border-trust/30 bg-trust-light text-trust"
-                    : "border-white/[0.06] bg-white/[0.04] text-muted hover:bg-white/[0.08] hover:text-ink"
-                )}
-                aria-label={isDemoMode ? "Exit demo mode" : "Enter demo mode"}
-              >
-                <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className={isDemoMode ? "" : "hidden sm:inline"}>
-                  {isDemoMode ? "Demo On" : "Demo"}
-                </span>
-              </button>
-
-              {isDemoMode && (
-                <button
-                  onClick={() => {
-                    endDemoSession();
-                    window.location.href = "/";
-                  }}
-                  className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-muted transition-all hover:bg-white/[0.08] hover:text-ink active:scale-[0.97]"
-                  aria-label="Reset demo data"
-                >
-                  <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span className="hidden sm:inline">Reset</span>
-                </button>
-              )}
-
-              <div className="h-6 w-px bg-white/[0.06]" aria-hidden="true" />
-
               <SearchBar />
               <NotificationCenter />
 
-              {/* Role badges */}
+              {/* Role badge */}
               <div className="hidden items-center gap-1.5 sm:flex">
-                <span className="rounded-lg border border-caution/20 bg-caution-light/50 px-2 py-1 text-[10px] font-semibold text-caution">
-                  1 urgent
-                </span>
                 <span className="rounded-lg border border-trust/20 bg-trust-light/50 px-2 py-1 text-[10px] font-semibold text-trust">
-                  {user?.name ?? roleLabels[role]}
+                  {user?.name ?? roleLabels[effectiveRole]}
                 </span>
+              </div>
+
+              {/* Overflow menu */}
+              <div className="relative" ref={overflowRef}>
+                <button
+                  type="button"
+                  onClick={() => setOverflowOpen(!overflowOpen)}
+                  className="grid min-h-9 min-w-9 place-items-center rounded-xl text-muted transition-all duration-200 hover:bg-white/[0.06] hover:text-ink active:scale-[0.95]"
+                  aria-label="More options"
+                >
+                  <HelpCircle className="h-4 w-4" />
+                </button>
+                {overflowOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-white/[0.08] bg-panel shadow-glass animate-scale-in z-50">
+                    <div className="p-1.5 space-y-0.5">
+                      <Link
+                        href="/help"
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted hover:bg-white/[0.04] hover:text-ink transition-colors"
+                        onClick={() => setOverflowOpen(false)}
+                      >
+                        <HelpCircle className="h-4 w-4" />
+                        Help Center
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => { toggleJudgeMode(); setOverflowOpen(false); }}
+                        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${isJudgeMode ? "bg-trust-light/20 text-trust" : "text-muted hover:bg-white/[0.04] hover:text-ink"}`}
+                      >
+                        <Eye className="h-4 w-4" />
+                        {isJudgeMode ? "Judge Mode On" : "Judge Mode"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { toggleDemoMode(); setOverflowOpen(false); }}
+                        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${isDemoMode ? "bg-trust-light/20 text-trust" : "text-muted hover:bg-white/[0.04] hover:text-ink"}`}
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        {isDemoMode ? "Demo On" : "Demo Mode"}
+                      </button>
+                      {isDemoMode && (
+                        <button
+                          type="button"
+                          onClick={() => { endDemoSession(); setOverflowOpen(false); window.location.href = "/"; }}
+                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted hover:bg-white/[0.04] hover:text-ink transition-colors"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                          Reset Demo
+                        </button>
+                      )}
+                      {isDemoMode && (
+                        <button
+                          type="button"
+                          onClick={() => { startTour(); setOverflowOpen(false); }}
+                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted hover:bg-white/[0.04] hover:text-ink transition-colors"
+                        >
+                          <MonitorPlay className="h-4 w-4" />
+                          Guided Tour
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <Link

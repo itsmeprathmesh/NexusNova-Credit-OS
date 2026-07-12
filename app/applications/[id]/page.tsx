@@ -1,6 +1,8 @@
 import { lazy } from "react";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { BackButton } from "@/components/ui/back-button";
 import { applications, documents, financialSignals, msmes } from "@/data/mock-data";
 import { parseRole } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -35,12 +37,18 @@ export default async function ApplicationDetailPage({
 
   return (
     <AppShell active="applications" role={role}>
-      <ApplicationWorkspace
-        application={application}
-        msme={msme}
-        documents={documents.filter((document) => document.applicationId === application.id)}
-        signals={signals}
-      />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <BackButton fallbackHref={`/applications?role=${role}`} />
+          <Breadcrumbs />
+        </div>
+        <ApplicationWorkspace
+          application={application}
+          msme={msme}
+          documents={documents.filter((document) => document.applicationId === application.id)}
+          signals={signals}
+        />
+      </div>
     </AppShell>
   );
 }

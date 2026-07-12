@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { BackButton } from "@/components/ui/back-button";
 import { applications, financialSignals, getCustomer360, msmes, portfolio } from "@/data/mock-data";
 import { MsmeDrilldown } from "@/features/portfolio/msme-drilldown";
 import { parseRole } from "@/lib/utils";
@@ -31,7 +33,13 @@ export default async function PortfolioDrilldownPage({
 
   return (
     <AppShell active="portfolio" role={role} allowedRoles={["loan-officer", "manager"]}>
-      <MsmeDrilldown msme={msme} portfolioItem={portfolioItem} role={role} snapshot={snapshot} signals={signals} application={application} />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <BackButton fallbackHref={`/portfolio?role=${role}`} />
+          <Breadcrumbs />
+        </div>
+        <MsmeDrilldown msme={msme} portfolioItem={portfolioItem} role={role} snapshot={snapshot} signals={signals} application={application} />
+      </div>
     </AppShell>
   );
 }

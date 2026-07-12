@@ -110,39 +110,36 @@ export function PortfolioDashboard({ role }: { role: UserRole }) {
 
       <div className="rounded-lg border border-line bg-panel p-5 shadow-sm">
         <h2 className="mb-4 text-base font-semibold text-ink">Sector & Branch Exposure</h2>
-        <div className="rounded-lg border border-line bg-panel p-5 shadow-sm">
-          <h2 className="mb-4 text-base font-semibold text-ink">Sector & Branch Exposure</h2>
-          {enriched.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <Inbox className="mb-3 h-12 w-12 text-muted/30" />
-              <p className="text-base font-semibold text-muted">No MSME data available</p>
-              <p className="mt-1 text-sm text-muted/60">Portfolio data will appear once MSMEs are onboarded.</p>
-            </div>
-          ) : (
-          <div className="overflow-hidden rounded-lg border border-line">
-            <div className="grid grid-cols-[1.1fr_1fr_1fr_0.8fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted">
-              <span>MSME</span>
-              <span>Sector</span>
-              <span>Branch</span>
-              <span>Exposure</span>
-            </div>
-            <div className="divide-y divide-line">
-              {enriched.map((item) => (
-                <Link
-                  key={item.msmeId}
-                  href={`/portfolio/${item.msmeId}?role=${role}`}
-                  className="grid grid-cols-[1.1fr_1fr_1fr_0.8fr] gap-4 px-4 py-3 text-sm transition hover:bg-slate-50"
-                >
-                  <span className="font-semibold text-ink">{item.name}</span>
-                  <span className="text-muted">{item.sector}</span>
-                  <span className="text-muted">{item.branch}</span>
-                  <span className="text-muted">{formatCurrency(item.exposure)}</span>
-                </Link>
-              ))}
-            </div>
+        {enriched.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <Inbox className="mb-3 h-12 w-12 text-muted/30" />
+            <p className="text-base font-semibold text-muted">No MSME data available</p>
+            <p className="mt-1 text-sm text-muted/60">Portfolio data will appear once MSMEs are onboarded.</p>
           </div>
-          )}
+        ) : (
+        <div className="overflow-hidden rounded-lg border border-line">
+          <div className="grid grid-cols-[1.1fr_1fr_1fr_0.8fr] gap-4 bg-white/[0.04] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted">
+            <span>MSME</span>
+            <span>Sector</span>
+            <span>Branch</span>
+            <span>Exposure</span>
+          </div>
+          <div className="divide-y divide-line">
+            {enriched.map((item) => (
+              <Link
+                key={item.msmeId}
+                href={`/portfolio/${item.msmeId}?role=${role}`}
+                className="grid grid-cols-[1.1fr_1fr_1fr_0.8fr] gap-4 px-4 py-3 text-sm transition hover:bg-white/[0.04]"
+              >
+                <span className="font-semibold text-ink">{item.name}</span>
+                <span className="text-muted">{item.sector}</span>
+                <span className="text-muted">{item.branch}</span>
+                <span className="text-muted">{formatCurrency(item.exposure)}</span>
+              </Link>
+            ))}
+          </div>
         </div>
+        )}
       </div>
     </div>
   );

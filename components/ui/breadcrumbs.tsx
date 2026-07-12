@@ -23,7 +23,23 @@ const labelMap: Record<string, string> = {
   support: "AI Support",
   login: "Login",
   register: "Register",
-  status: "Application Status"
+  status: "Application Status",
+  "app-1001": "APP-1001",
+  "msme-aurora": "Aurora Precision Tools",
+  "msme-kaveri": "Kaveri Engineering",
+  "msme-saral": "Saral Diagnostics",
+  "msme-lotus": "Lotus Fabrics",
+  "msme-greenearth": "GreenEarth Agri",
+  "msme-digibake": "DigiBake Foods",
+  "msme-surya": "Surya Electronics",
+  "msme-": "MSME",
+  settings: "Settings",
+  profile: "Profile",
+  help: "Help Center",
+  notifications: "Notifications",
+  "business-impact": "Business Impact",
+  "ps-3-alignment": "PS-3 Alignment",
+  "demo-complete": "Demo Complete",
 };
 
 export function Breadcrumbs({ className }: { className?: string }) {

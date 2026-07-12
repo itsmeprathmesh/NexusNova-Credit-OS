@@ -65,7 +65,7 @@ export function ReportingCenter() {
             <Link key={report.id} href={`/reporting/${report.id}`} className="block">
               <Panel className="h-full cursor-pointer transition hover:border-trust/30">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="grid h-10 w-10 place-items-center rounded-lg bg-slate-100 text-trust">
+                  <div className="grid h-10 w-10 place-items-center rounded-lg bg-white/[0.06] text-trust">
                     <Icon className="h-5 w-5" />
                   </div>
                   <Badge className={cn("shrink-0", categoryColors[report.category])}>
@@ -76,7 +76,7 @@ export function ReportingCenter() {
                 <p className="mt-2 text-sm leading-6 text-muted">{report.description}</p>
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   {report.sections.map((section) => (
-                    <span key={section} className="rounded-md border border-line bg-white px-2 py-0.5 text-xs text-muted">
+                    <span key={section} className="rounded-md border border-line bg-white/[0.04] px-2 py-0.5 text-xs text-muted">
                       {section}
                     </span>
                   ))}
@@ -94,7 +94,7 @@ export function ReportingCenter() {
               key={label}
               type="button"
               onClick={() => alert(`[NexusNova] Export initiated: ${label}. In production, this would download the file.`)}
-              className="rounded-lg border border-line bg-white px-4 py-3 text-sm font-semibold text-trust transition hover:bg-trust hover:text-white"
+              className="rounded-lg border border-line bg-white/[0.04] px-4 py-3 text-sm font-semibold text-trust transition hover:bg-trust hover:text-white"
             >
               {label}
             </button>
