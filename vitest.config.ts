@@ -6,5 +6,8 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname)
     }
+  },
+  test: {
+    exclude: ["node_modules", "tests"]
   }
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -140,6 +140,7 @@ export function AppShell({
   const [lastRefresh] = useState("2 min ago");
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const navRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const pathname = usePathname();
 
   const effectiveRole = user?.role ?? role;
@@ -179,9 +180,9 @@ export function AppShell({
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      window.location.href = "/staff-login";
+      router.replace("/staff-login");
     }
-  }, [isLoading, isAuthenticated]);
+  }, [isLoading, isAuthenticated, router]);
 
   if (isLoading) {
     return (

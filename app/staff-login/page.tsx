@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,12 +57,18 @@ export default function StaffLoginPage() {
     const result = await login(employeeId.trim(), password);
     if (result.success) {
       setStatus("success");
-      setTimeout(() => router.push("/command-center"), 800);
+      setTimeout(() => router.replace("/command-center"), 800);
     } else {
       setStatus("error");
       setErrorMsg(result.error ?? "Login failed. Please try again.");
     }
   }, [employeeId, password, login, router]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/command-center");
+    }
+  }, [isAuthenticated, router]);
 
   if (isAuthenticated) {
     return (
