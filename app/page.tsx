@@ -39,6 +39,7 @@ import { CountUp } from "@/components/ui/count-up";
 import { Badge } from "@/components/ui/primitives";
 import { FeatureHighlight } from "@/components/demo/feature-highlight";
 import { useDemoMode } from "@/contexts/demo-mode";
+import { useDemoSession } from "@/contexts/demo-session";
 import { useJudge, FeatureDiscoveryBar, RecommendedNext } from "@/features/judge-experience";
 import { FinancialHealthCard, AlternateDataGrid, CreditVisibilityScore, NtcDetection, EcosystemIntegrations } from "@/components/financial-health";
 import { computeAlternateDataSignals, computeNtcNtbProfile } from "@/services/alternate-data";
@@ -77,23 +78,22 @@ const customerJourney = [
 ];
 
 export default function HomePage() {
-  const { isDemoMode, enableDemoMode, startOnboarding } = useDemoMode();
+  const { isDemoMode, startOnboarding } = useDemoMode();
   const { startTour, toggleJudgeMode } = useJudge();
+  const { startDemoSession } = useDemoSession();
   const demoActive = isDemoMode || isSeeded();
   const [msmeIndex, setMsmeIndex] = useState(0);
 
   const handleDemo = useCallback(() => {
-    seedDemoData();
-    enableDemoMode();
+    startDemoSession();
     setTimeout(() => startOnboarding(), 300);
-  }, [enableDemoMode, startOnboarding]);
+  }, [startDemoSession, startOnboarding]);
 
   const handleFullDemo = useCallback(() => {
-    seedDemoData();
-    enableDemoMode();
+    startDemoSession();
     toggleJudgeMode();
     setTimeout(() => startTour(), 500);
-  }, [enableDemoMode, toggleJudgeMode, startTour]);
+  }, [startDemoSession, toggleJudgeMode, startTour]);
 
   const currentMsme = msmes[msmeIndex];
   const currentSignals = financialSignals[msmeIndex];

@@ -22,6 +22,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (employeeId: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginDirect: (employeeId: string) => void;
   logout: () => void;
 }
 
@@ -30,6 +31,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 const DEMO_CREDENTIALS: Record<string, { password: string; role: UserRole; name: string; branch: string }> = {
   LO1001: { password: "demo123", role: "loan-officer", name: "Rahul Sharma", branch: "Mumbai Main Branch" },
   MG2001: { password: "demo123", role: "manager", name: "Anita Desai", branch: "Mumbai Main Branch" },
+  EX3001: { password: "demo123", role: "manager", name: "Vikram Mehta", branch: "Mumbai Main Branch" },
 };
 
 const STORAGE_KEY = "nexusnova-auth";
@@ -74,6 +76,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true };
   }, []);
 
+  const loginDirect = useCallback((employeeId: string) => {
+    const creds = DEMO_CREDENTIALS[employeeId];
+    if (!creds) return;
+    const authUser: AuthUser = {
+      employeeId,
+      role: creds.role,
+      name: creds.name,
+      branch: creds.branch,
+    };
+    setUser(authUser);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(authUser)); } catch {}
+  }, []);
+
   const logout = useCallback(() => {
     setUser(null);
     try {
@@ -82,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, loginDirect, logout }}>
       {children}
     </AuthContext.Provider>
   );

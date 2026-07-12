@@ -7,6 +7,23 @@ import { useJudge } from "./guide-provider";
 import { TOUR_STEPS } from "./guide-config";
 import { useRouter, usePathname } from "next/navigation";
 import { useOnboarding } from "./onboarding-provider";
+import { useDemoSession } from "@/contexts/demo-session";
+
+const TOUR_ROLE_MAP: Record<string, string> = {
+  "customer-dashboard": "customer",
+  "customer-apply": "customer",
+  "customer-documents": "customer",
+  "customer-status": "customer",
+  "command-center": "loan-officer",
+  "application-workspace": "loan-officer",
+  "production-memo": "loan-officer",
+  "timeline": "loan-officer",
+  portfolio: "manager",
+  "portfolio-msme": "manager",
+  audit: "manager",
+  reporting: "manager",
+  "executive-dashboard": "manager",
+};
 
 const GUIDE_MAP: Record<string, string> = {
   home: "/",
@@ -112,6 +129,7 @@ export function TourEngine() {
   const { tourActive, tourStep, tourTotalSteps, nextTourStep, prevTourStep, endTour } =
     useJudge();
   const { openFinish } = useOnboarding();
+  const { switchDemoRole, endDemoSession } = useDemoSession();
   const router = useRouter();
   const pathname = usePathname();
   const step = TOUR_STEPS[tourStep];
@@ -122,6 +140,8 @@ export function TourEngine() {
     if (tourStep >= TOUR_STEPS.length - 1) return;
     const nextStep = TOUR_STEPS[tourStep + 1];
     if (!nextStep) return;
+    const role = TOUR_ROLE_MAP[nextStep.pageId];
+    if (role) switchDemoRole(role as any);
     const targetPath = GUIDE_MAP[nextStep.pageId];
     if (!targetPath) {
       console.log("Tour Step", nextStep.pageId, " — no route mapped, advancing without navigation");
@@ -139,12 +159,13 @@ export function TourEngine() {
     setNavigatingTo(nextStep.pageId);
     navigatingRef.current = nextStep.pageId;
     router.push(targetPath);
-  }, [tourStep, nextTourStep, pathname, router]);
+  }, [tourStep, nextTourStep, pathname, router, switchDemoRole]);
 
   const handleFinish = useCallback(() => {
     endTour();
+    endDemoSession();
     setTimeout(() => openFinish(), 300);
-  }, [endTour, openFinish]);
+  }, [endTour, endDemoSession, openFinish]);
 
   useEffect(() => {
     if (!navigatingTo) return;

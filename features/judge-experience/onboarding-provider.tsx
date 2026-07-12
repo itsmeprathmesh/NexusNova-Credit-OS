@@ -11,6 +11,7 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { useJudge } from "./guide-provider";
+import { useDemoSession } from "@/contexts/demo-session";
 import { TOUR_STEPS, CHECKLIST } from "./guide-config";
 
 export interface OnboardingStats {
@@ -143,11 +144,13 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const { startDemoSession } = useDemoSession();
   const startOnboardingTour = useCallback(() => {
     setShowWelcome(false);
+    startDemoSession();
     toggleJudgeMode();
     setTimeout(() => startTour(), 300);
-  }, [toggleJudgeMode, startTour]);
+  }, [startDemoSession, toggleJudgeMode, startTour]);
 
   const openFinish = useCallback(() => {
     setShowFinish(true);

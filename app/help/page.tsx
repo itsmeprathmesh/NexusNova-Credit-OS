@@ -39,6 +39,7 @@ import { Badge } from "@/components/ui/primitives";
 import { useAuth } from "@/contexts/auth-context";
 import { useJudge, GUIDES } from "@/features/judge-experience";
 import { useDemoMode } from "@/contexts/demo-mode";
+import { useDemoSession } from "@/contexts/demo-session";
 
 const faqs = [
   { q: "How does NexusNova assess credit-invisible MSMEs?", a: "NexusNova uses alternate data — GST returns, UPI transactions, Account Aggregator bank statements, EPFO payroll data, and utility bills — to build a comprehensive Financial Health Card for each MSME, replacing traditional credit scores and ITR-based assessments." },
@@ -94,6 +95,7 @@ export default function HelpPage() {
   const { user } = useAuth();
   const { startTour, toggleJudgeMode, isJudgeMode } = useJudge();
   const { toggleDemoMode, isDemoMode } = useDemoMode();
+  const { startDemoSession } = useDemoSession();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSection, setActiveSection] = useState<HelpSection>("all");
@@ -367,7 +369,7 @@ export default function HelpPage() {
                     <div className="mt-4 flex flex-wrap gap-3">
                       <button
                         type="button"
-                        onClick={() => { startTour(); router.push("/"); }}
+                        onClick={() => { startDemoSession(); startTour(); router.push("/"); }}
                         className="inline-flex items-center gap-1.5 rounded-xl bg-growth px-4 py-2.5 text-sm font-semibold text-canvas shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)] active:scale-[0.97]"
                       >
                         <PlayCircle className="h-4 w-4" />
@@ -375,7 +377,7 @@ export default function HelpPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => { toggleDemoMode(); if (!isDemoMode) router.push("/"); }}
+                        onClick={() => { if (isDemoMode) { toggleDemoMode(); router.push("/"); } else { startDemoSession(); router.push("/"); } }}
                         className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-ink transition-all hover:bg-white/[0.08] active:scale-[0.97]"
                       >
                         <RefreshCw className="h-4 w-4" />

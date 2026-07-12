@@ -6,6 +6,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { AuthProvider } from "@/contexts/auth-context";
 import { CustomerAuthProvider } from "@/contexts/customer-auth-context";
 import { DemoControlCenter } from "@/components/demo/demo-control-center";
+import { DemoSessionProvider } from "@/contexts/demo-session";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
@@ -28,10 +29,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <AuthProvider><CustomerAuthProvider><DemoShell><JudgeShell><ToastProvider>
+        <AuthProvider><CustomerAuthProvider><DemoShell><DemoSessionProvider><JudgeShell><ToastProvider>
           {children}
           <DemoControlCenter />
-        </ToastProvider></JudgeShell></DemoShell></CustomerAuthProvider></AuthProvider>
+        </ToastProvider></JudgeShell></DemoSessionProvider></DemoShell></CustomerAuthProvider></AuthProvider>
       </body>
     </html>
   );

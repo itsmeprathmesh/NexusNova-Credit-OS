@@ -25,6 +25,7 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import { useDemoMode } from "@/contexts/demo-mode";
+import { useDemoSession } from "@/contexts/demo-session";
 import { useJudge } from "@/features/judge-experience";
 import { resetDemoData } from "@/services/demo-seed";
 import { useAuth } from "@/contexts/auth-context";
@@ -38,6 +39,7 @@ const personas = [
 
 export function DemoControlCenter() {
   const { isDemoMode, toggleDemoMode } = useDemoMode();
+  const { switchDemoRole, endDemoSession } = useDemoSession();
   const { isJudgeMode, toggleJudgeMode, startTour, checklistProgress, completedPages } = useJudge();
   const { user } = useAuth();
   const router = useRouter();
@@ -67,14 +69,16 @@ export function DemoControlCenter() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const handlePersonaSwitch = useCallback((href: string) => {
+  const handlePersonaSwitch = useCallback((href: string, roleId: string) => {
     setOpen(false);
+    switchDemoRole(roleId as any);
     router.push(href);
-  }, [router]);
+  }, [router, switchDemoRole]);
 
   const handleResetDemo = useCallback(() => {
+    endDemoSession();
     window.location.href = "/";
-  }, []);
+  }, [endDemoSession]);
 
   const handleResetData = useCallback(() => {
     resetDemoData();
@@ -142,7 +146,7 @@ export function DemoControlCenter() {
                       <button
                         key={p.id}
                         type="button"
-                        onClick={() => handlePersonaSwitch(p.href)}
+                        onClick={() => handlePersonaSwitch(p.href, p.id)}
                         className="flex flex-col items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 transition-all hover:border-trust/30 hover:bg-trust-light/10 active:scale-[0.97]"
                       >
                         <Icon className="h-4 w-4 text-trust" />

@@ -30,6 +30,7 @@ import { NotificationCenter } from "@/components/ui/notification-center";
 import { UserMenu } from "@/components/ui/user-menu";
 import { QuickActions } from "@/components/ui/quick-actions";
 import { useDemoMode } from "@/contexts/demo-mode";
+import { useDemoSession } from "@/contexts/demo-session";
 import { useJudge, FeatureDiscoveryBar, RecommendedNext } from "@/features/judge-experience";
 import { BusinessOutcomePanel } from "@/components/judge/business-outcome-panel";
 import { resetDemoData } from "@/services/demo-seed";
@@ -69,6 +70,7 @@ export function AppShell({
   allowedRoles?: UserRole[];
 }) {
   const { isDemoMode, toggleDemoMode } = useDemoMode();
+  const { endDemoSession } = useDemoSession();
   const { isJudgeMode, toggleJudgeMode, openHelp, startTour } = useJudge();
   const { user, isAuthenticated, isLoading } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
@@ -326,7 +328,7 @@ export function AppShell({
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-growth" />
                   </span>
                   {!collapsed && (
-                    <span className="text-[10px] font-medium text-growth">Demo Environment</span>
+                    <span className="text-[10px] font-medium text-growth">Demo Session Active</span>
                   )}
                 </div>
               )}
@@ -437,7 +439,7 @@ export function AppShell({
               {isDemoMode && (
                 <button
                   onClick={() => {
-                    resetDemoData();
+                    endDemoSession();
                     window.location.href = "/";
                   }}
                   className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-muted transition-all hover:bg-white/[0.08] hover:text-ink active:scale-[0.97]"
