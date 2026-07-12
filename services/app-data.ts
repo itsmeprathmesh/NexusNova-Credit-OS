@@ -1,5 +1,5 @@
 import type { AuditEvent, BusinessRegistration, DecisionAction, DocumentRecord, DocumentType, LoanApplication, NotificationEvent, TimelineStage, UserRole } from "@/domain/types";
-import { documents as staticDocuments, financialSignals as staticSignals, msmes as staticMsmes } from "@/data/mock-data";
+import { applications as staticApplications, documents as staticDocuments, financialSignals as staticSignals, msmes as staticMsmes } from "@/data/mock-data";
 
 export type CustomerSession = {
   loggedIn: boolean;
@@ -14,6 +14,8 @@ let applicationIdCounter = 0;
 let notifications: NotificationEvent[] = [];
 
 let officerRequests: { applicationId: string; documentTypes: DocumentType[]; message: string; timestamp: string }[] = [];
+
+export function getApplications() { return staticApplications; }
 
 export function getSession() {
   return session;
@@ -83,10 +85,7 @@ export function submitApplication(request: {
 
   staticMsmes.push(newMsme);
 
-  const appsArray = (globalThis as any).__applications;
-  if (Array.isArray(appsArray)) {
-    appsArray.push(newApplication);
-  }
+  staticApplications.push(newApplication);
 
   staticSignals.push({
     msmeId: request.msmeId,

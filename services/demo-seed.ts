@@ -1,4 +1,4 @@
-import { addNotification, login, registerBusiness } from "./app-data";
+import { addNotification, login, registerBusiness, getApplications } from "./app-data";
 import type { BusinessRegistration } from "@/domain/types";
 
 let seeded = false;
@@ -43,11 +43,11 @@ export function seedDemoData() {
   addNotification({ type: "committee-complete", title: "Credit Committee Complete", message: "The AI Credit Committee has reached a conditional approval consensus.", timestamp: fmt(3) });
   addNotification({ type: "application-approved", title: "Application Approved", message: "Congratulations! Your loan has been approved by the loan officer.", timestamp: fmt(1) });
 
-  const appArray = (globalThis as any).__applications;
-  if (Array.isArray(appArray) && appArray.length > 0) {
-    appArray[0].status = "approved";
-    appArray[0].priority = "urgent";
-    appArray[0].slaHoursRemaining = 2;
+  const apps = getApplications();
+  if (apps.length > 0) {
+    apps[0].status = "approved";
+    apps[0].priority = "urgent";
+    apps[0].slaHoursRemaining = 2;
   }
 }
 
@@ -59,8 +59,6 @@ export function resetDemoData() {
     store.currentUser = null;
     store.businesses = [];
   }
-  const appArray = (globalThis as any).__applications;
-  if (Array.isArray(appArray)) {
-    appArray.length = 0;
-  }
+  const apps = getApplications();
+  apps.length = 0;
 }

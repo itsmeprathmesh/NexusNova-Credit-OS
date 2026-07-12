@@ -3,34 +3,26 @@
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import {
+  Activity,
   ArrowRight,
+  BarChart3,
   BriefcaseBusiness,
+  Building2,
   ClipboardCheck,
   Eye,
-  MonitorPlay,
-  PlayCircle,
-  Sparkles,
-  TrendingUp,
-  UserRound,
-  Activity,
-  BarChart3,
-  Building2,
-  CreditCard,
   FileText,
-  Globe,
   Handshake,
   IndianRupee,
-  ShieldCheck,
+  MonitorPlay,
+  PlayCircle,
   Smartphone,
-  Users,
-  Zap,
-  ChevronRight,
-  GraduationCap,
-  Lightbulb,
-  RefreshCw,
+  Sparkles,
   Target,
+  TrendingUp,
+  UserRound,
+  Users,
 } from "lucide-react";
-import { seedDemoData, isSeeded } from "@/services/demo-seed";
+import { isSeeded } from "@/services/demo-seed";
 import { computePortfolioHealth, computeSectorSummaries } from "@/services/portfolio-intelligence";
 import { applications, financialSignals, msmes, portfolio } from "@/data/mock-data";
 import { FadeInView, ScaleInView, SlideUpView, StaggerContainer, StaggerItem } from "@/components/ui/motion";
@@ -41,9 +33,7 @@ import { FeatureHighlight } from "@/components/demo/feature-highlight";
 import { useDemoMode } from "@/contexts/demo-mode";
 import { useDemoSession } from "@/contexts/demo-session";
 import { useJudge, FeatureDiscoveryBar, RecommendedNext } from "@/features/judge-experience";
-import { FinancialHealthCard, AlternateDataGrid, CreditVisibilityScore, NtcDetection, EcosystemIntegrations } from "@/components/financial-health";
-import { computeAlternateDataSignals, computeNtcNtbProfile } from "@/services/alternate-data";
-import { cn } from "@/lib/utils";
+import { computeNtcNtbProfile } from "@/services/alternate-data";
 
 const roles = [
   {
@@ -79,7 +69,7 @@ const customerJourney = [
 
 export default function HomePage() {
   const { isDemoMode, startOnboarding } = useDemoMode();
-  const { startTour, toggleJudgeMode } = useJudge();
+  const { startTour } = useJudge();
   const { startDemoSession } = useDemoSession();
   const demoActive = isDemoMode || isSeeded();
   const [msmeIndex, setMsmeIndex] = useState(0);
@@ -91,9 +81,8 @@ export default function HomePage() {
 
   const handleFullDemo = useCallback(() => {
     startDemoSession();
-    toggleJudgeMode();
     setTimeout(() => startTour(), 500);
-  }, [startDemoSession, toggleJudgeMode, startTour]);
+  }, [startDemoSession, startTour]);
 
   const currentMsme = msmes[msmeIndex];
   const currentSignals = financialSignals[msmeIndex];
@@ -257,77 +246,42 @@ export default function HomePage() {
         )}
 
         {demoActive ? (
-          <>
-            <div className="mb-8">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-bold text-ink">MSME Financial Health Card</h2>
-                  <p className="mt-1 text-sm text-muted">
-                    AI-powered unified credit assessment using alternate data
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted">MSME:</span>
-                  <select
-                    value={msmeIndex}
-                    onChange={(e) => setMsmeIndex(Number(e.target.value))}
-                    className="rounded-xl border border-white/[0.1] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-ink outline-none"
-                  >
-                    {msmes.map((m, i) => (
-                      <option key={m.id} value={i}>
-                        {m.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          <FadeInView>
+            <div className="mb-8 rounded-2xl border border-trust/20 bg-trust-light/10 p-6">
+              <div className="flex items-center gap-2.5 mb-4">
+                <Sparkles className="h-5 w-5 text-trust" />
+                <h2 className="text-lg font-semibold text-ink">Demo Mode Active</h2>
+              </div>
+              <p className="text-sm text-muted leading-relaxed">
+                Demo data has been seeded. Use the role cards below to explore the platform
+                as a Customer, Loan Officer, or Manager. Each portal provides a complete
+                AI-powered credit assessment workflow.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link
+                  href="/customer/dashboard"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-trust px-4 py-2 text-xs font-semibold text-canvas shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)] active:scale-[0.97]"
+                >
+                  <UserRound className="h-3.5 w-3.5" />
+                  Enter Customer Portal
+                </Link>
+                <Link
+                  href="/command-center?role=loan-officer"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] px-4 py-2 text-xs font-semibold text-ink transition-all hover:bg-white/[0.08] active:scale-[0.97]"
+                >
+                  <ClipboardCheck className="h-3.5 w-3.5" />
+                  Enter Loan Officer Portal
+                </Link>
+                <Link
+                  href="/command-center?role=manager"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] px-4 py-2 text-xs font-semibold text-ink transition-all hover:bg-white/[0.08] active:scale-[0.97]"
+                >
+                  <BriefcaseBusiness className="h-3.5 w-3.5" />
+                  Enter Manager Portal
+                </Link>
               </div>
             </div>
-
-            <FinancialHealthCard
-              msme={currentMsme}
-              signals={currentSignals}
-              className="mb-8"
-            />
-
-            <AlternateDataGrid
-              signals={currentSignals}
-              className="mb-8"
-            />
-
-            <div className="mb-8 grid gap-6 lg:grid-cols-2">
-              <CreditVisibilityScore msme={currentMsme} signals={currentSignals} />
-              <NtcDetection msme={currentMsme} signals={currentSignals} />
-            </div>
-
-            <EcosystemIntegrations className="mb-8" />
-
-            <div className="mb-8 rounded-2xl border border-trust/20 bg-trust-light/20 p-6">
-              <div className="flex items-center gap-2.5">
-                <Lightbulb className="h-5 w-5 text-trust" />
-                <h3 className="text-base font-semibold text-ink">Customer Journey</h3>
-              </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-                {customerJourney.map((step, i) => {
-                  const Icon = step.icon;
-                  return (
-                    <div
-                      key={step.step}
-                      className="relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-center"
-                    >
-                      {i < customerJourney.length - 1 && (
-                        <ChevronRight className="absolute -right-1.5 top-1/2 hidden h-4 w-4 -translate-y-1/2 text-muted/30 lg:block" />
-                      )}
-                      <div className="mx-auto grid h-10 w-10 place-items-center rounded-xl bg-trust-light text-trust">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <p className="mt-2 text-sm font-semibold text-ink">{step.step}</p>
-                      <p className="mt-0.5 text-[10px] text-muted">{step.desc}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </>
+          </FadeInView>
         ) : null}
 
         <StaggerContainer className="grid gap-6 md:grid-cols-3">

@@ -23,10 +23,16 @@ import {
   LogOut,
   Users,
   LayoutDashboard,
+  Play,
+  Pause,
+  SkipForward,
+  SkipBack,
+  Home,
 } from "lucide-react";
 import { useDemoMode } from "@/contexts/demo-mode";
 import { useDemoSession } from "@/contexts/demo-session";
 import { useJudge } from "@/features/judge-experience";
+import { TOUR_STEPS, GUIDE_MAP } from "@/features/judge-experience/guide-config";
 import { resetDemoData } from "@/services/demo-seed";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -40,12 +46,13 @@ const personas = [
 export function DemoControlCenter() {
   const { isDemoMode, toggleDemoMode } = useDemoMode();
   const { switchDemoRole, endDemoSession } = useDemoSession();
-  const { isJudgeMode, toggleJudgeMode, startTour, checklistProgress, completedPages } = useJudge();
+  const { isJudgeMode, toggleJudgeMode, startTour, goToStep, tourStep, tourTotalSteps, tourActive, endTour, checklistProgress, completedPages } = useJudge();
   const { user } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [showCredentials, setShowCredentials] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,6 +64,12 @@ export function DemoControlCenter() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  useEffect(() => {
+    const handler = () => setOpen((p) => !p);
+    document.addEventListener("toggle-demo-controls", handler);
+    return () => document.removeEventListener("toggle-demo-controls", handler);
   }, []);
 
   useEffect(() => {
@@ -75,10 +88,11 @@ export function DemoControlCenter() {
     router.push(href);
   }, [router, switchDemoRole]);
 
-  const handleResetDemo = useCallback(() => {
+  const handleExitDemo = useCallback(() => {
+    endTour();
     endDemoSession();
     window.location.href = "/";
-  }, [endDemoSession]);
+  }, [endDemoSession, endTour]);
 
   const handleResetData = useCallback(() => {
     resetDemoData();
@@ -196,10 +210,43 @@ export function DemoControlCenter() {
               {/* Divider */}
               <div className="border-t border-white/[0.06]" />
 
+              {/* Tour Controls */}
+              {tourActive && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-2">Tour Controls</p>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => { setIsPaused((p) => { const next = !p; window.dispatchEvent(new CustomEvent("demo-pause-toggle", { detail: { action: next ? "pause" : "resume" } })); return next; }); setOpen(false); }}
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] py-2 text-xs font-medium text-muted transition-all hover:border-trust/30 hover:text-trust"
+                    >
+                      {isPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+                      {isPaused ? "Resume" : "Pause"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { goToStep(Math.max(0, tourStep - 1)); setOpen(false); }}
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] py-2 text-xs font-medium text-muted transition-all hover:border-trust/30 hover:text-trust"
+                    >
+                      <SkipBack className="h-3.5 w-3.5" />
+                      Prev
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { goToStep(Math.min(tourTotalSteps - 1, tourStep + 1)); setOpen(false); }}
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] py-2 text-xs font-medium text-muted transition-all hover:border-trust/30 hover:text-trust"
+                    >
+                      <SkipForward className="h-3.5 w-3.5" />
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="space-y-1">
                 <ActionButton icon={MonitorPlay} label="Restart Guided Tour" onClick={() => { startTour(); setOpen(false); }} />
-                <ActionButton icon={RotateCcw} label="Reset Demo" onClick={handleResetDemo} />
+                <ActionButton icon={RotateCcw} label="Exit Demo" onClick={handleExitDemo} />
                 <ActionButton icon={Database} label="Reset Data" onClick={handleResetData} />
                 <ActionButton
                   icon={Eye}

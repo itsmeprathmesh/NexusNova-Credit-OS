@@ -6,7 +6,7 @@ import { parseRole } from "@/lib/utils";
 import type { Metadata } from "next";
 export async function generateMetadata({ params }: { params: Promise<{ msmeId: string }> }): Promise<Metadata> {
   const { msmeId } = await params;
-  return { title: `${msmeId} — Portfolio Drilldown — NexusNova` };
+  return { title: `${msmeId} — Customer 360 — NexusNova` };
 }
 
 export default async function PortfolioDrilldownPage({
@@ -30,7 +30,7 @@ export default async function PortfolioDrilldownPage({
   const application = applications.find((item) => item.msmeId === msmeId);
 
   return (
-    <AppShell active="portfolio" role={role} allowedRoles={["manager"]}>
+    <AppShell active="portfolio" role={role} allowedRoles={["loan-officer", "manager"]}>
       <MsmeDrilldown msme={msme} portfolioItem={portfolioItem} role={role} snapshot={snapshot} signals={signals} application={application} />
     </AppShell>
   );

@@ -25,6 +25,8 @@ import {
   MonitorPlay,
   CheckCircle2,
   FileText,
+  MessageSquare,
+  Send,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { GlassPanel } from "@/components/ui/glass-panel";
@@ -50,7 +52,8 @@ const sections: Section[] = [
   { id: "accessibility", label: "Accessibility", icon: Accessibility },
   { id: "about", label: "About", icon: Info },
   { id: "privacy", label: "Privacy", icon: ShieldCheck },
-  { id: "help", label: "Help", icon: HelpCircle },
+  { id: "help", label: "Help & Support", icon: HelpCircle },
+  { id: "feedback", label: "Feedback", icon: MessageSquare },
   { id: "shortcuts", label: "Keyboard Shortcuts", icon: Keyboard },
   { id: "demo", label: "Demo Preferences", icon: Sparkles },
   { id: "logout", label: "Logout", icon: LogOut },
@@ -147,6 +150,7 @@ export default function SettingsPage() {
                 {activeSection === "about" && <AboutSection />}
                 {activeSection === "privacy" && <PrivacySection />}
                 {activeSection === "help" && <HelpSection />}
+                {activeSection === "feedback" && <FeedbackSection />}
                 {activeSection === "shortcuts" && <ShortcutsSection />}
                 {activeSection === "demo" && <DemoPreferencesSection isDemoMode={isDemoMode} toggleDemoMode={toggleDemoMode} isJudgeMode={isJudgeMode} toggleJudgeMode={toggleJudgeMode} role={role} />}
               </motion.div>
@@ -392,6 +396,44 @@ function HelpSection() {
         <HelpRow icon={MonitorPlay} label="Video Tutorials" desc="Watch step-by-step walkthroughs" />
         <HelpRow icon={User} label="Contact Support" desc="Reach out to the IDBI support team" />
         <HelpRow icon={FileText} label="Release Notes" desc="See what&apos;s new in this version" />
+      </div>
+    </SectionCard>
+  );
+}
+
+function FeedbackSection() {
+  const [sent, setSent] = useState(false);
+  const [text, setText] = useState("");
+  const handleSend = useCallback(() => {
+    if (!text.trim()) return;
+    setSent(true);
+    setTimeout(() => { setSent(false); setText(""); }, 3000);
+  }, [text]);
+  return (
+    <SectionCard title="Send Feedback" description="Help us improve NexusNova with your suggestions.">
+      <div className="space-y-4">
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <p className="text-xs text-muted mb-1">Feature Feedback</p>
+          <p className="text-xs text-muted">What feature would you like to see improved or added?</p>
+        </div>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Describe your feedback or suggestion..."
+          rows={4}
+          className="w-full rounded-xl border border-white/[0.1] bg-white/[0.02] px-4 py-3 text-sm text-ink outline-none transition-all focus:border-trust focus:ring-1 focus:ring-trust/20 placeholder:text-muted/40 resize-none"
+        />
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={!text.trim() || sent}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-trust px-4 py-2 text-sm font-semibold text-canvas shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {sent ? <CheckCircle2 className="h-4 w-4" /> : <Send className="h-4 w-4" />}
+            {sent ? "Sent!" : "Send Feedback"}
+          </button>
+        </div>
       </div>
     </SectionCard>
   );

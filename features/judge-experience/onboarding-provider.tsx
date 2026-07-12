@@ -84,7 +84,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     tourStep,
     startTour,
     endTour,
-    toggleJudgeMode,
   } = useJudge();
   const pathname = usePathname();
 
@@ -148,9 +147,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const startOnboardingTour = useCallback(() => {
     setShowWelcome(false);
     startDemoSession();
-    toggleJudgeMode();
-    setTimeout(() => startTour(), 300);
-  }, [startDemoSession, toggleJudgeMode, startTour]);
+    setTimeout(() => startTour(), 200);
+  }, [startDemoSession, startTour]);
 
   const openFinish = useCallback(() => {
     setShowFinish(true);

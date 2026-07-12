@@ -7,7 +7,7 @@ import { useDemoMode } from "./demo-mode";
 import { seedDemoData } from "@/services/demo-seed";
 import type { UserRole } from "@/domain/types";
 
-export type DemoRole = "customer" | UserRole;
+export type DemoRole = "customer" | UserRole | "executive";
 
 interface DemoSessionContextType {
   isDemoSession: boolean;
@@ -36,6 +36,7 @@ export function DemoSessionProvider({ children }: { children: ReactNode }) {
   const switchDemoRole = useCallback((role: DemoRole) => {
     if (role === "loan-officer") staffLoginDirect("LO1001");
     else if (role === "manager") staffLoginDirect("MG2001");
+    else if (role === "executive") staffLoginDirect("EX3001");
     setDemoRole(role);
   }, [staffLoginDirect]);
 

@@ -22,6 +22,7 @@ interface JudgeContextType {
   tourTotalSteps: number;
   startTour: () => void;
   endTour: () => void;
+  goToStep: (step: number) => void;
   nextTourStep: () => void;
   prevTourStep: () => void;
   completedPages: string[];
@@ -65,6 +66,10 @@ export function GuideProvider({ children }: { children: ReactNode }) {
     const first = TOUR_STEPS[0];
     if (first) router.push("/");
   }, [router]);
+
+  const goToStep = useCallback((step: number) => {
+    setTourStep(Math.max(0, Math.min(step, TOUR_STEPS.length - 1)));
+  }, []);
 
   const nextTourStep = useCallback(() => {
     const next = tourStep + 1;
@@ -130,6 +135,7 @@ export function GuideProvider({ children }: { children: ReactNode }) {
         tourTotalSteps: TOUR_STEPS.length,
         startTour,
         endTour,
+        goToStep,
         nextTourStep,
         prevTourStep,
         completedPages,

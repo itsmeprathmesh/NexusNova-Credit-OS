@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
+  Activity,
   BarChart3,
+  Bell,
   BriefcaseBusiness,
   ClipboardList,
   Clock,
@@ -19,7 +21,9 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
+  TrendingUp,
   UserRound,
+  Users,
   X,
 } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState, useCallback } from "react";
@@ -36,14 +40,71 @@ import { BusinessOutcomePanel } from "@/components/judge/business-outcome-panel"
 import { resetDemoData } from "@/services/demo-seed";
 import { useAuth } from "@/contexts/auth-context";
 import { AccessDenied } from "@/components/auth/access-denied";
+import { ContextualGuide } from "@/components/ui/contextual-guide";
 
-const navItems = [
-  { href: "/command-center", label: "Command Center", icon: LayoutDashboard, highlight: "AI Hub", section: "main", managerOnly: false },
-  { href: "/applications", label: "Applications", icon: ClipboardList, highlight: "Explainable AI", section: "main", managerOnly: false },
-  { href: "/portfolio", label: "Portfolio", icon: BriefcaseBusiness, highlight: "Analytics", section: "main", managerOnly: true },
-  { href: "/audit", label: "Audit", icon: FileText, highlight: "Compliance", section: "main", managerOnly: true },
-  { href: "/reporting", label: "Reporting", icon: BarChart3, highlight: "Reports", section: "main", managerOnly: true },
+interface NavItem {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  highlight?: string;
+}
+
+interface NavGroup {
+  label: string;
+  roles: UserRole[];
+  items: NavItem[];
+  isExecutive?: boolean;
+}
+
+const navGroups: NavGroup[] = [
+  {
+    label: "Workspace",
+    roles: ["loan-officer"],
+    items: [
+      { href: "/command-center", label: "Dashboard", icon: LayoutDashboard, highlight: "AI Hub" },
+      { href: "/applications", label: "Applications Queue", icon: ClipboardList, highlight: "AI Ready" },
+      { href: "/applications/app-1001", label: "Financial Health Card", icon: Activity, highlight: "AI Score" },
+      { href: "/applications/app-1001/production-memo", label: "Credit Memo", icon: FileText, highlight: "Auto-Gen" },
+      { href: "/applications/app-1001/timeline", label: "Decision Timeline", icon: Clock, highlight: "Audit Trail" },
+    ],
+  },
+  {
+    label: "Intelligence",
+    roles: ["loan-officer"],
+    items: [
+      { href: "/portfolio/msme-aurora", label: "Customer 360", icon: Users, highlight: "Full View" },
+      { href: "/notifications", label: "Notifications", icon: Bell, highlight: "Alerts" },
+    ],
+  },
+  {
+    label: "Overview",
+    roles: ["manager"],
+    items: [
+      { href: "/command-center", label: "Command Center", icon: LayoutDashboard, highlight: "AI Hub" },
+      { href: "/applications", label: "Pending Approvals", icon: ClipboardList, highlight: "Queue" },
+      { href: "/portfolio", label: "Portfolio Intelligence", icon: BriefcaseBusiness, highlight: "Analytics" },
+      { href: "/portfolio/msme-aurora", label: "Customer 360", icon: Users, highlight: "Drilldown" },
+    ],
+  },
+  {
+    label: "Monitoring",
+    roles: ["manager"],
+    items: [
+      { href: "/reporting", label: "Reports", icon: BarChart3, highlight: "Summary" },
+      { href: "/reporting/executive", label: "Executive Dashboard", icon: TrendingUp, highlight: "Board" },
+      { href: "/audit", label: "Audit Center", icon: FileText, highlight: "Compliance" },
+      { href: "/notifications", label: "Notifications", icon: Bell, highlight: "Alerts" },
+    ],
+  },
 ];
+
+function getVisibleGroups(role: UserRole): NavGroup[] {
+  return navGroups.filter((g) => g.roles.includes(role));
+}
+
+function getAllNavItems(role: UserRole): NavItem[] {
+  return getVisibleGroups(role).flatMap((g) => g.items);
+}
 
 const roleLabels: Record<UserRole, string> = {
   "loan-officer": "Loan Officer",
@@ -82,8 +143,8 @@ export function AppShell({
   const pathname = usePathname();
 
   const effectiveRole = user?.role ?? role;
-  const isManager = effectiveRole === "manager";
-  const visibleNavItems = navItems.filter((item) => !item.managerOnly || isManager);
+  const visibleGroups = getVisibleGroups(effectiveRole);
+  const visibleNavItems = getAllNavItems(effectiveRole);
   const canAccess = !allowedRoles || allowedRoles.includes(effectiveRole);
 
   useEffect(() => {
@@ -193,95 +254,100 @@ export function AppShell({
           <nav
             ref={navRef}
             aria-label="Main navigation"
-            className="mt-6 flex-1 space-y-0.5"
+            className="mt-4 flex-1 overflow-y-auto space-y-1"
             onKeyDown={handleKeyDown}
             role="menu"
           >
+            {visibleGroups.map((group) => (
+              <div key={group.label} className="space-y-0.5">
+                {!collapsed && (
+                  <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted/60">
+                    {group.label}
+                  </p>
+                )}
+                {group.items.map((item, index) => {
+                  const Icon = item.icon;
+                  const globalIndex = visibleNavItems.indexOf(item);
+                  const selected = item.href.split("/")[1] === active || item.href.slice(1) === active;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={`${item.href}?role=${role}`}
+                      data-nav-index={globalIndex}
+                      role="menuitem"
+                      title={collapsed ? item.label : undefined}
+                      className={cn(
+                        "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 outline-none",
+                        selected
+                          ? "bg-trust-light text-trust"
+                          : "text-muted hover:bg-white/[0.04] hover:text-ink",
+                        collapsed && "justify-center px-2"
+                      )}
+                      aria-current={selected ? "page" : undefined}
+                      tabIndex={focusedIndex === globalIndex ? 0 : -1}
+                    >
+                      {selected && (
+                        <motion.span
+                          layoutId="sidebar-active"
+                          className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-trust shadow-[0_0_8px_rgba(216,255,62,0.5)]"
+                          aria-hidden="true"
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                      <Icon
+                        className={cn(
+                          "h-4 w-4 shrink-0 transition-transform duration-200",
+                          selected && "text-trust",
+                          !selected && "group-hover:scale-110"
+                        )}
+                        aria-hidden="true"
+                      />
+                      {!collapsed && (
+                        <>
+                          <span className="flex-1 truncate">{item.label}</span>
+                          {isDemoMode && !selected && item.highlight && (
+                            <span className="rounded-lg bg-white/[0.04] border border-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-muted">
+                              {item.highlight}
+                            </span>
+                          )}
+                          {isDemoMode && selected && (
+                            <span className="flex h-2 w-2 shrink-0">
+                              <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-trust/40" />
+                              <span className="relative inline-flex h-2 w-2 rounded-full bg-trust" />
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
+
+            {/* Resources */}
             {!collapsed && (
-              <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-wider text-muted/60">
-                Main Menu
-              </p>
-            )}
-            {visibleNavItems.map((item, index) => {
-              const Icon = item.icon;
-              const selected = active === item.href.slice(1);
-
-              return (
+              <div className="space-y-0.5 mt-3">
+                <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted/40">
+                  Resources
+                </p>
                 <Link
-                  key={item.href}
-                  href={`${item.href}?role=${role}`}
-                  data-nav-index={index}
-                  role="menuitem"
-                  title={collapsed ? item.label : undefined}
-                  className={cn(
-                    "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 outline-none",
-                    selected
-                      ? "bg-trust-light text-trust"
-                      : "text-muted hover:bg-white/[0.04] hover:text-ink",
-                    collapsed && "justify-center px-2"
-                  )}
-                  aria-current={selected ? "page" : undefined}
-                  tabIndex={focusedIndex === index ? 0 : -1}
+                  href="/ps-3-alignment"
+                  className="group flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink"
                 >
-                  {selected && (
-                    <motion.span
-                      layoutId="sidebar-active"
-                      className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-trust shadow-[0_0_8px_rgba(216,255,62,0.5)]"
-                      aria-hidden="true"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                  <Icon
-                    className={cn(
-                      "h-4 w-4 shrink-0 transition-transform duration-200",
-                      selected && "text-trust",
-                      !selected && "group-hover:scale-110"
-                    )}
-                    aria-hidden="true"
-                  />
-                  {!collapsed && (
-                    <>
-                      <span className="flex-1 truncate">{item.label}</span>
-                      {isDemoMode && !selected && (
-                        <span className="rounded-lg bg-white/[0.04] border border-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-muted">
-                          {item.highlight}
-                        </span>
-                      )}
-                      {isDemoMode && selected && (
-                        <span className="flex h-2 w-2 shrink-0">
-                          <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-trust/40" />
-                          <span className="relative inline-flex h-2 w-2 rounded-full bg-trust" />
-                        </span>
-                      )}
-                    </>
-                  )}
+                  <FileText className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                  PS-3 Alignment
                 </Link>
-              );
-            })}
+                <Link
+                  href="/business-impact"
+                  className="group flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink"
+                >
+                  <BarChart3 className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                  Business Impact
+                </Link>
+              </div>
+            )}
           </nav>
-
-          {/* PS-3 / Impact links */}
-          {!collapsed && (
-            <div className="mt-2 space-y-0.5">
-              <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted/40">
-                Resources
-              </p>
-              <Link
-                href="/ps-3-alignment"
-                className="group flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink"
-              >
-                <FileText className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                PS-3 Alignment
-              </Link>
-              <Link
-                href="/business-impact"
-                className="group flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink"
-              >
-                <BarChart3 className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                Business Impact
-              </Link>
-            </div>
-          )}
 
           {/* Sidebar collapse toggle */}
           <button
@@ -466,13 +532,6 @@ export function AppShell({
               </div>
 
               <Link
-                href="/profile"
-                className="grid min-h-9 min-w-9 place-items-center rounded-xl text-muted transition-all duration-200 hover:bg-white/[0.06] hover:text-ink active:scale-[0.95]"
-                aria-label="Profile"
-              >
-                <UserRound className="h-4 w-4" />
-              </Link>
-              <Link
                 href="/settings"
                 className="grid min-h-9 min-w-9 place-items-center rounded-xl text-muted transition-all duration-200 hover:bg-white/[0.06] hover:text-ink active:scale-[0.95]"
                 aria-label="Settings"
@@ -495,6 +554,7 @@ export function AppShell({
 
       <BusinessOutcomePanel />
       <QuickActions />
+      <ContextualGuide />
     </div>
   );
 }

@@ -3,18 +3,33 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, type ReactNode } from "react";
-import { Bot, Building2, ClipboardList, FileText, IndianRupee, Activity, LogOut } from "lucide-react";
+import {
+  Activity,
+  Bot,
+  Building2,
+  ClipboardList,
+  Bell,
+  FileText,
+  IndianRupee,
+  LogOut,
+  Settings,
+  UserRound,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BusinessOutcomePanel } from "@/components/judge/business-outcome-panel";
 import { CustomerGuard } from "@/components/auth/customer-guard";
 import { useCustomerAuth } from "@/contexts/customer-auth-context";
 
 const customerNav = [
-  { href: "/customer/dashboard", label: "Health Card", icon: Activity },
-  { href: "/customer/business", label: "Business", icon: Building2 },
-  { href: "/customer/apply", label: "Apply", icon: IndianRupee },
-  { href: "/customer/documents", label: "Documents", icon: FileText },
-  { href: "/customer/support", label: "AI", icon: Bot },
+  { href: "/customer/dashboard", label: "Dashboard", icon: Activity },
+  { href: "/customer/business", label: "Business Profile", icon: Building2 },
+  { href: "/customer/apply", label: "Loan Application", icon: IndianRupee },
+  { href: "/customer/documents", label: "Document Upload", icon: FileText },
+  { href: "/customer/status", label: "Application Tracker", icon: ClipboardList },
+  { href: "/customer/support", label: "AI Assistant", icon: Bot },
+  { href: "/notifications", label: "Notifications", icon: Bell },
+  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/profile", label: "Profile", icon: UserRound },
 ];
 
 export function CustomerShell({
@@ -22,7 +37,7 @@ export function CustomerShell({
   active
 }: {
   children: ReactNode;
-  active: "dashboard" | "business" | "apply" | "documents" | "status" | "support";
+  active: "dashboard" | "business" | "apply" | "documents" | "status" | "support" | "notifications" | "settings" | "profile";
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -73,7 +88,7 @@ export function CustomerShell({
 
         <BusinessOutcomePanel />
         <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[0.06] bg-surface/95 px-2 py-2 backdrop-blur-xl md:hidden shadow-[0_-12px_30px_rgba(0,0,0,0.3)]" aria-label="Mobile navigation">
-          <div className="grid grid-cols-5 gap-1">
+          <div className="flex gap-1 overflow-x-auto no-scrollbar">
             {customerNav.map((item) => {
               const Icon = item.icon;
               const selected = active === item.href.split("/").pop();
@@ -83,7 +98,7 @@ export function CustomerShell({
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[11px] font-semibold transition-all duration-200",
+                    "flex shrink-0 min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-all duration-200",
                     selected ? "bg-trust-light text-trust" : "text-muted hover:bg-white/[0.04] hover:text-ink"
                   )}
                   aria-current={selected ? "page" : undefined}

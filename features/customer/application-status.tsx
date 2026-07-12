@@ -14,7 +14,7 @@ import { CustomerTimeline } from "./customer-timeline";
 import { NotificationCenter } from "./notification-center";
 import { OnboardingJourney } from "./onboarding-journey";
 
-const application = applications[0];
+const application = applications[0]!;
 const msme = msmes.find((item) => item.id === application.msmeId)!;
 const signals = financialSignals.find((item) => item.msmeId === msme.id)!;
 const readiness = calculateCustomerReadiness(

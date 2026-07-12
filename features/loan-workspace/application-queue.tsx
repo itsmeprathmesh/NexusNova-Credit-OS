@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Filter, Inbox } from "lucide-react";
+import { ArrowUpRight, Filter, Inbox, ClipboardList, Plus, Sparkles } from "lucide-react";
 import { applications, msmes, portfolio } from "@/data/mock-data";
 import type { UserRole } from "@/domain/types";
 import { formatCurrency } from "@/lib/format";
