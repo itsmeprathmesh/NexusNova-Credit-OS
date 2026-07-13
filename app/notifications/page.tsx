@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Bell,
   CheckCheck,
@@ -20,11 +20,14 @@ import {
   Clock,
   Filter,
   Inbox,
-  ArrowLeft,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { Badge } from "@/components/ui/primitives";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { BackButton } from "@/components/ui/back-button";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { useAuth } from "@/contexts/auth-context";
 
 type NotifCategory = "application-approved" | "document-required" | "ai-recommendation" | "portfolio-alert" | "fraud-alert" | "risk-alert" | "manager-review" | "loan-approved" | "loan-rejected";
@@ -132,9 +135,13 @@ export default function NotificationsPage() {
   }, [notifications, categories]);
 
   return (
-    <AppShell active="command-center" role={role}>
+    <AppShell active="notifications" role={role}>
       <div className="mx-auto max-w-5xl">
         {/* Header */}
+        <div className="mb-4 flex items-center justify-between">
+          <BackButton fallbackHref="/command-center" />
+          <Breadcrumbs />
+        </div>
         <div className="mb-6 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="relative grid h-10 w-10 place-items-center rounded-xl bg-trust-light text-trust">
@@ -162,6 +169,9 @@ export default function NotificationsPage() {
           )}
         </div>
 
+        <PagePurpose className="mb-4" />
+        <SmartActionBar className="mb-6" />
+
         <div className="flex flex-col gap-6 lg:flex-row">
           {/* Sidebar filters */}
           <aside className="shrink-0 lg:w-56 space-y-5">
@@ -176,7 +186,7 @@ export default function NotificationsPage() {
                 className="min-h-10 w-full bg-transparent px-2.5 text-sm text-ink outline-none placeholder:text-muted/40"
               />
               {searchQuery && (
-                <button type="button" onClick={() => setSearchQuery("")} aria-label="Clear search" className="mr-2 text-muted hover:text-ink">
+                <button type="button" onClick={() => setSearchQuery("")} aria-label="Clear search" className="mr-2 text-muted hover:text-ink active:scale-[0.97] transition-transform duration-100">
                   <X className="h-3.5 w-3.5" />
                 </button>
               )}
@@ -209,7 +219,7 @@ export default function NotificationsPage() {
                     key={p}
                     type="button"
                     onClick={() => setFilterPriority(p)}
-                    className={`rounded-lg border px-2.5 py-1 text-[10px] font-medium capitalize transition-all ${
+                    className={`rounded-lg border px-2.5 py-1 text-[10px] font-medium capitalize transition-all active:scale-[0.97] ${
                       filterPriority === p
                         ? "border-trust/30 bg-trust-light/20 text-trust"
                         : "border-white/[0.06] text-muted hover:border-white/[0.12] hover:text-ink"
@@ -230,7 +240,7 @@ export default function NotificationsPage() {
                     key={s}
                     type="button"
                     onClick={() => setFilterRead(s)}
-                    className={`rounded-lg border px-2.5 py-1 text-[10px] font-medium capitalize transition-all ${
+                    className={`rounded-lg border px-2.5 py-1 text-[10px] font-medium capitalize transition-all active:scale-[0.97] ${
                       filterRead === s
                         ? "border-trust/30 bg-trust-light/20 text-trust"
                         : "border-white/[0.06] text-muted hover:border-white/[0.12] hover:text-ink"
@@ -313,13 +323,13 @@ export default function NotificationsPage() {
                                 <button
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); toggleRead(notif.id); }}
-                                  className="inline-flex items-center gap-1 rounded-lg border border-white/[0.06] px-2.5 py-1.5 text-[10px] font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-white/[0.06] px-2.5 py-1.5 text-[10px] font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink active:scale-[0.97]"
                                 >
                                   {notif.read ? "Mark unread" : "Mark read"}
                                 </button>
                                 <button
                                   type="button"
-                                  className="inline-flex items-center gap-1 rounded-lg border border-white/[0.06] px-2.5 py-1.5 text-[10px] font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-white/[0.06] px-2.5 py-1.5 text-[10px] font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink active:scale-[0.97]"
                                 >
                                   View details
                                 </button>
@@ -345,7 +355,7 @@ function FilterButton({ label, count, active, onClick, color }: { label: string;
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm transition-all ${
+      className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm transition-all active:scale-[0.97] ${
         active ? "bg-trust-light/20 text-trust font-medium" : "text-muted hover:bg-white/[0.04] hover:text-ink"
       }`}
     >

@@ -1,5 +1,9 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { BackButton } from "@/components/ui/back-button";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { applications, documents, financialSignals, msmes } from "@/data/mock-data";
 import { CreditMemo } from "@/features/loan-workspace/credit-memo";
 import { parseRole } from "@/lib/utils";
@@ -28,12 +32,20 @@ export default async function ApplicationMemoPage({
 
   return (
     <AppShell active="applications" role={role}>
-      <CreditMemo
-        application={application}
-        msme={msme}
-        documents={documents.filter((document) => document.applicationId === application.id)}
-        signals={signals}
-      />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <BackButton fallbackHref={`/applications?role=${role}`} />
+          <Breadcrumbs />
+        </div>
+        <PagePurpose />
+        <SmartActionBar />
+        <CreditMemo
+          application={application}
+          msme={msme}
+          documents={documents.filter((document) => document.applicationId === application.id)}
+          signals={signals}
+        />
+      </div>
     </AppShell>
   );
 }

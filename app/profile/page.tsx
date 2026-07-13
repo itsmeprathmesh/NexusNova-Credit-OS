@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
   User,
   Building2,
@@ -44,6 +44,10 @@ import {
 import { AppShell } from "@/components/layout/app-shell";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { Badge } from "@/components/ui/primitives";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { BackButton } from "@/components/ui/back-button";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { useAuth } from "@/contexts/auth-context";
 import { useCustomerAuth } from "@/contexts/customer-auth-context";
 import { applications, financialSignals, msmes, portfolio } from "@/data/mock-data";
@@ -94,7 +98,7 @@ export default function ProfilePage() {
   }, [staffLogout, customerLogout, router, isCustomer]);
 
   return (
-    <AppShell active="command-center" role={userRole}>
+    <AppShell active="profile" role={userRole}>
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-6">
@@ -131,7 +135,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="grid h-9 w-9 place-items-center rounded-xl text-muted transition-all hover:bg-white/[0.06] hover:text-danger"
+                className="grid h-9 w-9 place-items-center rounded-xl text-muted transition-all hover:bg-white/[0.06] hover:text-danger active:scale-[0.97]"
                 aria-label="Sign out"
               >
                 <LogOut className="h-4 w-4" />
@@ -139,6 +143,15 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Back button + Breadcrumbs */}
+        <div className="mb-4 flex items-center justify-between">
+          <BackButton fallbackHref="/command-center" />
+          <Breadcrumbs />
+        </div>
+
+        <PagePurpose className="mb-4" />
+        <SmartActionBar className="mb-6" />
 
         <div className="flex flex-col gap-6 lg:flex-row">
           {/* Sidebar sections */}
@@ -158,7 +171,7 @@ export default function ProfilePage() {
             ) : userRole === "manager" ? (
               <ManagerProfileContent editing={editing} user={user} role={userRole} />
             ) : (
-              <ExecutiveProfileContent editing={editing} user={user} role={userRole} />
+              <ManagerProfileContent editing={editing} user={user} role={userRole} />
             )}
 
             {/* Universal: Activity Timeline */}
@@ -565,94 +578,6 @@ function ManagerProfileContent({ editing, user, role }: { editing: boolean; user
   );
 }
 
-/* ───── Executive Profile ───── */
-
-function ExecutiveProfileContent({ editing, user, role }: { editing: boolean; user: any; role: UserRole }) {
-  const totalExposure = portfolio.reduce((s, p) => s + p.exposure, 0);
-  const metrics = {
-    msmes: portfolio.length,
-    exposure: `₹${(totalExposure / 10000000).toFixed(1)}Cr`,
-    sectors: 7,
-    branches: 5,
-    approvalRate: 76,
-    avgScore: 64,
-  };
-
-  return (
-    <>
-      <Section id="region" title="Region Overview">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Region" value="West Zone" editing={false} />
-          <Field label="Head Office" value="Mumbai Main Branch" editing={false} />
-          <Field label="Branches Under" value="5" editing={false} />
-          <Field label="Regional Director" value="Anita Desai" editing={false} />
-        </div>
-      </Section>
-
-      <Section id="portfolio" title="Portfolio Summary">
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <MetricCard label="Total MSMEs" value={metrics.msmes} />
-          <MetricCard label="Total Exposure" value={metrics.exposure} />
-          <MetricCard label="Sectors" value={metrics.sectors} />
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Branches Active" value={`${metrics.branches}`} editing={false} />
-          <Field label="Avg Portfolio Score" value={`${metrics.avgScore}/100`} editing={false} />
-        </div>
-      </Section>
-
-      <Section id="analytics" title="Analytics">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <MetricCard label="Approval Rate" value={`${metrics.approvalRate}%`} tone="success" />
-          <MetricCard label="Disbursement" value="₹36.2Cr" />
-          <MetricCard label="NPA Ratio" value="1.8%" tone="warning" />
-          <MetricCard label="Inclusion Score" value="84" tone="success" />
-        </div>
-      </Section>
-
-      <Section id="reports" title="Reports">
-        <div className="space-y-2">
-          {[
-            { name: "Portfolio Health — Q2 2026", date: "30 Jun 2026" },
-            { name: "Sector Intelligence Report", date: "15 Jun 2026" },
-            { name: "Branch Performance Review", date: "01 Jun 2026" },
-            { name: "Credit Risk Migration", date: "25 May 2026" },
-          ].map((r) => (
-            <div key={r.name} className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-              <div className="flex items-center gap-3">
-                <FileText className="h-4 w-4 text-trust" />
-                <span className="text-sm text-ink">{r.name}</span>
-              </div>
-              <span className="text-xs text-muted">{r.date}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section id="audit" title="Audit Trail">
-        <div className="space-y-2">
-          {[
-            { event: "Portfolio review completed", by: "System", date: "Today, 10:30 AM" },
-            { event: "Credit limit revised — Surya Electronics", by: "Anita Desai", date: "Yesterday" },
-            { event: "New sector added — Logistics", by: "System", date: "2 days ago" },
-            { event: "Compliance report generated", by: "System", date: "5 days ago" },
-          ].map((a, i) => (
-            <div key={i} className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-trust-light/50 text-trust">
-                <ClipboardCheck className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-ink">{a.event}</p>
-                <p className="text-xs text-muted">{a.by} · {a.date}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
-    </>
-  );
-}
-
 /* ───── Universal Sections ───── */
 
 function ActivityTimelineSection() {
@@ -707,7 +632,7 @@ function RecentActionsSection() {
               <button
                 key={action.label}
                 type="button"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-xs font-medium text-muted transition-all hover:bg-white/[0.06] hover:text-ink"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-xs font-medium text-muted transition-all hover:bg-white/[0.06] hover:text-ink active:scale-[0.97]"
               >
                 <Icon className="h-3.5 w-3.5" />
                 {action.label}

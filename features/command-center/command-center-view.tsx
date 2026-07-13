@@ -145,9 +145,9 @@ export function CommandCenterView({ role }: { role: UserRole }) {
           <div className="space-y-4">
             <Metric label="Early Warnings" value={alerts.length} hint="Alerts requiring attention" />
             <div className="max-h-48 space-y-2 overflow-y-auto">
-              {alerts.slice(0, 5).map((alert, i) => (
+              {alerts.slice(0, 5).map((alert) => (
                 <Link
-                  key={i}
+                  key={alert.msme?.id + "-" + alert.warning}
                   href={`/portfolio/${alert.msme?.id}`}
                   className="flex items-start gap-2 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2 text-xs transition-colors hover:bg-white/[0.04]"
                 >

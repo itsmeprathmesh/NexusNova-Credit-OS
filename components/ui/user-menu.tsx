@@ -73,7 +73,7 @@ export function UserMenu({ currentRole, user }: { currentRole: UserRole; user?: 
             <button
               type="button"
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition-colors hover:bg-white/[0.04] hover:text-danger"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition-colors hover:bg-white/[0.04] hover:text-danger active:scale-[0.97]"
             >
               <LogOut className="h-3.5 w-3.5" />
               Sign out

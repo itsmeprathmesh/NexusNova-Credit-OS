@@ -46,7 +46,7 @@ export function NotificationCenter() {
               <button
                 type="button"
                 onClick={() => { markAllNotificationsRead(); setOpen(false); }}
-                className="text-xs font-medium text-trust transition-colors hover:text-trust/80"
+                className="text-xs font-medium text-trust transition-colors hover:text-trust/80 active:scale-[0.97]"
               >
                 Mark all read
               </button>

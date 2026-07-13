@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle2, ListChecks } from "lucide-react";
 import { useJudge } from "./guide-provider";
 import { CHECKLIST } from "./guide-config";

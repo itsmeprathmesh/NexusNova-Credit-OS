@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   FileText,
   Upload,
@@ -15,7 +15,6 @@ import {
   Sparkles,
   ShieldCheck,
   FileSearch,
-  Ban,
   FileX2,
   Image,
   Fingerprint,
@@ -24,7 +23,6 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowUpFromLine,
-  Building2,
   Smartphone,
   Building,
   Landmark,
@@ -148,12 +146,14 @@ function DocumentActions({
       <button
         className="inline-flex items-center gap-1 rounded-lg border border-white/[0.1] bg-white/[0.04] px-2.5 py-1.5 text-[10px] font-medium text-muted transition-all hover:bg-white/[0.08] hover:text-ink active:scale-[0.97]"
         title="Download file"
+        aria-label="Download file"
       >
         <Download className="h-3 w-3" />
       </button>
       <button
         className="inline-flex items-center gap-1 rounded-lg border border-white/[0.1] bg-white/[0.04] px-2.5 py-1.5 text-[10px] font-medium text-muted transition-all hover:bg-white/[0.08] hover:text-ink active:scale-[0.97]"
         title="Preview file"
+        aria-label="Preview file"
       >
         <Eye className="h-3 w-3" />
       </button>
@@ -190,7 +190,7 @@ function AiVerificationPanel({ doc }: { doc: CustomerDocument }) {
     <div className={cn("rounded-xl border p-3", hasIssues ? "border-caution/20 bg-caution-light/10" : "border-growth/10 bg-growth/[0.03]")}>
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between"
+        className="flex w-full items-center justify-between active:scale-[0.97] transition-transform duration-100"
       >
         <div className="flex items-center gap-2">
           <ShieldCheck className={cn("h-3.5 w-3.5", hasIssues ? "text-caution" : "text-growth")} />
@@ -244,8 +244,8 @@ function AiVerificationPanel({ doc }: { doc: CustomerDocument }) {
             {v.recommendations.length > 0 && (
               <div className="mt-2 space-y-1">
                 <span className="text-[10px] font-semibold text-muted">AI Recommendations</span>
-                {v.recommendations.map((r, i) => (
-                  <div key={i} className="flex items-start gap-1.5 text-[10px] leading-relaxed text-muted">
+                  {v.recommendations.map((r) => (
+                  <div key={r} className="flex items-start gap-1.5 text-[10px] leading-relaxed text-muted">
                     <span className="mt-0.5 block h-1 w-1 shrink-0 rounded-full bg-trust" />
                     {r}
                   </div>
@@ -341,7 +341,7 @@ function UploadTimeline() {
     <GlassPanel variant="strong" className="p-5">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between"
+        className="flex w-full items-center justify-between active:scale-[0.97] transition-transform duration-100"
       >
         <div className="flex items-center gap-2.5">
           <div className="grid h-9 w-9 place-items-center rounded-xl bg-trust-light/30 text-trust">
@@ -392,7 +392,7 @@ function UploadTimeline() {
             {!expanded && uploadTimeline.length > 5 && (
               <button
                 onClick={() => setExpanded(true)}
-                className="mt-2 flex items-center gap-1 text-[10px] font-medium text-trust transition-colors hover:text-trust/80"
+                className="mt-2 flex items-center gap-1 text-[10px] font-medium text-trust transition-colors hover:text-trust/80 active:scale-[0.97]"
               >
                 View all {uploadTimeline.length} events <ChevronDown className="h-3 w-3" />
               </button>
@@ -420,6 +420,7 @@ function formatTimeAgo(iso: string): string {
 export function DocumentUploadCenter() {
   const [documents, setDocuments] = useState(demoDocuments);
   const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
+  const uploadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stats = useMemo(() => {
     const total = documents.length;
@@ -435,7 +436,7 @@ export function DocumentUploadCenter() {
 
   const handleUpload = (docId: string) => {
     setUploadingDoc(docId);
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       const updated = documents.map((d) => {
         if (d.id === docId) {
           if (d.status === "missing") return simulateUpload(d.type) ?? d;
@@ -446,7 +447,14 @@ export function DocumentUploadCenter() {
       setDocuments([...updated]);
       setUploadingDoc(null);
     }, 1200);
+    uploadTimerRef.current = timer;
   };
+
+  useEffect(() => {
+    return () => {
+      if (uploadTimerRef.current) clearTimeout(uploadTimerRef.current);
+    };
+  }, []);
 
   return (
     <div className="space-y-5">

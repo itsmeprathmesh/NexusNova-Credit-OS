@@ -2,10 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap");
-
 :root {
   color-scheme: dark;
+
+  /* Design tokens */
+  --ease-spring: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
 }
 
 * {
@@ -23,7 +37,7 @@ body {
   margin: 0;
   background: #070A09;
   color: #FFFFFF;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
+  font-family: Geist, system-ui, -apple-system, Segoe UI, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
@@ -48,7 +62,12 @@ svg {
   color: #FFFFFF;
 }
 
-*:focus-visible {
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
   outline: 2px solid #D8FF3E;
   outline-offset: 2px;
   border-radius: 4px;
@@ -150,9 +169,11 @@ svg {
 .btn-elevated {
   transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
-.btn-elevated:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .btn-elevated:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
 }
 .btn-elevated:active {
   transform: translateY(0);
@@ -161,9 +182,11 @@ svg {
 .card-lift {
   transition: transform 0.2s ease, box-shadow 0.25s ease;
 }
-.card-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+@media (hover: hover) and (pointer: fine) {
+  .card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
 }
 
 .focus-ring {
@@ -184,9 +207,11 @@ svg {
 .interactive-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.interactive-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+@media (hover: hover) and (pointer: fine) {
+  .interactive-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
 }
 
 .ripple-btn {
@@ -265,9 +290,11 @@ svg {
     transition: box-shadow 0.3s ease, transform 0.3s ease;
   }
 
-  .card-glow:hover {
-    box-shadow: 0 0 24px rgba(216, 255, 62, 0.08), 0 8px 32px rgba(0, 0, 0, 0.3);
-    transform: translateY(-2px);
+  @media (hover: hover) and (pointer: fine) {
+    .card-glow:hover {
+      box-shadow: 0 0 24px rgba(216, 255, 62, 0.08), 0 8px 32px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+    }
   }
 
   .text-gradient {

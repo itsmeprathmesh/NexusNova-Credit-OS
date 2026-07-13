@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, ChevronDown, Scale, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronDown, Scale } from "lucide-react";
 import type { DecisionAction, DocumentRecord, FinancialSignals, LoanApplication, MsmeProfile, RiskBand } from "@/domain/types";
 import {
   calculateAiReadiness,
@@ -31,7 +31,6 @@ import { requestDocument } from "@/services/app-data";
 import { BusinessForecastPanel } from "./business-forecast-panel";
 import { StressSimulatorPanel } from "./stress-simulator-panel";
 import { ExplainabilityPanel } from "./explainability-panel";
-import { RecommendationCard } from "./recommendation-card";
 import { AICompleted, AIWarning } from "@/components/ai/ai-status";
 import { AIThinkingPanel } from "@/components/ai/ai-thinking";
 import { ConfidenceIndicators } from "@/components/ai/confidence-indicator";
@@ -39,6 +38,8 @@ import { AIRecommendationCard } from "@/components/ai/ai-recommendation-card";
 import { AIInsightsPanel } from "@/components/ai/ai-insights-panel";
 import { AITimeline } from "@/components/ai/ai-timeline";
 import { DonutChart } from "@/components/charts";
+import { BrainCircuit } from "lucide-react";
+import { SmartCallout } from "@/components/demo/smart-callout";
 
 const actions: { value: DecisionAction; label: string }[] = [
   { value: "approve", label: "Approve" },
@@ -221,6 +222,14 @@ export function ApplicationWorkspace({
         </div>
       </Panel>
 
+      <SmartCallout
+        id="ai-credit-committee-simulation"
+        title="AI Credit Committee Simulation"
+        description="The AI simulates a virtual credit committee by evaluating alternate data against 40+ risk factors, replicating how a committee would assess the application — in seconds instead of days."
+        variant="info"
+        icon={BrainCircuit}
+      />
+
       <AIInsightsPanel signals={signals} health={health} />
 
       <div className="grid gap-6 xl:grid-cols-2">
@@ -239,7 +248,7 @@ export function ApplicationWorkspace({
         <button
           type="button"
           onClick={() => setShowDecisionTrace(!showDecisionTrace)}
-          className="flex w-full items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-5 py-4 text-sm font-semibold text-ink transition hover:bg-white/[0.04]"
+          className="flex w-full items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-5 py-4 text-sm font-semibold text-ink transition hover:bg-white/[0.04] active:scale-[0.97]"
         >
           <span>How AI Reached This Decision</span>
           <ChevronDown
@@ -294,7 +303,7 @@ export function ApplicationWorkspace({
               { id: "officer", label: "Officer Review", status: "pending", detail: "Awaiting decision" }
             ]}
           />
-          <div className="overflow-hidden rounded-lg border border-line">
+          <div className="overflow-x-auto rounded-lg border border-line">
             <div className="hidden grid-cols-[0.6fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr_0.8fr] gap-2 bg-white/[0.04] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
               <span>Period</span>
               <span>Revenue</span>
@@ -370,7 +379,7 @@ export function ApplicationWorkspace({
                         requestDocument(application.id, [docType], "Please upload this document for verification.");
                         alert(`Document request sent to customer for: ${docType}`);
                       }}
-                      className="rounded-md border border-line bg-white px-2.5 py-1 text-xs font-semibold text-trust hover:bg-trust hover:text-white"
+                      className="rounded-md border border-line bg-white px-2.5 py-1 text-xs font-semibold text-trust hover:bg-trust hover:text-white active:scale-[0.97] transition-transform duration-100"
                     >
                       Request {docType}
                     </button>

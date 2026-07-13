@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, X } from "lucide-react";
 import { useDemoMode } from "@/contexts/demo-mode";
 

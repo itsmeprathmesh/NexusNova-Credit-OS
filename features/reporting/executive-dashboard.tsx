@@ -40,6 +40,7 @@ import { PremiumBarChart, PremiumLineChart, DonutChart, SectorComparisonChart, E
 import { FadeInView, StaggerContainer, StaggerItem, SlideUpView } from "@/components/ui/motion";
 import { CountUp } from "@/components/ui/count-up";
 import { cn } from "@/lib/utils";
+import { SmartCallout } from "@/components/demo/smart-callout";
 
 function KpiCard({ kpi, index }: { kpi: any; index: number }) {
   return (
@@ -122,6 +123,14 @@ export function ExecutiveDashboard() {
         </Panel>
       </FadeInView>
 
+      <SmartCallout
+        id="executive-real-time-visibility"
+        title="Real-Time Executive Visibility"
+        description="Executives get a live, AI-powered view of portfolio health, risk trends, and strategic insights — enabling data-driven decisions that were previously hidden in siloed reports."
+        variant="insight"
+        icon={BarChart3}
+      />
+
       {/* Tab Navigation */}
       <div className="flex flex-wrap gap-2 border-b border-white/[0.06] pb-2">
         {tabs.map((tab) => {
@@ -132,7 +141,7 @@ export function ExecutiveDashboard() {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200",
+                "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-[0.97]",
                 activeTab === tab.id
                   ? "bg-trust-light text-trust"
                   : "text-muted hover:bg-white/[0.04] hover:text-ink"
@@ -598,7 +607,7 @@ export function ExecutiveDashboard() {
                     type="button"
                     onClick={() => setSimulationId(simulationId === scenario.id ? null : scenario.id)}
                     className={cn(
-                      "rounded-xl border p-5 text-left transition-all duration-200",
+                      "rounded-xl border p-5 text-left transition-all duration-200 active:scale-[0.97]",
                       simulationId === scenario.id
                         ? "border-trust/30 bg-trust-light/20"
                         : "border-white/[0.06] bg-white/[0.02] hover:border-trust/20 hover:bg-white/[0.04]"

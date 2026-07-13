@@ -145,7 +145,7 @@ export function BusinessRegistration() {
         <button
           type="button"
           onClick={handleSave}
-          className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 text-sm font-semibold text-white shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)]"
+          className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 text-sm font-semibold text-white shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)] active:scale-[0.97]"
         >
           Save & continue to loan request
           <ArrowRight className="h-4 w-4" />

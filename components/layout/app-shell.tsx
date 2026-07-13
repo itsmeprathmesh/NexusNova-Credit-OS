@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   Activity,
   BarChart3,
@@ -36,11 +36,14 @@ import { QuickActions } from "@/components/ui/quick-actions";
 import { useDemoMode } from "@/contexts/demo-mode";
 import { useDemoSession } from "@/contexts/demo-session";
 import { useJudge, FeatureDiscoveryBar, RecommendedNext } from "@/features/judge-experience";
+import { RelatedFeatures } from "@/components/ui/related-features";
 import { BusinessOutcomePanel } from "@/components/judge/business-outcome-panel";
 import { resetDemoData } from "@/services/demo-seed";
 import { useAuth } from "@/contexts/auth-context";
 import { AccessDenied } from "@/components/auth/access-denied";
 import { ContextualGuide } from "@/components/ui/contextual-guide";
+import { BackButton } from "@/components/ui/back-button";
+import { DemoOverlay } from "@/components/demo/demo-overlay";
 
 interface NavItem {
   href: string;
@@ -59,48 +62,198 @@ interface NavGroup {
 function buildNavGroups(role: UserRole): NavGroup[] {
   const groups: NavGroup[] = [];
 
+  // ==================== SHARED: HOME / DASHBOARD ====================
   groups.push({
-    label: "Workspace",
+    label: "Dashboard",
     roles: ["loan-officer", "manager"],
     items: [
-      { href: "/command-center", label: role === "manager" ? "Command Center" : "Dashboard", icon: LayoutDashboard, highlight: "AI Hub" },
-      { href: "/applications", label: role === "manager" ? "Pending Approvals" : "Applications Queue", icon: ClipboardList, highlight: role === "manager" ? "Queue" : "AI Ready" },
+      { 
+        href: "/command-center", 
+        label: role === "manager" ? "Command Center" : "Dashboard", 
+        icon: LayoutDashboard, 
+        highlight: "AI Hub" 
+      },
     ],
   });
 
+  // ==================== LOAN OFFICER WORKFLOWS ====================
   if (role === "loan-officer") {
+    // Applications Queue
     groups.push({
-      label: "Credit Assessment",
+      label: "Applications",
       roles: ["loan-officer"],
       items: [
-        { href: "/applications/app-1001", label: "Financial Health Card", icon: Activity, highlight: "AI Score" },
-        { href: "/portfolio/msme-aurora", label: "Customer 360", icon: Users, highlight: "Full View" },
-        { href: "/applications/app-1001/production-memo", label: "Credit Memo", icon: FileText, highlight: "Auto-Gen" },
-        { href: "/applications/app-1001/timeline", label: "Decision Timeline", icon: Clock, highlight: "Audit Trail" },
+        { 
+          href: "/applications", 
+          label: "Applications Queue", 
+          icon: ClipboardList, 
+          highlight: "AI Ready" 
+        },
+      ],
+    });
+
+    // Assessment Workflow
+    groups.push({
+      label: "Assessment",
+      roles: ["loan-officer"],
+      items: [
+        { 
+          href: "/applications", 
+          label: "Customer 360", 
+          icon: Users, 
+          highlight: "Full View" 
+        },
+        { 
+          href: "/applications", 
+          label: "Financial Health Card", 
+          icon: Activity, 
+          highlight: "AI Score" 
+        },
+        { 
+          href: "/applications", 
+          label: "Alternate Data", 
+          icon: BarChart3, 
+          highlight: "Coverage" 
+        },
+        { 
+          href: "/applications", 
+          label: "Explainable AI", 
+          icon: Eye, 
+          highlight: "Transparent" 
+        },
+        { 
+          href: "/applications", 
+          label: "Document Intelligence", 
+          icon: FileText, 
+          highlight: "AI OCR" 
+        },
+        { 
+          href: "/applications", 
+          label: "Risk Assessment", 
+          icon: ShieldCheck, 
+          highlight: "AI Risk" 
+        },
+      ],
+    });
+
+    // Decision Workflow
+    groups.push({
+      label: "Decision",
+      roles: ["loan-officer"],
+      items: [
+        { 
+          href: "/applications", 
+          label: "Credit Memo", 
+          icon: FileText, 
+          highlight: "Auto-Gen" 
+        },
+        { 
+          href: "/applications", 
+          label: "Decision Timeline", 
+          icon: Clock, 
+          highlight: "Audit Trail" 
+        },
+        { 
+          href: "/applications", 
+          label: "Approve / Reject", 
+          icon: ShieldCheck, 
+          highlight: "Decision" 
+        },
       ],
     });
   }
 
+  // ==================== MANAGER WORKFLOWS ====================
   if (role === "manager") {
+    // Pending Approvals
+    groups.push({
+      label: "Approvals",
+      roles: ["manager"],
+      items: [
+        { 
+          href: "/applications", 
+          label: "Pending Approvals", 
+          icon: ClipboardList, 
+          highlight: "Queue" 
+        },
+      ],
+    });
+
+    // Portfolio Intelligence
     groups.push({
       label: "Portfolio",
       roles: ["manager"],
       items: [
-        { href: "/portfolio", label: "Portfolio Intelligence", icon: BriefcaseBusiness, highlight: "Analytics" },
-        { href: "/portfolio/msme-aurora", label: "Customer 360", icon: Users, highlight: "Drilldown" },
+        { 
+          href: "/portfolio", 
+          label: "Portfolio Intelligence", 
+          icon: BriefcaseBusiness, 
+          highlight: "Analytics" 
+        },
+        { 
+          href: "/portfolio/msme-aurora", 
+          label: "Customer 360", 
+          icon: Users, 
+          highlight: "Drilldown" 
+        },
+        { 
+          href: "/portfolio", 
+          label: "Risk Analytics", 
+          icon: BarChart3, 
+          highlight: "Heatmap" 
+        },
+        { 
+          href: "/portfolio", 
+          label: "Financial Inclusion", 
+          icon: Users, 
+          highlight: "Impact" 
+        },
+      ],
+    });
+
+    // Executive
+    groups.push({
+      label: "Executive",
+      roles: ["manager"],
+      items: [
+        { 
+          href: "/reporting/executive", 
+          label: "Executive Dashboard", 
+          icon: TrendingUp, 
+          highlight: "Board" 
+        },
       ],
     });
   }
 
+  // ==================== SHARED: ALERTS ====================
   groups.push({
-    label: "Reports",
+    label: "Alerts",
     roles: ["loan-officer", "manager"],
     items: [
-      ...(role === "loan-officer" ? [{ href: "/notifications", label: "Notifications", icon: Bell, highlight: "Alerts" as const }] : []),
+      { href: "/notifications", label: "Notifications", icon: Bell, highlight: "Alerts" },
+    ],
+  });
+
+  // ==================== SHARED: REPORTS & AUDIT ====================
+  groups.push({
+    label: "Reports & Audit",
+    roles: ["loan-officer", "manager"],
+    items: [
       { href: "/reporting", label: "Reports Center", icon: BarChart3, highlight: "Summary" },
       { href: "/reporting/executive", label: "Executive Dashboard", icon: TrendingUp, highlight: "Board" },
       { href: "/audit", label: "Audit Center", icon: FileText, highlight: "Compliance" },
-      ...(role === "manager" ? [{ href: "/notifications", label: "Notifications", icon: Bell, highlight: "Alerts" as const }] : []),
+    ],
+  });
+
+  // ==================== SETTINGS & HELP ====================
+  groups.push({
+    label: "Account",
+    roles: ["loan-officer", "manager"],
+    items: [
+      { href: "/settings", label: "Settings", icon: Settings, highlight: "Preferences" },
+      { href: "/help", label: "Help Center", icon: HelpCircle, highlight: "Support" },
+      { href: "/profile", label: "Profile", icon: UserRound, highlight: "Account" },
     ],
   });
 
@@ -128,7 +281,7 @@ export function AppShell({
   allowedRoles,
 }: {
   children: ReactNode;
-  active: "command-center" | "applications" | "portfolio" | "audit" | "reporting";
+  active: "command-center" | "applications" | "portfolio" | "audit" | "reporting" | "notifications" | "settings" | "help" | "profile" | "approvals" | "assessment" | "decision" | "approvals" | "risk-analytics" | "financial-inclusion" | "executive" | "reports-audit" | "account";
   role?: UserRole;
   allowedRoles?: UserRole[];
 }) {
@@ -194,7 +347,7 @@ export function AppShell({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-canvas">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-canvas">
         <div className="text-center">
           <RefreshCw className="mx-auto h-6 w-6 animate-spin text-trust" />
           <p className="mt-3 text-sm text-muted">Loading session...</p>
@@ -210,7 +363,7 @@ export function AppShell({
   }
 
   return (
-    <div className="min-h-screen bg-canvas text-ink relative">
+    <div className="min-h-[100dvh] bg-canvas text-ink relative">
       <div className="noise-overlay fixed inset-0 z-0 pointer-events-none" />
 
       {/* Mobile overlay */}
@@ -253,7 +406,7 @@ export function AppShell({
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
-            className="absolute right-3 top-4 grid h-8 w-8 place-items-center rounded-xl text-muted hover:bg-white/[0.06] hover:text-ink lg:hidden"
+            className="absolute right-3 top-4 grid h-8 w-8 place-items-center rounded-xl text-muted hover:bg-white/[0.06] hover:text-ink active:scale-[0.97] transition-transform duration-100 lg:hidden"
             aria-label="Close sidebar"
           >
             <X className="h-4 w-4" />
@@ -277,7 +430,28 @@ export function AppShell({
                 {group.items.map((item, index) => {
                   const Icon = item.icon;
                   const globalIndex = visibleNavItems.indexOf(item);
-                  const selected = item.href.split("/")[1] === active || item.href.slice(1) === active;
+                  const selected = 
+                    item.href.split("/")[1] === active || 
+                    item.href.slice(1) === active || 
+                    (item.href === "/notifications" && active === "notifications") || 
+                    (item.href === "/settings" && active === "settings") || 
+                    (item.href === "/help" && active === "help") || 
+                    (item.href === "/profile" && active === "profile") ||
+                    (item.href === "/applications" && (active === "applications" || active === "approvals" || active === "assessment" || active === "decision")) ||
+                    (item.href === "/portfolio" && (active === "portfolio" || active === "risk-analytics" || active === "financial-inclusion")) ||
+                    (item.href === "/reporting" && (active === "reporting" || active === "reports-audit")) ||
+                    (item.href === "/reporting/executive" && active === "executive") ||
+                    (item.href === "/audit" && active === "audit") ||
+                    (item.href === "/settings" && active === "settings") ||
+                    (item.href === "/help" && active === "help") ||
+                    (item.href === "/profile" && active === "profile") ||
+                    (item.href === "/applications" && active === "approvals") ||
+                    (item.href === "/applications" && active === "assessment") ||
+                    (item.href === "/applications" && active === "decision") ||
+                    (item.href === "/portfolio" && active === "risk-analytics") ||
+                    (item.href === "/portfolio" && active === "financial-inclusion") ||
+                    (item.href === "/reporting/executive" && active === "executive") ||
+                    (item.href === "/reporting" && active === "reports-audit");
 
                   return (
                     <Link
@@ -335,34 +509,75 @@ export function AppShell({
             ))}
 
             {/* Resources */}
-            {!collapsed && (
-              <div className="space-y-0.5 mt-3">
+            <div className="space-y-0.5 mt-3">
+              {!collapsed && (
                 <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted/40">
                   Resources
                 </p>
-                <Link
-                  href="/ps-3-alignment"
-                  className="group flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink"
-                >
-                  <FileText className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                  PS-3 Alignment
-                </Link>
-                <Link
-                  href="/business-impact"
-                  className="group flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink"
-                >
-                  <BarChart3 className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                  Business Impact
-                </Link>
-              </div>
-            )}
+              )}
+              <Link
+                href="/ps-3-alignment"
+                className={cn(
+                  "group flex items-center gap-3 rounded-xl text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink",
+                  collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2"
+                )}
+                title={collapsed ? "PS-3 Alignment" : undefined}
+              >
+                <FileText className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                {!collapsed && <span>PS-3 Alignment</span>}
+              </Link>
+              <Link
+                href="/business-impact"
+                className={cn(
+                  "group flex items-center gap-3 rounded-xl text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink",
+                  collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2"
+                )}
+                title={collapsed ? "Business Impact" : undefined}
+              >
+                <BarChart3 className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                {!collapsed && <span>Business Impact</span>}
+              </Link>
+              <Link
+                href="/settings"
+                className={cn(
+                  "group flex items-center gap-3 rounded-xl text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink",
+                  collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2"
+                )}
+                title={collapsed ? "Settings" : undefined}
+              >
+                <Settings className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                {!collapsed && <span>Settings</span>}
+              </Link>
+              <Link
+                href="/help"
+                className={cn(
+                  "group flex items-center gap-3 rounded-xl text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink",
+                  collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2"
+                )}
+                title={collapsed ? "Help Center" : undefined}
+              >
+                <HelpCircle className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                {!collapsed && <span>Help Center</span>}
+              </Link>
+              <Link
+                href="/profile"
+                className={cn(
+                  "group flex items-center gap-3 rounded-xl text-xs font-medium text-muted transition-all hover:bg-white/[0.04] hover:text-ink",
+                  collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2"
+                )}
+                title={collapsed ? "Profile" : undefined}
+              >
+                <UserRound className="h-3.5 w-3.5 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                {!collapsed && <span>Profile</span>}
+              </Link>
+            </div>
           </nav>
 
           {/* Sidebar collapse toggle */}
           <button
             type="button"
             onClick={() => setCollapsed(!collapsed)}
-            className="mb-3 hidden w-full items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs text-muted transition-all hover:bg-white/[0.04] hover:text-ink lg:flex"
+            className="mb-3 hidden w-full items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs text-muted transition-all hover:bg-white/[0.04] hover:text-ink active:scale-[0.97] lg:flex"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={collapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
           >
@@ -423,7 +638,7 @@ export function AppShell({
               <button
                 type="button"
                 onClick={() => setMobileOpen(true)}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-muted hover:bg-white/[0.06] hover:text-ink lg:hidden"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-muted hover:bg-white/[0.06] hover:text-ink active:scale-[0.97] transition-transform duration-100 lg:hidden"
                 aria-label="Open sidebar menu"
               >
                 <LayoutDashboard className="h-4 w-4" />
@@ -450,6 +665,9 @@ export function AppShell({
                 </span>
               </div>
 
+              {/* Back button for drilldown pages */}
+              <BackButton fallbackHref="/" className="hidden sm:flex" />
+
               {/* Overflow menu */}
               <div className="relative" ref={overflowRef}>
                 <button
@@ -474,7 +692,7 @@ export function AppShell({
                       <button
                         type="button"
                         onClick={() => { toggleJudgeMode(); setOverflowOpen(false); }}
-                        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${isJudgeMode ? "bg-trust-light/20 text-trust" : "text-muted hover:bg-white/[0.04] hover:text-ink"}`}
+                        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors active:scale-[0.97] ${isJudgeMode ? "bg-trust-light/20 text-trust" : "text-muted hover:bg-white/[0.04] hover:text-ink"}`}
                       >
                         <Eye className="h-4 w-4" />
                         {isJudgeMode ? "Judge Mode On" : "Judge Mode"}
@@ -482,7 +700,7 @@ export function AppShell({
                       <button
                         type="button"
                         onClick={() => { toggleDemoMode(); setOverflowOpen(false); }}
-                        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${isDemoMode ? "bg-trust-light/20 text-trust" : "text-muted hover:bg-white/[0.04] hover:text-ink"}`}
+                        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors active:scale-[0.97] ${isDemoMode ? "bg-trust-light/20 text-trust" : "text-muted hover:bg-white/[0.04] hover:text-ink"}`}
                       >
                         <Sparkles className="h-4 w-4" />
                         {isDemoMode ? "Demo On" : "Demo Mode"}
@@ -490,8 +708,8 @@ export function AppShell({
                       {isDemoMode && (
                         <button
                           type="button"
-                          onClick={() => { endDemoSession(); setOverflowOpen(false); window.location.href = "/"; }}
-                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted hover:bg-white/[0.04] hover:text-ink transition-colors"
+                          onClick={() => { endDemoSession(); setOverflowOpen(false); router.push("/"); }}
+                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted hover:bg-white/[0.04] hover:text-ink transition-colors active:scale-[0.97]"
                         >
                           <RefreshCw className="h-4 w-4" />
                           Reset Demo
@@ -501,7 +719,7 @@ export function AppShell({
                         <button
                           type="button"
                           onClick={() => { startTour(); setOverflowOpen(false); }}
-                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted hover:bg-white/[0.04] hover:text-ink transition-colors"
+                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted hover:bg-white/[0.04] hover:text-ink transition-colors active:scale-[0.97]"
                         >
                           <MonitorPlay className="h-4 w-4" />
                           Guided Tour
@@ -527,8 +745,10 @@ export function AppShell({
         <PageTransition key={pathname}>
           <div id="main-content">
             <FeatureDiscoveryBar />
+            <DemoOverlay />
             {children}
             <RecommendedNext />
+            <RelatedFeatures className="mt-4" />
           </div>
         </PageTransition>
       </div>
@@ -545,9 +765,9 @@ function PageTransition({ children }: { children: ReactNode }) {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
     >
-      <main className="px-4 py-5 sm:px-6 lg:px-8">{children}</main>
+      <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">{children}</main>
     </motion.div>
   );
 }

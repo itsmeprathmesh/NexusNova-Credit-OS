@@ -2,6 +2,8 @@ import { lazy } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { BackButton } from "@/components/ui/back-button";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { parseRole } from "@/lib/utils";
 import type { Metadata } from "next";
 export const metadata: Metadata = { title: "Executive Dashboard — NexusNova" };
@@ -23,6 +25,8 @@ export default async function ExecutiveDashboardPage({
           <BackButton fallbackHref={`/reporting?role=${role}`} />
           <Breadcrumbs />
         </div>
+        <PagePurpose />
+        <SmartActionBar />
         <ExecutiveDashboard />
       </div>
     </AppShell>

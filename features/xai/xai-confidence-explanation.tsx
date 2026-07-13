@@ -1,10 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Brain, CheckCircle2, Info, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlassPanel } from "@/components/ui/glass-panel";
-import { Badge, ProgressBar } from "@/components/ui/primitives";
 import { ConfidenceBar } from "@/components/ai/confidence-indicator";
 
 export function ConfidenceExplanation({

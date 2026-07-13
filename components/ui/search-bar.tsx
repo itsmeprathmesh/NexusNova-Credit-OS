@@ -35,6 +35,7 @@ const FEATURES: FeatureItem[] = [
   { id: "explainable-ai", label: "Explainable AI", description: "View factor contributions, confidence scores, and AI reasoning", href: "/applications/app-1001?role=loan-officer&view=explain", category: "Loan Officer", keywords: "explainable xai explainability factor contribution" },
   { id: "document-intelligence", label: "Document Intelligence", description: "AI document extraction with per-field confidence scoring", href: "/applications/app-1001?role=loan-officer&view=documents", category: "Loan Officer", keywords: "document ocr extraction intelligence" },
   { id: "credit-memo", label: "Credit Memo", description: "AI-generated bank-grade credit memo for approval authorities", href: "/applications/app-1001/production-memo?role=loan-officer", category: "Loan Officer", keywords: "credit memo memo report" },
+  { id: "credit-memo-internal", label: "Credit Memo (Internal)", description: "Internal AI-powered credit analysis for underwriters", href: "/applications/app-1001/memo", category: "Loan Officer", keywords: "credit memo internal underwriting" },
   { id: "decision-timeline", label: "Decision Timeline", description: "Complete audit trail of the loan decision process", href: "/applications/app-1001/timeline?role=loan-officer", category: "Loan Officer", keywords: "timeline decision audit trail history" },
   { id: "customer-360", label: "Customer 360", description: "Full MSME profile with financials, risk, documents, and history", href: "/portfolio/msme-aurora?role=loan-officer", category: "Loan Officer", keywords: "customer 360 profile drilldown" },
   { id: "alternate-data-dashboard", label: "Alternate Data Dashboard", description: "Alternate data coverage and assessment readiness overview", href: "/applications?role=loan-officer", category: "Loan Officer", keywords: "alternate data coverage readiness" },
@@ -209,7 +210,7 @@ export function SearchBar() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex min-h-9 items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-xs text-muted transition-all duration-200 hover:border-trust/30 hover:bg-white/[0.06] hover:text-ink md:w-56 lg:w-64"
+        className="flex min-h-9 items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-xs text-muted transition-all duration-200 hover:border-trust/30 hover:bg-white/[0.06] hover:text-ink active:scale-[0.97] md:w-56 lg:w-64"
       >
         <Search className="h-3.5 w-3.5 shrink-0" />
         <span className="hidden md:inline">Search features, pages, data...</span>
@@ -236,7 +237,7 @@ export function SearchBar() {
               />
               <div className="flex items-center gap-1.5">
                 <kbd className="rounded-lg border border-white/[0.1] bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-mono text-muted">Esc</kbd>
-                <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="rounded-lg p-1.5 text-muted hover:bg-white/[0.06] hover:text-ink transition-colors">
+                <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="rounded-lg p-1.5 text-muted hover:bg-white/[0.06] hover:text-ink transition-colors active:scale-[0.97]">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -253,7 +254,7 @@ export function SearchBar() {
                         key={cat}
                         type="button"
                         onClick={() => setQuery(cat.toLowerCase())}
-                        className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-2.5 py-1 text-[11px] font-medium text-muted transition-colors hover:bg-white/[0.04] hover:text-ink"
+                        className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-2.5 py-1 text-[11px] font-medium text-muted transition-colors hover:bg-white/[0.04] hover:text-ink active:scale-[0.97]"
                       >
                         {cat}
                       </button>

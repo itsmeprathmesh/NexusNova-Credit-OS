@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { ArrowUpRight, Filter, Inbox, ClipboardList, Plus, Sparkles } from "lucide-react";
+import { ArrowUpRight, Filter, ClipboardList, Plus, Sparkles, Inbox } from "lucide-react";
 import { applications, msmes, portfolio } from "@/data/mock-data";
 import type { UserRole } from "@/domain/types";
 import { formatCurrency } from "@/lib/format";
-import { Badge, Panel, RiskBadge } from "@/components/ui/primitives";
+import { Badge, Panel, RiskBadge, EmptyState } from "@/components/ui/primitives";
 
 const filters = [
   { label: "Priority", values: ["All", "Urgent", "High", "Standard"] },
@@ -49,8 +49,8 @@ export function ApplicationQueue({ role }: { role: UserRole }) {
                     key={value}
                     className={
                       index === 0
-                        ? "rounded-md bg-trust px-3 py-1.5 text-xs font-semibold text-white"
-                        : "rounded-md border border-line bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-muted"
+                        ? "rounded-md bg-trust px-3 py-1.5 text-xs font-semibold text-white active:scale-[0.97] transition-transform duration-100"
+                        : "rounded-md border border-line bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-muted active:scale-[0.97] transition-transform duration-100"
                     }
                     type="button"
                   >
@@ -65,13 +65,9 @@ export function ApplicationQueue({ role }: { role: UserRole }) {
 
       <Panel title="Cases">
         {applications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Inbox className="mb-3 h-12 w-12 text-muted/30" />
-            <p className="text-base font-semibold text-muted">No applications in queue</p>
-            <p className="mt-1 text-sm text-muted/60">New MSME credit applications will appear here.</p>
-          </div>
+          <EmptyState icon={<Inbox className="h-8 w-8" />} title="No applications in queue" description="New MSME credit applications will appear here." />
         ) : (
-        <div className="overflow-hidden rounded-lg border border-line">
+        <div className="overflow-x-auto rounded-lg border border-line">
           <div className="hidden grid-cols-[1.2fr_1fr_0.8fr_0.8fr_0.6fr] gap-4 bg-white/[0.04] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
             <span>Borrower</span>
             <span>Request</span>

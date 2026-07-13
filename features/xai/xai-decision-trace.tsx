@@ -1,9 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   Activity,
-  ArrowDown,
   BarChart3,
   Brain,
   CheckCircle2,

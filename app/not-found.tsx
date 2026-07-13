@@ -3,7 +3,7 @@ import { FileQuestion, ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <main id="main-content" className="flex min-h-screen flex-col items-center justify-center bg-canvas px-4">
+    <main id="main-content" className="flex min-h-[100dvh] flex-col items-center justify-center bg-canvas px-4">
       <div className="w-full max-w-md text-center">
         <div className="mx-auto mb-6 grid h-20 w-20 place-items-center rounded-3xl border border-white/[0.08] bg-white/[0.02]">
           <FileQuestion className="h-10 w-10 text-muted" />

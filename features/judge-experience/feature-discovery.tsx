@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useJudge } from "./guide-provider";
 import { FEATURE_DISCOVERY } from "./guide-config";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 interface FeatureDiscoveryBadgeProps {
   featureId: string;

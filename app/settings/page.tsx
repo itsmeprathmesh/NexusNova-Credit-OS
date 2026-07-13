@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
   User,
   Bell,
@@ -31,6 +31,10 @@ import {
 import { AppShell } from "@/components/layout/app-shell";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { Badge } from "@/components/ui/primitives";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { BackButton } from "@/components/ui/back-button";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { useAuth } from "@/contexts/auth-context";
 import { useDemoMode } from "@/contexts/demo-mode";
 import { useJudge } from "@/features/judge-experience";
@@ -82,7 +86,7 @@ export default function SettingsPage() {
   const role = user?.role ?? "loan-officer";
 
   return (
-    <AppShell active="command-center" role={role}>
+    <AppShell active="settings" role={role}>
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 flex items-center gap-3">
           <div className="grid h-10 w-10 place-items-center rounded-xl bg-trust-light text-trust">
@@ -93,6 +97,14 @@ export default function SettingsPage() {
             <p className="text-sm text-muted">Manage your account, preferences, and application settings</p>
           </div>
         </div>
+
+        <div className="mb-4 flex items-center justify-between">
+          <BackButton fallbackHref="/command-center" />
+          <Breadcrumbs />
+        </div>
+
+        <PagePurpose className="mb-4" />
+        <SmartActionBar className="mb-6" />
 
         <div className="flex flex-col gap-6 lg:flex-row">
           {/* Sidebar */}
@@ -113,7 +125,7 @@ export default function SettingsPage() {
                         setActiveSection(sec.id);
                       }
                     }}
-                    className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all ${
+                    className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all active:scale-[0.97] ${
                       isLogout
                         ? "text-muted hover:bg-danger/10 hover:text-danger"
                         : isActive
@@ -273,16 +285,16 @@ function ThemeSection() {
             { id: "dark", label: "Dark", desc: "Default dark theme" },
             { id: "system", label: "System", desc: "Follow system preference" },
           ].map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTheme(t.id)}
-              className={`flex-1 rounded-xl border p-4 text-left transition-all ${
-                theme === t.id
-                  ? "border-trust/30 bg-trust-light/20"
-                  : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
-              }`}
-            >
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTheme(t.id)}
+                className={`flex-1 rounded-xl border p-4 text-left transition-all active:scale-[0.97] ${
+                  theme === t.id
+                    ? "border-trust/30 bg-trust-light/20"
+                    : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
+                }`}
+              >
               <p className="font-medium text-ink">{t.label}</p>
               <p className="text-xs text-muted mt-0.5">{t.desc}</p>
             </button>
@@ -329,7 +341,7 @@ function AccessibilitySection() {
                 key={size}
                 type="button"
                 onClick={() => setFontSize(size)}
-                className={`rounded-lg border px-3 py-1.5 text-xs font-medium capitalize transition-all ${
+                className={`rounded-lg border px-3 py-1.5 text-xs font-medium capitalize transition-all active:scale-[0.97] ${
                   fontSize === size
                     ? "border-trust/30 bg-trust-light/20 text-trust"
                     : "border-white/[0.06] text-muted hover:border-white/[0.12]"
@@ -441,7 +453,7 @@ function FeedbackSection() {
 
 function HelpRow({ icon: Icon, label, desc }: { icon: typeof HelpCircle; label: string; desc: string }) {
   return (
-    <button className="flex w-full items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-left transition-all hover:border-white/[0.12] hover:bg-white/[0.04]">
+    <button className="flex w-full items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-left transition-all hover:border-white/[0.12] hover:bg-white/[0.04] active:scale-[0.97]">
       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-trust-light/50 text-trust">
         <Icon className="h-4 w-4" />
       </div>
@@ -528,7 +540,7 @@ function ToggleRow({ label, desc, enabled, onChange }: { label: string; desc: st
         role="switch"
         aria-checked={enabled}
         onClick={() => onChange(!enabled)}
-        className={`relative ml-3 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors ${
+        className={`relative ml-3 inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full transition-colors active:scale-[0.97] ${
           enabled ? "bg-trust" : "bg-white/[0.12]"
         }`}
       >
@@ -556,7 +568,7 @@ function Field({ label, type, placeholder, showToggle, showPassword, onToggle }:
           className="min-h-11 w-full bg-transparent px-4 text-sm text-ink outline-none placeholder:text-muted/30"
         />
         {showToggle && (
-          <button type="button" onClick={onToggle} aria-label={showPassword ? "Hide password" : "Show password"} className="mr-3 text-muted hover:text-ink" tabIndex={-1}>
+          <button type="button" onClick={onToggle} aria-label={showPassword ? "Hide password" : "Show password"} className="mr-3 text-muted hover:text-ink active:scale-[0.97] transition-transform duration-100" tabIndex={-1}>
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         )}

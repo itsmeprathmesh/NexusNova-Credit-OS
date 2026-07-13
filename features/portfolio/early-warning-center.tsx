@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowUpRight } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, Bell } from "lucide-react";
 import type { UserRole } from "@/domain/types";
 import { Badge, Panel, RiskBadge } from "@/components/ui/primitives";
 import type { EarlyWarningItem } from "@/services/portfolio-intelligence";
+import { SmartCallout } from "@/components/demo/smart-callout";
 
 export function EarlyWarningCenter({
   warnings,
@@ -24,6 +25,13 @@ export function EarlyWarningCenter({
 
   return (
     <Panel title="Early Warning Center" action={<Badge tone="warning">{warnings.length} active</Badge>}>
+      <SmartCallout
+        id="early-warning-predictive-insight"
+        title="Predictive Early Warning Intelligence"
+        description="AI detects warning signals 2-3 months ahead of traditional monitoring by analyzing alternate data patterns — giving officers time to intervene before NPA classification."
+        variant="impact"
+        icon={Bell}
+      />
       <div className="space-y-3">
         {warnings.map((warning) => (
           <Link

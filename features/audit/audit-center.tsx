@@ -83,7 +83,7 @@ export function AuditCenter() {
                     key={role}
                     type="button"
                     onClick={() => toggleRole(role)}
-                    className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition ${
+                    className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition active:scale-[0.97] ${
                       filter.roles.includes(role) ? "border-trust bg-trust/10 text-trust" : "border-line bg-white/[0.04] text-muted hover:bg-white/[0.08]"
                     }`}
                   >
@@ -100,7 +100,7 @@ export function AuditCenter() {
                     key={action}
                     type="button"
                     onClick={() => toggleAction(action)}
-                    className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition ${
+                    className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition active:scale-[0.97] ${
                       filter.actions.includes(action) ? "border-trust bg-trust/10 text-trust" : "border-line bg-white/[0.04] text-muted hover:bg-white/[0.08]"
                     }`}
                   >

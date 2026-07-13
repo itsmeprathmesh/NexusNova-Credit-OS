@@ -13,6 +13,7 @@ import { RealTimeBadge } from "@/components/financial-health";
 import { CustomerTimeline } from "./customer-timeline";
 import { NotificationCenter } from "./notification-center";
 import { OnboardingJourney } from "./onboarding-journey";
+import { SmartCallout } from "@/components/demo/smart-callout";
 
 const application = applications[0]!;
 const msme = msmes.find((item) => item.id === application.msmeId)!;
@@ -112,6 +113,13 @@ export function ApplicationStatus() {
       <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
         <OnboardingJourney stages={journeyStages} activeStage="submitted" />
         <div className="space-y-4">
+          <SmartCallout
+            id="application-alternate-data-health"
+            title="Alternate Data Health Assessment"
+            description="Your financial health score is computed from alternate data sources like GST, UPI, and bank activity — giving a 360° view beyond traditional credit scores."
+            variant="insight"
+            icon={Activity}
+          />
           <div className="rounded-xl border border-trust/20 bg-trust-light/20 p-4">
             <p className="text-sm font-semibold text-trust">Financial Health</p>
             <p className="mt-2 text-3xl font-bold text-ink">{healthScore.score}<span className="text-sm text-muted">/100</span></p>

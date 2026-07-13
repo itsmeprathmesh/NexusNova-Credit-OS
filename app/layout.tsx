@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import "@fontsource/geist-sans/400.css";
+import "@fontsource/geist-sans/500.css";
+import "@fontsource/geist-sans/600.css";
+import "@fontsource/geist-sans/700.css";
 import { DemoShell } from "@/components/demo/demo-shell";
 import { JudgeShell } from "@/features/judge-experience";
 import { ToastProvider } from "@/components/ui/toast";
@@ -8,8 +11,6 @@ import { CustomerAuthProvider } from "@/contexts/customer-auth-context";
 import { DemoControlCenter } from "@/components/demo/demo-control-center";
 import { DemoSessionProvider } from "@/contexts/demo-session";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "NexusNova MSME Financial Health Card",
@@ -24,7 +25,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className="[--font-geist-sans:Geist]">
       <body>
         <a href="#main-content" className="skip-link">
           Skip to main content

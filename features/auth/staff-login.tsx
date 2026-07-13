@@ -22,7 +22,7 @@ export function StaffLogin({ role }: { role: UserRole }) {
   const Icon = item.icon;
 
   return (
-    <main className="min-h-screen bg-canvas px-4 py-6 text-ink">
+    <main className="min-h-[100dvh] bg-canvas px-4 py-6 text-ink">
       <section className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-5xl items-center gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-trust">
@@ -41,11 +41,11 @@ export function StaffLogin({ role }: { role: UserRole }) {
           <div className="mt-5 space-y-4">
             <label className="block">
               <span className="text-sm font-semibold">Employee ID</span>
-              <input className="mt-2 min-h-12 w-full rounded-lg border border-line px-3 outline-none focus:border-trust" defaultValue={role === "manager" ? "MGR-2041" : "LO-1187"} />
+              <input className="mt-2 min-h-12 w-full rounded-lg border border-line px-3 outline-none focus:border-trust" defaultValue={role === "manager" ? "MGR-2041" : "LO-1187"} aria-label="Employee ID" />
             </label>
             <label className="block">
               <span className="text-sm font-semibold">Password</span>
-              <input className="mt-2 min-h-12 w-full rounded-lg border border-line px-3 outline-none focus:border-trust" type="password" defaultValue="password" />
+              <input className="mt-2 min-h-12 w-full rounded-lg border border-line px-3 outline-none focus:border-trust" type="password" defaultValue="password" aria-label="Password" />
             </label>
             <Link href={item.href} className="flex min-h-12 items-center justify-center gap-2 rounded-lg bg-trust px-4 text-sm font-semibold text-white">
               Continue to workspace

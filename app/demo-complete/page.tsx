@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { CheckCircle2, Sparkles, Eye, Clock, Activity, MonitorPlay, Home, Compass } from "lucide-react";
 import { useOnboarding } from "@/features/judge-experience/onboarding-provider";
 import { useDemoSession } from "@/contexts/demo-session";
@@ -66,7 +66,7 @@ export default function DemoCompletePage() {
   }, [endDemoSession, router]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-canvas px-4 py-8">
+    <main className="flex min-h-[100dvh] flex-col items-center justify-center bg-canvas px-4 py-8">
       <div className="relative mx-auto w-full max-w-lg">
         <div className="absolute inset-0 bg-gradient-to-b from-trust/[0.02] via-transparent to-growth/[0.02] pointer-events-none rounded-3xl" />
 

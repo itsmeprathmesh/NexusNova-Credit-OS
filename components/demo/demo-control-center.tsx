@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
   X,
   Sparkles,
@@ -91,13 +91,13 @@ export function DemoControlCenter() {
   const handleExitDemo = useCallback(() => {
     endTour();
     endDemoSession();
-    window.location.href = "/";
-  }, [endDemoSession, endTour]);
+    router.push("/");
+  }, [endDemoSession, endTour, router]);
 
   const handleResetData = useCallback(() => {
     resetDemoData();
-    window.location.reload();
-  }, []);
+    router.refresh();
+  }, [router]);
 
   const toggleSection = useCallback((id: string) => {
     setExpandedSection((prev) => (prev === id ? null : id));
@@ -239,6 +239,33 @@ export function DemoControlCenter() {
                       <SkipForward className="h-3.5 w-3.5" />
                       Next
                     </button>
+                  </div>
+                  {/* Jump to step */}
+                  <div className="mt-2">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-muted mb-1.5">Jump to Step</p>
+                    <div className="flex gap-1">
+                      <input
+                        type="number"
+                        min={1}
+                        max={tourTotalSteps}
+                        value={tourStep + 1}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value, 10);
+                          if (v >= 1 && v <= tourTotalSteps) goToStep(v - 1);
+                        }}
+                        className="w-14 rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-1.5 text-xs text-ink text-center outline-none focus:border-trust/40"
+                        aria-label="Jump to step number"
+                      />
+                      <span className="flex items-center text-[10px] text-muted">of {tourTotalSteps}</span>
+                      <button
+                        type="button"
+                        onClick={() => { setOpen(false); window.dispatchEvent(new CustomEvent("toggle-onboarding")); }}
+                        className="flex items-center gap-1 rounded-lg border border-trust/20 bg-trust-light/10 px-2.5 py-1.5 text-[10px] font-medium text-trust transition-all hover:bg-trust-light/20"
+                      >
+                        <MonitorPlay className="h-3 w-3" />
+                        Show Walkthrough
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

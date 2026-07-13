@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { CheckCircle2, Circle, Clock, FileText, LineChart, Search, ShieldCheck, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 

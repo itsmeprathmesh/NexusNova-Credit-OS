@@ -94,7 +94,7 @@ export function ReportingCenter() {
               key={label}
               type="button"
               onClick={() => alert(`[NexusNova] Export initiated: ${label}. In production, this would download the file.`)}
-              className="rounded-lg border border-line bg-white/[0.04] px-4 py-3 text-sm font-semibold text-trust transition hover:bg-trust hover:text-white"
+              className="rounded-lg border border-line bg-white/[0.04] px-4 py-3 text-sm font-semibold text-trust transition hover:bg-trust hover:text-white active:scale-[0.97]"
             >
               {label}
             </button>

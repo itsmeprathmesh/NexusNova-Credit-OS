@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
   X,
   ChevronLeft,
@@ -78,7 +78,7 @@ function SpotlightOverlay({ selector, stepId }: { selector?: string; stepId: str
         retryCount.current++;
         if (retryCount.current >= maxRetries) {
           clearInterval(interval);
-          console.warn(`[Tour] Spotlight not found: ${selector} (step ${stepId})`);
+          if (process.env.NODE_ENV !== "production") console.warn(`[Tour] Spotlight not found: ${selector} (step ${stepId})`);
         }
       }, 500);
       return () => clearInterval(interval);
@@ -224,7 +224,7 @@ export function TourEngine() {
   const doNavigate = useCallback((pageId: string) => {
     const targetPath = GUIDE_MAP[pageId];
     if (!targetPath) {
-      console.warn(`[Tour] No route mapped for: ${pageId}`);
+      if (process.env.NODE_ENV !== "production") console.warn(`[Tour] No route mapped for: ${pageId}`);
       nextTourStep();
       return;
     }
@@ -259,7 +259,7 @@ export function TourEngine() {
     if (sameBase) {
       if (nextStep.highlightSelector) {
         // Wait for selector — even on same page
-        console.log(`[Tour] Same page, waiting for selector: ${nextStep.highlightSelector}`);
+        if (process.env.NODE_ENV !== "production") console.log(`[Tour] Same page, waiting for selector: ${nextStep.highlightSelector}`);
         setNavigatingTo(nextStep.pageId);
         navigatingRef.current = nextStep.pageId;
       } else {
@@ -311,7 +311,7 @@ export function TourEngine() {
           return;
         }
       }
-      console.log(`[Tour] Page ready: ${navigatingTo}`);
+      if (process.env.NODE_ENV !== "production") console.log(`[Tour] Page ready: ${navigatingTo}`);
       setNavigatingTo(null);
       navigatingRef.current = null;
       nextTourStep();
@@ -331,7 +331,7 @@ export function TourEngine() {
       if (selector) {
         const el = document.querySelector(selector);
         if (el) {
-          console.log(`[Tour] DOM ready: ${navigatingTo} (${selector})`);
+          if (process.env.NODE_ENV !== "production") console.log(`[Tour] DOM ready: ${navigatingTo} (${selector})`);
           setNavigatingTo(null);
           navigatingRef.current = null;
           nextTourStep();
@@ -355,7 +355,7 @@ export function TourEngine() {
       }
       retries++;
       if (retries >= maxRetries) {
-        console.warn(`[Tour] Timeout waiting for: ${navigatingTo} — advancing anyway`);
+        if (process.env.NODE_ENV !== "production") console.warn(`[Tour] Timeout waiting for: ${navigatingTo} — advancing anyway`);
         clearInterval(interval);
         setNavigatingTo(null);
         navigatingRef.current = null;

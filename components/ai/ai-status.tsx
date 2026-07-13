@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { AlertTriangle, CheckCircle2, Circle, Clock, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 

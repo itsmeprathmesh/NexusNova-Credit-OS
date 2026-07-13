@@ -133,7 +133,7 @@ export default function HomePage() {
   ];
 
   return (
-    <main id="main-content" className="min-h-screen bg-canvas text-ink relative">
+    <main id="main-content" className="min-h-[100dvh] bg-canvas text-ink relative">
       <div className="noise-overlay fixed inset-0 z-0 pointer-events-none" />
       <div className="bg-hero-gradient relative z-10">
         <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10">

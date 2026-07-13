@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Sparkles, Brain, BarChart3, ShieldCheck, Zap, Eye } from "lucide-react";
 import { useDemoMode } from "@/contexts/demo-mode";

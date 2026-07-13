@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { BarChart3, Eye, Info } from "lucide-react";
 import type { FinancialSignals, MsmeProfile } from "@/domain/types";
 import { cn } from "@/lib/utils";

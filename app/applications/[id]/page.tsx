@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { BackButton } from "@/components/ui/back-button";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { applications, documents, financialSignals, msmes } from "@/data/mock-data";
 import { parseRole } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -42,6 +44,8 @@ export default async function ApplicationDetailPage({
           <BackButton fallbackHref={`/applications?role=${role}`} />
           <Breadcrumbs />
         </div>
+        <PagePurpose />
+        <SmartActionBar />
         <ApplicationWorkspace
           application={application}
           msme={msme}

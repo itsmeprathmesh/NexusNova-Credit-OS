@@ -73,8 +73,8 @@ export function BankAiSupport() {
               onClick={() => setQuestion(prompt)}
               className={
                 question === prompt
-                  ? "rounded-lg bg-trust px-3 py-2 text-sm font-semibold text-canvas"
-                  : "rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-sm font-semibold text-muted"
+                  ? "rounded-lg bg-trust px-3 py-2 text-sm font-semibold text-canvas active:scale-[0.97] transition-transform duration-100"
+                  : "rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-sm font-semibold text-muted active:scale-[0.97] transition-transform duration-100"
               }
             >
               {prompt}

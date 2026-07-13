@@ -1,17 +1,15 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   CheckCircle2,
   CreditCard,
   IndianRupee,
   Info,
-  Lightbulb,
-  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlassPanel } from "@/components/ui/glass-panel";
-import { Badge, ProgressBar } from "@/components/ui/primitives";
+import { Badge } from "@/components/ui/primitives";
 import { ConfidenceBar } from "@/components/ai/confidence-indicator";
 
 export interface LoanEligibilityData {

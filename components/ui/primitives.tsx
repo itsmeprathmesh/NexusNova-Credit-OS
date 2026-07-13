@@ -1,7 +1,7 @@
 "use client";
 
 import { type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode, forwardRef } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { ShieldCheck, FileText, ClipboardCheck, TrendingUp } from "lucide-react";
 import type { RiskBand } from "@/domain/types";
 import { cn } from "@/lib/utils";
@@ -130,7 +130,7 @@ export function Metric({
       className={cn("min-w-0", className)}
       initial={animate ? { opacity: 0, y: 12 } : undefined}
       animate={animate ? { opacity: 1, y: 0 } : undefined}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
       role="group"
     >
       <p className="text-xs font-medium uppercase tracking-wider text-muted/80">{label}</p>
@@ -149,7 +149,7 @@ export function ProgressBar({ value, className }: { value: number; className?: s
         className="h-full rounded-full bg-gradient-to-r from-trust to-growth"
         initial={{ width: 0 }}
         animate={{ width: `${clamped}%` }}
-        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
       />
     </div>
   );

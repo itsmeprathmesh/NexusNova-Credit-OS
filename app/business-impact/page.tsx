@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   ArrowLeft,
   Clock,
@@ -69,7 +69,7 @@ const TECHNICAL_DIFFERENTIATORS = [
 
 export default function BusinessImpactPage() {
   return (
-    <main className="min-h-screen bg-canvas text-ink">
+    <main className="min-h-[100dvh] bg-canvas text-ink">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-10">
         <Link
           href="/"

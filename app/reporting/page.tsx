@@ -1,6 +1,8 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { ReportingCenter } from "@/features/reporting/reporting-center";
 import { PageHeader } from "@/components/ui/page-header";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { parseRole } from "@/lib/utils";
 import type { Metadata } from "next";
 export const metadata: Metadata = { title: "Reporting Center — NexusNova" };
@@ -19,6 +21,8 @@ export default async function ReportingPage({
         title="Reporting Center"
         description="Pre-built enterprise reports for portfolio health, sector intelligence, risk migration, and compliance."
       />
+      <PagePurpose className="mb-4" />
+      <SmartActionBar className="mb-6" />
       <ReportingCenter />
     </AppShell>
   );

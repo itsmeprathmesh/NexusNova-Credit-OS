@@ -1,6 +1,8 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { PortfolioDashboard } from "@/features/portfolio/portfolio-dashboard";
 import { PageHeader } from "@/components/ui/page-header";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { parseRole } from "@/lib/utils";
 import type { Metadata } from "next";
 export const metadata: Metadata = { title: "Portfolio Intelligence — NexusNova" };
@@ -15,6 +17,8 @@ export default async function PortfolioPage({ searchParams }: { searchParams: Pr
         title="Portfolio Intelligence"
         description="AI-powered MSME portfolio monitoring, sector intelligence, and early warning detection."
       />
+      <PagePurpose className="mb-4" />
+      <SmartActionBar className="mb-6" />
       <PortfolioDashboard role={role} />
     </AppShell>
   );

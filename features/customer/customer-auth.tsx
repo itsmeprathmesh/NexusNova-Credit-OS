@@ -36,7 +36,7 @@ export function CustomerLogin() {
   }, [router, authLogin, mobile]);
 
   return (
-    <main className="min-h-screen bg-canvas px-4 py-6 text-ink">
+    <main className="min-h-[100dvh] bg-canvas px-4 py-6 text-ink">
       <section className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-5xl items-center gap-8 lg:grid-cols-[1fr_1fr]">
         <div>
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-trust">
@@ -104,7 +104,7 @@ export function CustomerLogin() {
             <button
               type="button"
               onClick={handleLogin}
-              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 text-sm font-semibold text-canvas shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)]"
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 text-sm font-semibold text-canvas shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)] active:scale-[0.97]"
             >
               Continue
               <ArrowRight className="h-4 w-4" />
@@ -145,7 +145,7 @@ export function CustomerRegister() {
   }, [router]);
 
   return (
-    <main className="min-h-screen bg-canvas px-4 py-6 text-ink">
+    <main className="min-h-[100dvh] bg-canvas px-4 py-6 text-ink">
       <section className="mx-auto max-w-3xl">
         <Link href="/customer/login" className="inline-flex items-center gap-2 text-sm font-semibold text-trust">
           <ArrowRight className="h-4 w-4" />
@@ -183,7 +183,7 @@ export function CustomerRegister() {
           <button
             type="button"
             onClick={handleRegister}
-            className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 text-sm font-semibold text-canvas shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)]"
+            className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-trust px-4 text-sm font-semibold text-canvas shadow-glow transition-all hover:shadow-[0_0_30px_rgba(216,255,62,0.25)] active:scale-[0.97]"
           >
             Continue to Business Profile
             <ArrowRight className="h-4 w-4" />

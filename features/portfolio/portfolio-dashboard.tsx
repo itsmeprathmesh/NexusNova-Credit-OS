@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
-import { Inbox } from "lucide-react";
+import { Inbox, Radar } from "lucide-react";
+import { EmptyState } from "@/components/ui/primitives";
 import { msmes, portfolio, financialSignals } from "@/data/mock-data";
 import type { UserRole } from "@/domain/types";
 import { formatCurrency } from "@/lib/format";
@@ -25,6 +26,7 @@ import {
   computeSectorSummaries,
   getEnrichedPortfolio
 } from "@/services/portfolio-intelligence";
+import { SmartCallout } from "@/components/demo/smart-callout";
 
 export function PortfolioDashboard({ role }: { role: UserRole }) {
   const enriched = useMemo(() => {
@@ -108,14 +110,17 @@ export function PortfolioDashboard({ role }: { role: UserRole }) {
         </SlideUpView>
       </div>
 
+      <SmartCallout
+        id="portfolio-intelligence-risk-management"
+        title="Portfolio Intelligence in Action"
+        description="AI-powered portfolio intelligence monitors risk migration, sector exposure, and early warning signals across all branches — enabling proactive risk management before accounts slip into NPA."
+        variant="impact"
+        icon={Radar}
+      />
       <div className="rounded-lg border border-line bg-panel p-5 shadow-sm">
         <h2 className="mb-4 text-base font-semibold text-ink">Sector & Branch Exposure</h2>
-        {enriched.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Inbox className="mb-3 h-12 w-12 text-muted/30" />
-            <p className="text-base font-semibold text-muted">No MSME data available</p>
-            <p className="mt-1 text-sm text-muted/60">Portfolio data will appear once MSMEs are onboarded.</p>
-          </div>
+          {enriched.length === 0 ? (
+          <EmptyState icon={<Inbox className="h-8 w-8" />} title="No MSME data available" description="Portfolio data will appear once MSMEs are onboarded." />
         ) : (
         <div className="overflow-hidden rounded-lg border border-line">
           <div className="grid grid-cols-[1.1fr_1fr_1fr_0.8fr] gap-4 bg-white/[0.04] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted">

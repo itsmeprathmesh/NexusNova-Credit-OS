@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowUp, Lightbulb, Sparkles, TrendingUp } from "lucide-react";
+import { motion } from "motion/react";
+import { ArrowUp, Lightbulb, TrendingUp } from "lucide-react";
 import type { FinancialSignals } from "@/domain/types";
 import { cn } from "@/lib/utils";
 import { GlassPanel } from "@/components/ui/glass-panel";

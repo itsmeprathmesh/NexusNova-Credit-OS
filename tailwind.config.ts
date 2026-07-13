@@ -5,7 +5,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"]
+        sans: ["Geist", "system-ui", "-apple-system", "Segoe UI", "sans-serif"]
       },
       colors: {
         ink: "#FFFFFF",
@@ -60,15 +60,15 @@ const config: Config = {
         glow: { "0%, 100%": { boxShadow: "0 0 20px rgba(216,255,62,0.1)" }, "50%": { boxShadow: "0 0 30px rgba(216,255,62,0.2)" } },
       },
       animation: {
-        "fade-in": "fade-in 0.3s ease-out",
-        "slide-up": "slide-up 0.35s ease-out",
-        "slide-down": "slide-down 0.25s ease-out",
-        "scale-in": "scale-in 0.25s ease-out",
-        shimmer: "shimmer 1.5s ease-in-out infinite",
-        float: "float 4s ease-in-out infinite",
-        "gradient-x": "gradient-x 8s ease infinite",
-        pulse: "pulse 2s ease-in-out infinite",
-        glow: "glow 3s ease-in-out infinite",
+        "fade-in": "fade-in 0.25s cubic-bezier(0.23,1,0.32,1)",
+        "slide-up": "slide-up 0.25s cubic-bezier(0.23,1,0.32,1)",
+        "slide-down": "slide-down 0.2s cubic-bezier(0.23,1,0.32,1)",
+        "scale-in": "scale-in 0.2s cubic-bezier(0.23,1,0.32,1)",
+        shimmer: "shimmer 1.5s cubic-bezier(0.77,0,0.175,1) infinite",
+        float: "float 4s cubic-bezier(0.77,0,0.175,1) infinite",
+        "gradient-x": "gradient-x 8s linear infinite",
+        pulse: "pulse 2s cubic-bezier(0.77,0,0.175,1) infinite",
+        glow: "glow 3s cubic-bezier(0.77,0,0.175,1) infinite",
       }
     }
   },

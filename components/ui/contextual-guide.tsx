@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/contexts/auth-context";
 import { getGuide } from "@/features/judge-experience/guide-config";
 import { Lightbulb, X, ChevronRight, Sparkles } from "lucide-react";
@@ -82,7 +82,7 @@ export function ContextualGuide() {
               <button
                 type="button"
                 onClick={handleDismiss}
-                className="shrink-0 rounded-md p-1 text-muted hover:bg-white/[0.06] hover:text-ink"
+                className="shrink-0 rounded-md p-1 text-muted hover:bg-white/[0.06] hover:text-ink active:scale-[0.97] transition-transform duration-100"
                 aria-label="Dismiss guide"
               >
                 <X className="h-3.5 w-3.5" />

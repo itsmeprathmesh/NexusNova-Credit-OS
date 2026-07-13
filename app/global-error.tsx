@@ -4,7 +4,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
   return (
     <html>
       <body>
-        <main className="flex min-h-screen flex-col items-center justify-center bg-canvas px-4" style={{ backgroundColor: "#0a0a0f", color: "#e8edf5" }}>
+        <main className="flex min-h-[100dvh] flex-col items-center justify-center bg-canvas px-4" style={{ backgroundColor: "#0a0a0f", color: "#e8edf5" }}>
           <div style={{ maxWidth: "400px", textAlign: "center" }}>
             <div style={{ width: "80px", height: "80px", margin: "0 auto 24px", borderRadius: "24px", border: "1px solid rgba(255,107,107,0.2)", backgroundColor: "rgba(255,107,107,0.05)", display: "grid", placeItems: "center" }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>

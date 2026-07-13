@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { BackButton } from "@/components/ui/back-button";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { applications, financialSignals, getCustomer360, msmes, portfolio } from "@/data/mock-data";
 import { MsmeDrilldown } from "@/features/portfolio/msme-drilldown";
 import { parseRole } from "@/lib/utils";
@@ -38,6 +40,8 @@ export default async function PortfolioDrilldownPage({
           <BackButton fallbackHref={`/portfolio?role=${role}`} />
           <Breadcrumbs />
         </div>
+        <PagePurpose />
+        <SmartActionBar />
         <MsmeDrilldown msme={msme} portfolioItem={portfolioItem} role={role} snapshot={snapshot} signals={signals} application={application} />
       </div>
     </AppShell>

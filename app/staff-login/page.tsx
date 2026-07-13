@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
   ShieldCheck,
   ArrowRight,
@@ -16,6 +16,7 @@ import {
   Activity,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
+import { cn } from "@/lib/utils";
 
 const BRANCHES = [
   "Mumbai Main Branch",
@@ -72,7 +73,7 @@ export default function StaffLoginPage() {
 
   if (isAuthenticated) {
     return (
-      <main id="main-content" className="flex min-h-screen items-center justify-center bg-canvas">
+      <main id="main-content" className="flex min-h-[100dvh] items-center justify-center bg-canvas">
         <div className="text-center">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-trust" />
           <p className="mt-4 text-sm text-muted">Redirecting to dashboard...</p>
@@ -82,7 +83,7 @@ export default function StaffLoginPage() {
   }
 
   return (
-    <main id="main-content" className="flex min-h-screen flex-col bg-canvas">
+    <main id="main-content" className="flex min-h-[100dvh] flex-col bg-canvas">
       <div className="flex flex-1 items-center justify-center px-4 py-8">
         <div className="w-full max-w-[420px]">
           <div className="mb-8 text-center">
@@ -190,7 +191,7 @@ export default function StaffLoginPage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="mr-3 text-muted hover:text-ink"
+                        className="mr-3 text-muted hover:text-ink active:scale-[0.97] transition-transform duration-100"
                         tabIndex={-1}
                         aria-label={showPassword ? "Hide password" : "Show password"}
                       >
@@ -223,7 +224,7 @@ export default function StaffLoginPage() {
                       />
                       Remember me
                     </label>
-                    <button type="button" className="text-sm font-medium text-trust hover:text-trust/80 transition-colors">
+                    <button type="button" className="text-sm font-medium text-trust hover:text-trust/80 transition-colors active:scale-[0.97]">
                       Forgot password?
                     </button>
                   </div>
@@ -251,7 +252,7 @@ export default function StaffLoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowDemo(!showDemo)}
-                    className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-trust transition-colors"
+                    className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-trust transition-colors active:scale-[0.97]"
                   >
                     <Building2 className="h-3.5 w-3.5" />
                     {showDemo ? "Hide" : "Use"} Demo Credentials
@@ -277,7 +278,7 @@ export default function StaffLoginPage() {
                               key={demo.id}
                               type="button"
                               onClick={() => fillDemo(demo.id)}
-                              className="flex w-full items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 text-left transition-all hover:bg-white/[0.04] hover:border-trust/30"
+                              className="flex w-full items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 text-left transition-all hover:bg-white/[0.04] hover:border-trust/30 active:scale-[0.97]"
                             >
                               <div>
                                 <p className="text-xs font-medium text-ink">{demo.role}</p>
@@ -305,8 +306,4 @@ export default function StaffLoginPage() {
       </div>
     </main>
   );
-}
-
-function cn(...classes: (string | false | undefined | null)[]): string {
-  return classes.filter(Boolean).join(" ");
 }

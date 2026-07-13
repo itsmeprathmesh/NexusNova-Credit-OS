@@ -211,7 +211,7 @@ export function ReportDetail({ reportId }: { reportId: string }) {
           <button
             type="button"
             onClick={() => alert(`[NexusNova] ${meta.title} export initiated as PDF.`)}
-            className="inline-flex items-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-trust transition hover:bg-trust hover:text-white"
+            className="inline-flex items-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-trust transition hover:bg-trust hover:text-white active:scale-[0.97]"
           >
             <Download className="h-4 w-4" />
             Download PDF
@@ -219,7 +219,7 @@ export function ReportDetail({ reportId }: { reportId: string }) {
           <button
             type="button"
             onClick={() => alert(`[NexusNova] ${meta.title} export initiated as CSV.`)}
-            className="inline-flex items-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-trust transition hover:bg-trust hover:text-white"
+            className="inline-flex items-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-trust transition hover:bg-trust hover:text-white active:scale-[0.97]"
           >
             <Download className="h-4 w-4" />
             Download CSV

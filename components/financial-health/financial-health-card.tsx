@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Activity, BadgeCheck, Brain, ChevronDown, UserCheck } from "lucide-react";
 import type { FinancialSignals, MsmeProfile } from "@/domain/types";
 import { cn } from "@/lib/utils";

@@ -120,7 +120,7 @@ export function LoanApplicationForm() {
               key={product.id}
               type="button"
               onClick={() => { setProductId(product.id); setAmount(product.defaultTenureMonths === 12 ? Math.min(amount, product.maxAmount) : amount); }}
-              className={`rounded-lg border-2 p-4 text-left transition ${productId === product.id ? "border-trust bg-trust/[0.03]" : "border-white/[0.06] hover:border-trust/50"}`}
+              className={`rounded-lg border-2 p-4 text-left transition active:scale-[0.97] ${productId === product.id ? "border-trust bg-trust/[0.03]" : "border-white/[0.06] hover:border-trust/50"}`}
             >
               <div className="flex items-start justify-between">
                 <p className="font-semibold text-ink">{product.name}</p>

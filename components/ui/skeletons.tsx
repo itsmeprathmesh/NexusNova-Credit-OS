@@ -45,8 +45,8 @@ export function ChartSkeleton() {
     <div className="rounded-2xl border border-white/[0.06] bg-panel p-6 shadow-soft" aria-hidden="true">
       <Skeleton className="mb-6 h-4 w-32 rounded-md" />
       <div className="flex items-end gap-3 h-48">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="flex-1 rounded-md" style={{ height: `${30 + Math.random() * 70}%` }} />
+        {[55, 80, 45, 90, 65, 35, 75, 50].map((h, i) => (
+          <Skeleton key={i} className="flex-1 rounded-md" style={{ height: `${h}%` }} />
         ))}
       </div>
     </div>

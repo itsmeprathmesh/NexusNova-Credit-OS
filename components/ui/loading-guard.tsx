@@ -4,7 +4,7 @@ import { RefreshCw, Activity } from "lucide-react";
 
 export function LoadingGuard({ label = "Loading..." }: { label?: string }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-4">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-canvas px-4">
       <div className="text-center">
         <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-2xl bg-trust/10">
           <Activity className="h-8 w-8 text-trust" />

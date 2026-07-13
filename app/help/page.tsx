@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Search,
   HelpCircle,
@@ -17,10 +17,8 @@ import {
   Sparkles,
   ChevronRight,
   X,
-  ArrowLeft,
   Lightbulb,
   ExternalLink,
-  CheckCircle2,
   Eye,
   RefreshCw,
   Shield,
@@ -36,6 +34,10 @@ import {
 import { AppShell } from "@/components/layout/app-shell";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { Badge } from "@/components/ui/primitives";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { BackButton } from "@/components/ui/back-button";
+import { PagePurpose } from "@/components/ui/page-purpose";
+import { SmartActionBar } from "@/components/ui/smart-action-bar";
 import { useAuth } from "@/contexts/auth-context";
 import { useJudge, GUIDES } from "@/features/judge-experience";
 import { useDemoMode } from "@/contexts/demo-mode";
@@ -142,8 +144,8 @@ export default function HelpPage() {
 
   const showAll = activeSection === "all";
 
-  return (
-    <AppShell active="command-center" role={role}>
+return (
+    <AppShell active="help" role={role}>
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-6">
@@ -168,12 +170,21 @@ export default function HelpPage() {
               className="min-h-11 w-full rounded-xl border border-white/[0.1] bg-white/[0.02] pl-10 pr-10 text-sm text-ink outline-none transition-all focus:border-trust focus:ring-1 focus:ring-trust/20 placeholder:text-muted/40"
             />
             {searchQuery && (
-              <button type="button" onClick={() => setSearchQuery("")} aria-label="Clear search" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink">
+              <button type="button" onClick={() => setSearchQuery("")} aria-label="Clear search" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink active:scale-[0.97] transition-transform duration-100">
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
         </div>
+
+        {/* Back button + Breadcrumbs */}
+        <div className="mb-4 flex items-center justify-between">
+          <BackButton fallbackHref="/command-center" />
+          <Breadcrumbs />
+        </div>
+
+        <PagePurpose className="mb-4" />
+        <SmartActionBar className="mb-6" />
 
         <div className="flex flex-col gap-6 lg:flex-row">
           {/* Sidebar */}
@@ -182,7 +193,7 @@ export default function HelpPage() {
               <button
                 type="button"
                 onClick={() => { setActiveSection("all"); setSearchQuery(""); }}
-                className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all ${
+                className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all active:scale-[0.97] ${
                   activeSection === "all" ? "bg-trust-light text-trust font-medium" : "text-muted hover:bg-white/[0.04] hover:text-ink"
                 }`}
               >
@@ -198,7 +209,7 @@ export default function HelpPage() {
                     key={sec.id}
                     type="button"
                     onClick={() => setActiveSection(isActive ? "all" : sec.id)}
-                    className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all ${
+                    className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all active:scale-[0.97] ${
                       isActive ? "bg-trust-light text-trust font-medium" : "text-muted hover:bg-white/[0.04] hover:text-ink"
                     }`}
                   >
@@ -245,7 +256,7 @@ export default function HelpPage() {
                           <button
                             type="button"
                             onClick={() => setExpandedFaq(isOpen ? null : i)}
-                            className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm font-medium text-ink transition-colors hover:bg-white/[0.02]"
+                            className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm font-medium text-ink transition-colors hover:bg-white/[0.02] active:scale-[0.97]"
                           >
                             <span>{faq.q}</span>
                             <ChevronRight className={`h-4 w-4 shrink-0 text-muted transition-transform ${isOpen ? "rotate-90" : ""}`} />
@@ -413,7 +424,7 @@ export default function HelpPage() {
                           key={item.label}
                           type="button"
                           onClick={() => { if (item.label === "Judge Mode") toggleJudgeMode(); }}
-                          className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-left transition-all hover:border-trust/20 hover:bg-trust-light/10"
+                          className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-left transition-all hover:border-trust/20 hover:bg-trust-light/10 active:scale-[0.97]"
                         >
                           <div className="flex items-center gap-2 mb-1.5">
                             <Icon className="h-4 w-4 text-trust" />
@@ -501,7 +512,7 @@ export default function HelpPage() {
                           <button
                             type="button"
                             onClick={() => setExpandedGlossary(isOpen ? null : entry.term)}
-                            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium text-ink transition-colors hover:bg-white/[0.02]"
+                            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium text-ink transition-colors hover:bg-white/[0.02] active:scale-[0.97]"
                           >
                             <span>{entry.term}</span>
                             <ChevronRight className={`h-4 w-4 shrink-0 text-muted transition-transform ${isOpen ? "rotate-90" : ""}`} />
